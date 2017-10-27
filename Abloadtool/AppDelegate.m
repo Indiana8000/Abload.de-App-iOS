@@ -7,19 +7,51 @@
 //
 
 #import "AppDelegate.h"
+#import "NetworkManager.h"
+#import "AT_TabBarController.h"
+
 
 @interface AppDelegate ()
 
 @end
 
-@implementation AppDelegate
 
+@implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    NSLog(@"Main - didFinishLaunchingWithOptions");
+
+    // Init Network Manager and Abload.de Session
+    [NetworkManager sharedManager];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [self.window makeKeyAndVisible];
+        
+    AT_TabBarController *tabBar = [[AT_TabBarController alloc] init];
+
+    self.window.rootViewController = tabBar;
     return YES;
 }
 
++ (void)initialize {
+    NSLog(@"Main - initialize");
+    
+    // User Defaults
+    NSDictionary *defaults = [NSDictionary dictionaryWithObjectsAndKeys:@"", @"token", nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
+
+    // Disable URLCache by aktivating Cache wir 0 bytes
+    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
+    [NSURLCache setSharedURLCache:sharedCache];
+
+    // Prepare App for Device size
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        // Small
+    } else {
+        // Large
+    }
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

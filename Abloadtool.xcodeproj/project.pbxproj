@@ -7,9 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3E3A6511E0C2E1EABD867CBC /* libPods-Abloadtool.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A20A928C3CA6579C7E7B319A /* libPods-Abloadtool.a */; };
+		529FF7221FECEF0686558678 /* libPods-AbloadtoolTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1F4B2B0D37E50350CA4BDA /* libPods-AbloadtoolTests.a */; };
+		980CAF9CA9736392507CE62B /* libPods-AbloadtoolUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAB2C2A8A42CF26F810AB14 /* libPods-AbloadtoolUITests.a */; };
+		A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */; };
+		A1067D811F866CCF007D1D89 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1067D801F866CCF007D1D89 /* NetworkManager.m */; };
+		A1067D821F866CCF007D1D89 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1067D801F866CCF007D1D89 /* NetworkManager.m */; };
+		A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */; };
+		A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */; };
+		A1BAD3FD1FA251F400865051 /* AT_TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1BAD3FC1FA251F400865051 /* AT_TabBarController.m */; };
+		A1E504DE1F8BECEB0029146D /* libXMLDictionary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */; };
 		A1EE6B5D1F864E0700F78F24 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EE6B5C1F864E0700F78F24 /* AppDelegate.m */; };
-		A1EE6B601F864E0700F78F24 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EE6B5F1F864E0700F78F24 /* FirstViewController.m */; };
-		A1EE6B631F864E0700F78F24 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EE6B621F864E0700F78F24 /* SecondViewController.m */; };
 		A1EE6B661F864E0700F78F24 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1EE6B641F864E0700F78F24 /* Main.storyboard */; };
 		A1EE6B681F864E0700F78F24 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1EE6B671F864E0700F78F24 /* Assets.xcassets */; };
 		A1EE6B6B1F864E0700F78F24 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */; };
@@ -36,13 +44,23 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0153291D76D079647D18A38C /* Pods-AbloadtoolTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbloadtoolTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AbloadtoolTests/Pods-AbloadtoolTests.debug.xcconfig"; sourceTree = "<group>"; };
+		07340EA2D57CB46617C65DED /* Pods-AbloadtoolUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbloadtoolUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AbloadtoolUITests/Pods-AbloadtoolUITests.release.xcconfig"; sourceTree = "<group>"; };
+		A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAFNetworking.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1067D7F1F866CCF007D1D89 /* NetworkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetworkManager.h; sourceTree = "<group>"; };
+		A1067D801F866CCF007D1D89 /* NetworkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetworkManager.m; sourceTree = "<group>"; };
+		A18EDF421FA34E6300F8E80E /* AT_UploadTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_UploadTableViewController.h; sourceTree = "<group>"; };
+		A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_UploadTableViewController.m; sourceTree = "<group>"; };
+		A1B1E3C61F98E70300C05787 /* AT_GalleryTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_GalleryTableViewController.h; sourceTree = "<group>"; };
+		A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_GalleryTableViewController.m; sourceTree = "<group>"; };
+		A1BAD3FB1FA251F400865051 /* AT_TabBarController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_TabBarController.h; sourceTree = "<group>"; };
+		A1BAD3FC1FA251F400865051 /* AT_TabBarController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_TabBarController.m; sourceTree = "<group>"; };
+		A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libXMLDictionary.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1E504E01F8C06BB0029146D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A1E504E11F8C06C70029146D /* API.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = API.md; sourceTree = "<group>"; };
 		A1EE6B581F864E0700F78F24 /* Abloadtool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Abloadtool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1EE6B5B1F864E0700F78F24 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		A1EE6B5C1F864E0700F78F24 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		A1EE6B5E1F864E0700F78F24 /* FirstViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
-		A1EE6B5F1F864E0700F78F24 /* FirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
-		A1EE6B611F864E0700F78F24 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
-		A1EE6B621F864E0700F78F24 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
 		A1EE6B651F864E0700F78F24 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A1EE6B671F864E0700F78F24 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1EE6B6A1F864E0700F78F24 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -54,6 +72,13 @@
 		A1EE6B7E1F864E0700F78F24 /* AbloadtoolUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbloadtoolUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1EE6B821F864E0700F78F24 /* AbloadtoolUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AbloadtoolUITests.m; sourceTree = "<group>"; };
 		A1EE6B841F864E0700F78F24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20A928C3CA6579C7E7B319A /* libPods-Abloadtool.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Abloadtool.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B57E11279FF8618D7CEC1E87 /* Pods-AbloadtoolUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbloadtoolUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AbloadtoolUITests/Pods-AbloadtoolUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		BB3EFA445ED4F087135CB5F9 /* Pods-Abloadtool.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Abloadtool.release.xcconfig"; path = "Pods/Target Support Files/Pods-Abloadtool/Pods-Abloadtool.release.xcconfig"; sourceTree = "<group>"; };
+		BD1F4B2B0D37E50350CA4BDA /* libPods-AbloadtoolTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AbloadtoolTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7360DFC41E5F6F224B4DDA2 /* Pods-AbloadtoolTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbloadtoolTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AbloadtoolTests/Pods-AbloadtoolTests.release.xcconfig"; sourceTree = "<group>"; };
+		FBAB2C2A8A42CF26F810AB14 /* libPods-AbloadtoolUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AbloadtoolUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE09CBE5EA925E488DE39672 /* Pods-Abloadtool.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Abloadtool.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Abloadtool/Pods-Abloadtool.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +86,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1E504DE1F8BECEB0029146D /* libXMLDictionary.a in Frameworks */,
+				A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */,
+				3E3A6511E0C2E1EABD867CBC /* libPods-Abloadtool.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,6 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				529FF7221FECEF0686558678 /* libPods-AbloadtoolTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,12 +104,36 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				980CAF9CA9736392507CE62B /* libPods-AbloadtoolUITests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		15B5AA95DD45F0A80546805E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */,
+				A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */,
+				A20A928C3CA6579C7E7B319A /* libPods-Abloadtool.a */,
+				BD1F4B2B0D37E50350CA4BDA /* libPods-AbloadtoolTests.a */,
+				FBAB2C2A8A42CF26F810AB14 /* libPods-AbloadtoolUITests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A18EDF451FA34E8200F8E80E /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				A1EE6B6D1F864E0700F78F24 /* main.m */,
+				A1EE6B6C1F864E0700F78F24 /* Info.plist */,
+				A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */,
+				A1EE6B641F864E0700F78F24 /* Main.storyboard */,
+			);
+			path = "Support Files";
+			sourceTree = "<group>";
+		};
 		A1EE6B4F1F864E0700F78F24 = {
 			isa = PBXGroup;
 			children = (
@@ -88,6 +141,8 @@
 				A1EE6B761F864E0700F78F24 /* AbloadtoolTests */,
 				A1EE6B811F864E0700F78F24 /* AbloadtoolUITests */,
 				A1EE6B591F864E0700F78F24 /* Products */,
+				D0D11EB49D3E8A30403D0E30 /* Pods */,
+				15B5AA95DD45F0A80546805E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -106,15 +161,18 @@
 			children = (
 				A1EE6B5B1F864E0700F78F24 /* AppDelegate.h */,
 				A1EE6B5C1F864E0700F78F24 /* AppDelegate.m */,
-				A1EE6B5E1F864E0700F78F24 /* FirstViewController.h */,
-				A1EE6B5F1F864E0700F78F24 /* FirstViewController.m */,
-				A1EE6B611F864E0700F78F24 /* SecondViewController.h */,
-				A1EE6B621F864E0700F78F24 /* SecondViewController.m */,
-				A1EE6B641F864E0700F78F24 /* Main.storyboard */,
+				A1BAD3FB1FA251F400865051 /* AT_TabBarController.h */,
+				A1BAD3FC1FA251F400865051 /* AT_TabBarController.m */,
+				A18EDF421FA34E6300F8E80E /* AT_UploadTableViewController.h */,
+				A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */,
+				A1B1E3C61F98E70300C05787 /* AT_GalleryTableViewController.h */,
+				A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */,
+				A1067D7F1F866CCF007D1D89 /* NetworkManager.h */,
+				A1067D801F866CCF007D1D89 /* NetworkManager.m */,
+				A1E504E01F8C06BB0029146D /* README.md */,
+				A1E504E11F8C06C70029146D /* API.md */,
 				A1EE6B671F864E0700F78F24 /* Assets.xcassets */,
-				A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */,
-				A1EE6B6C1F864E0700F78F24 /* Info.plist */,
-				A1EE6B6D1F864E0700F78F24 /* main.m */,
+				A18EDF451FA34E8200F8E80E /* Support Files */,
 			);
 			path = Abloadtool;
 			sourceTree = "<group>";
@@ -137,6 +195,19 @@
 			path = AbloadtoolUITests;
 			sourceTree = "<group>";
 		};
+		D0D11EB49D3E8A30403D0E30 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FE09CBE5EA925E488DE39672 /* Pods-Abloadtool.debug.xcconfig */,
+				BB3EFA445ED4F087135CB5F9 /* Pods-Abloadtool.release.xcconfig */,
+				0153291D76D079647D18A38C /* Pods-AbloadtoolTests.debug.xcconfig */,
+				E7360DFC41E5F6F224B4DDA2 /* Pods-AbloadtoolTests.release.xcconfig */,
+				B57E11279FF8618D7CEC1E87 /* Pods-AbloadtoolUITests.debug.xcconfig */,
+				07340EA2D57CB46617C65DED /* Pods-AbloadtoolUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -144,9 +215,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1EE6B871F864E0700F78F24 /* Build configuration list for PBXNativeTarget "Abloadtool" */;
 			buildPhases = (
+				7C2636DA51040BFDAE2E05A0 /* [CP] Check Pods Manifest.lock */,
 				A1EE6B541F864E0700F78F24 /* Sources */,
 				A1EE6B551F864E0700F78F24 /* Frameworks */,
 				A1EE6B561F864E0700F78F24 /* Resources */,
+				9A1661F0ECE508C90A524B57 /* [CP] Embed Pods Frameworks */,
+				7329A63997B4B17DD631BDFB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -161,9 +235,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1EE6B8A1F864E0700F78F24 /* Build configuration list for PBXNativeTarget "AbloadtoolTests" */;
 			buildPhases = (
+				9A6DDAAFBDC427C26A6BC465 /* [CP] Check Pods Manifest.lock */,
 				A1EE6B6F1F864E0700F78F24 /* Sources */,
 				A1EE6B701F864E0700F78F24 /* Frameworks */,
 				A1EE6B711F864E0700F78F24 /* Resources */,
+				D40F0A599ABC71645F5E4E30 /* [CP] Embed Pods Frameworks */,
+				4A2F28C5BE312962B33755E5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -179,9 +256,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1EE6B8D1F864E0700F78F24 /* Build configuration list for PBXNativeTarget "AbloadtoolUITests" */;
 			buildPhases = (
+				E33F3469077B346197D7FD4B /* [CP] Check Pods Manifest.lock */,
 				A1EE6B7A1F864E0700F78F24 /* Sources */,
 				A1EE6B7B1F864E0700F78F24 /* Frameworks */,
 				A1EE6B7C1F864E0700F78F24 /* Resources */,
+				563B42D93CDC9CEF7A67E418 /* [CP] Embed Pods Frameworks */,
+				3493ACC567174846F49201B4 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -265,15 +345,164 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		3493ACC567174846F49201B4 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AbloadtoolUITests/Pods-AbloadtoolUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		4A2F28C5BE312962B33755E5 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AbloadtoolTests/Pods-AbloadtoolTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		563B42D93CDC9CEF7A67E418 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AbloadtoolUITests/Pods-AbloadtoolUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7329A63997B4B17DD631BDFB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Abloadtool/Pods-Abloadtool-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7C2636DA51040BFDAE2E05A0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Abloadtool-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9A1661F0ECE508C90A524B57 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Abloadtool/Pods-Abloadtool-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9A6DDAAFBDC427C26A6BC465 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AbloadtoolTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D40F0A599ABC71645F5E4E30 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AbloadtoolTests/Pods-AbloadtoolTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E33F3469077B346197D7FD4B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AbloadtoolUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		A1EE6B541F864E0700F78F24 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1EE6B631F864E0700F78F24 /* SecondViewController.m in Sources */,
+				A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */,
 				A1EE6B5D1F864E0700F78F24 /* AppDelegate.m in Sources */,
+				A1BAD3FD1FA251F400865051 /* AT_TabBarController.m in Sources */,
 				A1EE6B6E1F864E0700F78F24 /* main.m in Sources */,
-				A1EE6B601F864E0700F78F24 /* FirstViewController.m in Sources */,
+				A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */,
+				A1067D811F866CCF007D1D89 /* NetworkManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +510,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1067D821F866CCF007D1D89 /* NetworkManager.m in Sources */,
 				A1EE6B781F864E0700F78F24 /* AbloadtoolTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -434,6 +664,7 @@
 		};
 		A1EE6B881F864E0700F78F24 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FE09CBE5EA925E488DE39672 /* Pods-Abloadtool.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -448,6 +679,7 @@
 		};
 		A1EE6B891F864E0700F78F24 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BB3EFA445ED4F087135CB5F9 /* Pods-Abloadtool.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -462,6 +694,7 @@
 		};
 		A1EE6B8B1F864E0700F78F24 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0153291D76D079647D18A38C /* Pods-AbloadtoolTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -477,6 +710,7 @@
 		};
 		A1EE6B8C1F864E0700F78F24 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E7360DFC41E5F6F224B4DDA2 /* Pods-AbloadtoolTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -492,6 +726,7 @@
 		};
 		A1EE6B8E1F864E0700F78F24 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B57E11279FF8618D7CEC1E87 /* Pods-AbloadtoolUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
@@ -506,6 +741,7 @@
 		};
 		A1EE6B8F1F864E0700F78F24 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 07340EA2D57CB46617C65DED /* Pods-AbloadtoolUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
