@@ -15,19 +15,37 @@ typedef void (^NetworkManagerSuccess)(NSDictionary *responseObject);
 typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusCode);
 
 @interface NetworkManager : NSObject {
-    NSArray* gallery;
 }
     + (id)sharedManager;
+    + (void)showMessage:(NSString*) msg;
+
+    - (void)showProgressHUD;
+    - (void)hideProgressHUD;
 
     - (void)showLoginWithViewController:(UIViewController*)viewController andCallback:(void(^)(void))successCallback;
     - (void)tokenCheckWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
     - (void)authenticateWithEmail:(NSString*)email password:(NSString*)password success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+
+    - (void)saveSelectedGallery:(NSNumber*) gid;
+    - (void)saveSelectedResolution:(NSString*) name;
+    - (void)saveSelectedScale:(NSNumber*) scale;
+
     - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
     - (void)getImageList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
-@property (nonatomic, strong) NSNumber* loggedin;
-@property (nonatomic, strong) NSArray* gallery;
-@property (nonatomic, strong) NSArray* images;
+    - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+    - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
+@property (nonatomic, strong) NSNumber* loggedin;
+@property (nonatomic, strong) NSNumber* noad;
+@property (nonatomic, strong) NSNumber* motd_time;
+
+@property (nonatomic, strong) NSArray* gallery;
+@property (nonatomic, strong) NSNumber* selectedGallery;
+@property (nonatomic, strong) NSString* selectedResolution;
+@property (nonatomic, strong) NSNumber* selectedScale;
+@property (nonatomic, strong) NSArray* listScaling;
+
+@property (nonatomic, strong) NSMutableDictionary* images;
 
 @end

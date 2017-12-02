@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AT_SettingTableViewController.h"
 
-@interface AT_UploadTableViewController : UITableViewController
-
+@interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate>
+    @property (nonatomic, strong) AT_SettingTableViewController* pageSetting;
+    @property (nonatomic, strong) UINavigationController* navSetting;
 @end

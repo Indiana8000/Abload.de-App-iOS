@@ -7,8 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "NetworkManager.h"
-#import "AT_TabBarController.h"
+
 
 
 @interface AppDelegate ()
@@ -19,38 +18,28 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
-    NSLog(@"Main - didFinishLaunchingWithOptions");
-
     // Init Network Manager and Abload.de Session
     [NetworkManager sharedManager];
     
+    // Init main Window
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window makeKeyAndVisible];
-        
-    AT_TabBarController *tabBar = [[AT_TabBarController alloc] init];
+    
+    // Init & Set RootViewController
+    self.tabBar = [[AT_TabBarController alloc] init];
+    self.window.rootViewController = self.tabBar ;
 
-    self.window.rootViewController = tabBar;
     return YES;
 }
 
 + (void)initialize {
-    NSLog(@"Main - initialize");
-    
     // User Defaults
     NSDictionary *defaults = [NSDictionary dictionaryWithObjectsAndKeys:@"", @"token", nil];
     [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
 
-    // Disable URLCache by aktivating Cache wir 0 bytes
+    // Disable URLCache by aktivating Cache with 0 bytes
     NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
     [NSURLCache setSharedURLCache:sharedCache];
-
-    // Prepare App for Device size
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        // Small
-    } else {
-        // Large
-    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

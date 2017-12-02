@@ -11,5 +11,4 @@
 
 @interface AT_GalleryTableViewController : UITableViewController
 
-
 @end

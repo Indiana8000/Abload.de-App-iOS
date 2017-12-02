@@ -7,44 +7,36 @@
 //
 
 #import "AT_TabBarController.h"
-#import "FirstViewController.h"
-#import "SecondViewController.h"
-#import "AT_GalleryTableViewController.h"
 
 @interface AT_TabBarController ()
-    @property (nonatomic, strong) AT_GalleryTableViewController* tabGallery;
+
 @end
 
 @implementation AT_TabBarController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
-    self.tabGallery = [[AT_GalleryTableViewController alloc] init];
+    self.tabUpload = [[AT_UploadTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    self.tabGallery = [[AT_GalleryTableViewController alloc] initWithStyle:UITableViewStylePlain];
+    self.tabAbout = [[AT_AboutViewController alloc] init];
 
-    FirstViewController *firstVC = [[FirstViewController alloc] init];
-    firstVC.tabBarItem.title = @"First";
-    
-    UINavigationController *nacVC = [[UINavigationController alloc] initWithRootViewController:self.tabGallery];
-    nacVC.tabBarItem.title = @"Gallery";
+    UINavigationController *navUL = [[UINavigationController alloc] initWithRootViewController:self.tabUpload];
+    navUL.tabBarItem.title = NSLocalizedString(@"Upload", @"Tab Bar Title");
+    navUL.tabBarItem.image = [UIImage imageNamed:@"266-upload"];
 
-    [self setViewControllers:@[firstVC,nacVC]];
+    UINavigationController *navGL = [[UINavigationController alloc] initWithRootViewController:self.tabGallery];
+    navGL.tabBarItem.title = NSLocalizedString(@"Gallery", @"Tab Bar Title");
+    navGL.tabBarItem.image = [UIImage imageNamed:@"42-photos"];
+
+    UINavigationController *navAB = [[UINavigationController alloc] initWithRootViewController:self.tabAbout];
+    navAB.tabBarItem.title = NSLocalizedString(@"About Us", @"Tab Bar Title");
+    navAB.tabBarItem.image = [UIImage imageNamed:@"999-logo"];
+
+    [self setViewControllers:@[navUL, navGL, navAB]];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

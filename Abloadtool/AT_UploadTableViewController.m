@@ -6,6 +6,8 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
+#define c_ICELLID @"ImageTableViewCell"
+
 #import "AT_UploadTableViewController.h"
 
 @interface AT_UploadTableViewController ()
@@ -16,83 +18,129 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.navigationItem.title = NSLocalizedString(@"Upload", @"Navigation Title");
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"106-sliders"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettings:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"56-cloud"] style:UIBarButtonItemStylePlain target:self action:@selector(startUploadingImages:)];
+
+    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:c_ICELLID];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Incomplete implementation, return the number of sections
-    return 0;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of rows
-    return 0;
+    if(section == 0) {
+        return 1;
+    } else {
+        return 8;
+    }
 }
 
-/*
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:c_ICELLID forIndexPath:indexPath];
     
-    // Configure the cell...
+    if(indexPath.section == 0) {
+        cell.textLabel.text = NSLocalizedString(@"Add Pictures", @"Upload");
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    } else {
+        cell.textLabel.text = @"Picture #?";
+    }
     
     return cell;
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+#pragma mark - Table view delegate
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    return indexPath;
 }
-*/
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if(indexPath.section == 0) {
+        
+        UIAlertController *sheet;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            sheet = [UIAlertController alertControllerWithTitle:@"Add Picture from"
+                                                        message:nil
+                                                 preferredStyle:UIAlertControllerStyleActionSheet];
+        } else {
+            sheet = [UIAlertController alertControllerWithTitle:@"Add Picture from"
+                                                        message:nil
+                                                 preferredStyle:UIAlertControllerStyleAlert];
+        }
+        
+        if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            UIAlertAction *btn1 = [UIAlertAction actionWithTitle:NSLocalizedString(@"Single Camera Picture", @"TBD") style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+                                                             [self showImagePickerWithSource:UIImagePickerControllerSourceTypeCamera repeateAdd:NO];
+                                                         }];
+            [sheet addAction:btn1];
+            
+            UIAlertAction *btn2 = [UIAlertAction actionWithTitle:NSLocalizedString(@"Multiple Camera Picture", @"TBD") style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+                                                             [self showImagePickerWithSource:UIImagePickerControllerSourceTypeCamera repeateAdd:YES];
+                                                         }];
+            [sheet addAction:btn2];
+        }
+        
+        if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+            UIAlertAction *btn3 = [UIAlertAction actionWithTitle:NSLocalizedString(@"Single Photo Lybrary", @"TBD") style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+                                                             [self showImagePickerWithSource:UIImagePickerControllerSourceTypePhotoLibrary repeateAdd:NO];
+                                                         }];
+            [sheet addAction:btn3];
+            
+            UIAlertAction *btn4 = [UIAlertAction actionWithTitle:NSLocalizedString(@"Multiple Photo Lybrary", @"TBD") style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+                                                             [self showImagePickerWithSource:UIImagePickerControllerSourceTypePhotoLibrary repeateAdd:YES];
+                                                         }];
+            [sheet addAction:btn4];
+        }
+        
+        UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"TBD") style:UIAlertActionStyleDestructive
+                                                   handler:^(UIAlertAction * action) {
+                                                       [tableView reloadData];
+                                                   }];
+        [sheet addAction:cancel];
+
+        [self presentViewController:sheet animated:YES completion:nil];
+    } else {
+        // Picture tapped
+    }
 }
-*/
 
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+#pragma mark - More
+
+- (void)showSettings:(id) sender {
+    if ( self.pageSetting == nil) {
+        self.pageSetting = [[AT_SettingTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        self.navSetting = [[UINavigationController alloc] initWithRootViewController:self.pageSetting];
+        self.navSetting.modalPresentationStyle = UIModalPresentationPopover;
+    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController pushViewController:self.pageSetting animated:YES];
+    } else {
+        [self.navigationController presentViewController:self.navSetting animated:YES completion:nil];
+        UIPopoverPresentationController *presentationController =[self.navSetting popoverPresentationController];
+        presentationController.barButtonItem = self.navigationItem.leftBarButtonItem;
+    }
 }
-*/
 
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
+
+- (void)showImagePickerWithSource:(UIImagePickerControllerSourceType) sourceType repeateAdd:(BOOL) repeat {
+    
 }
-*/
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)startUploadingImages {
+    
 }
-*/
-
 @end

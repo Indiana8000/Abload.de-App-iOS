@@ -16,12 +16,12 @@
 @interface NetworkManager()
     @property (nonatomic, strong) AFHTTPSessionManager *networkingManager;
     @property (nonatomic, strong) MBProgressHUD *progressHUD;
-
 @end
 
 
 @implementation NetworkManager
 @synthesize gallery;
+@synthesize motd_time;
 
 #pragma mark - Constructors
 
@@ -40,7 +40,16 @@ static NetworkManager *sharedManager = nil;
     NSLog(@"Net - init");
     if ((self = [super init])) {
         self.loggedin = [NSNumber numberWithInteger:0]; // Not Logged In
-        [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(initCheck) userInfo:nil repeats:NO];
+        self.noad = [NSNumber numberWithInteger:0]; // Show Ad
+
+        //NSLog(@"PATH: %@",[[NSBundle mainBundle] bundlePath] );
+        NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"scalemethods" ofType:@"plist"];
+        self.listScaling = [NSArray arrayWithContentsOfFile:plistPath];
+        
+        self.images = [[NSMutableDictionary alloc] initWithCapacity:100];
+        [self loadDefaults];
+        
+        //[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(initCheck) userInfo:nil repeats:NO];
     }
     return self;
 }
@@ -55,23 +64,19 @@ static NetworkManager *sharedManager = nil;
 
 - (void)showLoginWithViewController:(UIViewController*)viewController andCallback:(void(^)(void))successCallback  {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Abloadtool"
-                                                                   message:@"Anmeldung"
+                                                                   message:NSLocalizedString(@"Login", @"Dialog Login")
                                                             preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"Dialog Login") style:UIAlertActionStyleDefault
                                                handler:^(UIAlertAction * action) {
-                                                   //Do Some action here
-                                                   NSLog(@"%@", [[alert.textFields objectAtIndex:0] text]);
-                                                   NSLog(@"%@", [[alert.textFields objectAtIndex:1] text]);
                                                    [self authenticateWithEmail:[[alert.textFields objectAtIndex:0] text] password:[[alert.textFields objectAtIndex:1] text] success:^(id responseObject) {
-                                                       // Save User Credentials and show content
                                                        successCallback();
                                                    } failure:^(NSString *failureReason, NSInteger statusCode) {
-                                                       // Explain to user why authentication failed
+                                                       [NetworkManager showMessage:failureReason];
                                                    }];
                                                }];
 
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Dialog Login") style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
                                                        [alert dismissViewControllerAnimated:YES completion:nil];
                                                    }];
@@ -80,16 +85,17 @@ static NetworkManager *sharedManager = nil;
     [alert addAction:cancel];
     
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = @"Benutzername oder E-Mail-Adresse";
+        textField.placeholder = NSLocalizedString(@"Userid or Email", @"Dialog Login");
         textField.keyboardType = UIKeyboardTypeEmailAddress;
     }];
+    
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = @"Passwort";
+        textField.placeholder = NSLocalizedString(@"Password", @"Dialog Login");
         textField.keyboardType = UIKeyboardTypeDefault;
         textField.secureTextEntry = YES;
     }];
 
-    //UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
+    UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
     [viewController presentViewController:alert animated:YES completion:nil];
     
 }
@@ -111,17 +117,6 @@ static NetworkManager *sharedManager = nil;
     return policy; */
 }
 
-- (NSString*)getError:(NSError*)error {
-    if (error != nil) {
-        NSData *errorData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-        NSDictionary *responseObject = [NSJSONSerialization JSONObjectWithData: errorData options:kNilOptions error:nil];
-        if (responseObject != nil && [responseObject isKindOfClass:[NSDictionary class]] && [responseObject objectForKey:@"message"] != nil && [[responseObject objectForKey:@"message"] length] > 0) {
-            return [responseObject objectForKey:@"message"];
-        }
-    }
-    return @"Server Error. Please try again later";
-}
-
 - (void)showProgressHUD {
     [self hideProgressHUD];
     self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -138,7 +133,16 @@ static NetworkManager *sharedManager = nil;
     }
 }
 
-#pragma mark - Functions
++ (void)showMessage:(NSString*) msg {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Abloadtool"
+                                                                   message:msg
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"Dialog Generic") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
+    [alert addAction:ok];
+    [[[UIApplication sharedApplication] delegate].window.rootViewController presentViewController:alert animated:YES completion:nil];
+}
+
+#pragma mark - AbloadAPI
 
 - (AFHTTPSessionManager*)getNetworkingManager {
     if (self.networkingManager == nil) {
@@ -156,8 +160,9 @@ static NetworkManager *sharedManager = nil;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *token = [defaults objectForKey:@"token"];
     if (token == nil || [token length] == 0) {
+        self.loggedin = [NSNumber numberWithInteger:0];
         if (failure != nil) {
-            failure(@"Invalid Token", -1);
+            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
         }
         return;
     }
@@ -165,13 +170,24 @@ static NetworkManager *sharedManager = nil;
     [params setObject:token forKey:@"session"];
     [[self getNetworkingManager] POST:@"user" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        //NSLog(@"NET - Check: %@", tmpDict);
+        NSLog(@"NET - tokenCheckWithSuccess:\r\n%@", tmpDict);
         if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
             NSString *newToken = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
             [defaults setObject:newToken forKey:@"token"];
+            if ( [tmpDict objectForKey:@"motd"] && [[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue] > [self.motd_time intValue] ) {
+                self.motd_time = [NSNumber numberWithInt:[[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue]];
+                [defaults setObject:self.motd_time forKey:@"motd_time"];
+                [NetworkManager showMessage:[[tmpDict objectForKey:@"motd"] objectForKey:@"_text"]];
+            }
+            [defaults synchronize];
             self.loggedin = [NSNumber numberWithInteger:1];
+            NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
+            if ([tmpStr compare:@"true"] == NSOrderedSame) {
+                NSLog(@"NO AD's!");
+                self.noad = [NSNumber numberWithInteger:1];
+            }
             if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
-                [self setGallery:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+                [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
             }
             if (success != nil) {
                 success(tmpDict);
@@ -183,9 +199,9 @@ static NetworkManager *sharedManager = nil;
             }
         }
     } failure:^(NSURLSessionTask *operation, NSError *error) {
-        self.loggedin = [NSNumber numberWithInteger:0];
+        self.loggedin = [NSNumber numberWithInteger:-1];
         if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", error], ((NSHTTPURLResponse*)operation.response).statusCode);
+            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
         }
     }];
 }
@@ -199,14 +215,25 @@ static NetworkManager *sharedManager = nil;
         [[self getNetworkingManager] POST:@"login" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
             [self hideProgressHUD];
             NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-            //NSLog(@"NET - Login: %@", tmpDict);
+            NSLog(@"NET - authenticateWithEmail:\r\n%@", tmpDict);
             if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 NSString *newToken = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
                 [defaults setObject:newToken forKey:@"token"];
+                if ( [tmpDict objectForKey:@"motd"] && [[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue] > [self.motd_time intValue] ) {
+                    self.motd_time = [NSNumber numberWithInt:[[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue]];
+                    [defaults setObject:self.motd_time forKey:@"motd_time"];
+                    [NetworkManager showMessage:[[tmpDict objectForKey:@"motd"] objectForKey:@"_text"]];
+                }
+                [defaults synchronize];
                 self.loggedin = [NSNumber numberWithInteger:1];
+                NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
+                if ([tmpStr compare:@"true"] == NSOrderedSame) {
+                    NSLog(@"NO AD's!");
+                    self.noad = [NSNumber numberWithInteger:1];
+                }
                 if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
-                    [self setGallery:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+                    [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
                 }
                 if (success != nil) {
                     success(tmpDict);
@@ -218,25 +245,100 @@ static NetworkManager *sharedManager = nil;
                 }
             }
         } failure:^(NSURLSessionTask *operation, NSError *error) {
-            self.loggedin = [NSNumber numberWithInteger:0];
+            self.loggedin = [NSNumber numberWithInteger:-1];
             [self hideProgressHUD];
             if (failure != nil) {
-                failure([NSString stringWithFormat:@"%@", error], ((NSHTTPURLResponse*)operation.response).statusCode);
+                failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
             }
         }];
     } else {
         if (failure != nil) {
-            failure(@"Email and Password Required", -1);
+            failure(@"Userid/Email and Password Required", -1);
         }
     }
 }
+
+#pragma mark - Gallery
+
+- (void)loadDefaults {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults objectForKey:@"gallery"]) {
+        self.gallery = [defaults objectForKey:@"gallery"];
+        NSLog(@"NET - loadGallery %ld", [self.gallery count]);
+    } else {
+        self.gallery = [[NSArray alloc] init];
+        NSLog(@"NET - loadGallery NEW");
+    }
+    
+    if ([defaults objectForKey:@"motd_time"]) {
+        self.motd_time = [defaults objectForKey:@"motd_time"];
+        NSLog(@"NET - mod_time %ld", [self.motd_time longValue]);
+    } else {
+        self.motd_time =  [NSNumber numberWithInt:0];
+        NSLog(@"NET - mod_time NEW");
+    }
+    
+    if ([defaults objectForKey:@"gallery_selected"]) {
+        self.selectedGallery = [defaults objectForKey:@"gallery_selected"];
+        NSLog(@"NET - selectedGallery %ld", [self.selectedGallery longValue]);
+    } else {
+        self.selectedGallery =  [NSNumber numberWithInt:0];
+        NSLog(@"NET - selectedGallery NEW");
+    }
+
+    if ([defaults objectForKey:@"resolution_selected"]) {
+        self.selectedResolution = [defaults objectForKey:@"resolution_selected"];
+        NSLog(@"NET - selectedResolution %@", self.selectedResolution);
+    } else {
+        self.selectedResolution = NSLocalizedString(@"Keep Original", @"Settings");
+        NSLog(@"NET - selectedResolution NEW");
+    }
+
+    if ([defaults objectForKey:@"scale_selected"]) {
+        self.selectedScale = [defaults objectForKey:@"scale_selected"];
+        NSLog(@"NET - selectedScale %ld", [self.selectedScale longValue]);
+    } else {
+        self.selectedScale =  [NSNumber numberWithInt:0];
+        NSLog(@"NET - selectedScale NEW");
+    }
+
+}
+
+- (void)saveGalleryList:(NSArray*) gallery {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:gallery forKey:@"gallery"];
+    [defaults synchronize];
+    self.gallery = gallery;
+}
+
+- (void)saveSelectedGallery:(NSNumber*) gid {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:gid forKey:@"gallery_selected"];
+    [defaults synchronize];
+    self.selectedGallery = gid;
+}
+
+- (void)saveSelectedResolution:(NSString*) name {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:name forKey:@"resolution_selected"];
+    [defaults synchronize];
+    self.selectedResolution = name;
+}
+
+- (void)saveSelectedScale:(NSNumber*) scale {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:scale forKey:@"scale_selected"];
+    [defaults synchronize];
+    self.selectedScale = scale;
+}
+
 
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *token = [defaults objectForKey:@"token"];
     if (token == nil || [token length] == 0) {
         if (failure != nil) {
-            failure(@"Invalid Token", -1);
+            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
         }
         return;
     }
@@ -244,25 +346,98 @@ static NetworkManager *sharedManager = nil;
     [params setObject:token forKey:@"session"];
     [[self getNetworkingManager] POST:@"gallery/list" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"NET - getGalleryList:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
-            [self setGallery:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
         }
         if (success != nil) {
             success(tmpDict);
         }
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", error], ((NSHTTPURLResponse*)operation.response).statusCode);
+            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
         }
     }];
 }
+
+- (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *token = [defaults objectForKey:@"token"];
+    if (token == nil || [token length] == 0) {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
+        }
+        return;
+    }
+    NSMutableDictionary *params = [self getBaseParams];
+    [params setObject:token forKey:@"session"];
+    [params setObject:name forKey:@"name"];
+    [params setObject:desc forKey:@"desc"];
+    [[self getNetworkingManager] POST:@"gallery/new" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"NET - createGalleryWithName:\r\n%@", tmpDict);
+        if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
+            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+        }
+        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 605 ) {
+            if (success != nil) {
+                success(tmpDict);
+            }
+        } else {
+            if (failure != nil) {
+                failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+            }
+        }
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        if (failure != nil) {
+            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
+        }
+    }];
+}
+
+- (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *token = [defaults objectForKey:@"token"];
+    if (token == nil || [token length] == 0) {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
+        }
+        return;
+    }
+    NSMutableDictionary *params = [self getBaseParams];
+    [params setObject:token forKey:@"session"];
+    [params setObject:[NSString stringWithFormat:@"%ld", gid] forKey:@"gid"];
+    [params setObject:[NSString stringWithFormat:@"%ld", img] forKey:@"img"];
+    [[self getNetworkingManager] POST:@"gallery/del" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"NET - deleteGalleryWithID:\r\n%@", tmpDict);
+        if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
+            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+        }
+        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 608 || [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 609 ) {
+            if (success != nil) {
+                success(tmpDict);
+            }
+        } else {
+            if (failure != nil) {
+                failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+            }
+        }
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        if (failure != nil) {
+            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
+        }
+    }];
+}
+
+#pragma mark - Images
 
 - (void)getImageList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *token = [defaults objectForKey:@"token"];
     if (token == nil || [token length] == 0) {
         if (failure != nil) {
-            failure(@"Invalid Token", -1);
+            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
         }
         return;
     }
@@ -270,15 +445,22 @@ static NetworkManager *sharedManager = nil;
     [params setObject:token forKey:@"session"];
     [[self getNetworkingManager] POST:@"images" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"NET - getImageList:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"images"] objectForKey:@"image"] ) {
-            [self setImages:[[tmpDict objectForKey:@"images"] objectForKey:@"image"]];
+            //[self setImages:[[tmpDict objectForKey:@"images"] objectForKey:@"image"]];
         }
-        if (success != nil) {
-            success(tmpDict);
+        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
+            if (success != nil) {
+                success(tmpDict);
+            }
+        } else {
+            if (failure != nil) {
+                failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+            }
         }
     } failure:^(NSURLSessionTask *operation, NSError *error) {
         if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", error], ((NSHTTPURLResponse*)operation.response).statusCode);
+            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
         }
     }];
 }
