@@ -48,4 +48,8 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 
 @property (nonatomic, strong) NSMutableDictionary* images;
 
+@property (nonatomic, strong) NSString* uploadPath;
+@property NSInteger uploadNumber;
+@property (nonatomic, strong) NSMutableArray* uploadImages;
+
 @end

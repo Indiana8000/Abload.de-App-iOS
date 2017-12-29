@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UzysAssetsPickerController.h"
+
 #import "AT_SettingTableViewController.h"
 
-@interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate>
+@interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate, UIImagePickerControllerDelegate, UzysAssetsPickerControllerDelegate>
     @property (nonatomic, strong) AT_SettingTableViewController* pageSetting;
     @property (nonatomic, strong) UINavigationController* navSetting;
 @end

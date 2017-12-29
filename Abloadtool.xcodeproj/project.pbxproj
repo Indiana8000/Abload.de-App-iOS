@@ -19,12 +19,12 @@
 		A11E2A521FCEBCA1008055E4 /* outputlinks.plist in Resources */ = {isa = PBXBuildFile; fileRef = A11E2A4F1FCEBCA1008055E4 /* outputlinks.plist */; };
 		A11E2A551FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */; };
 		A11E2A581FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */; };
+		A1623B251FD30BBE00B6DF49 /* libQBImagePickerController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1623B261FD30BBE00B6DF49 /* libQBImagePickerController.a */; };
 		A1780F0F1FB5D807009BFED0 /* AT_SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */; };
 		A1780F121FB60385009BFED0 /* AT_SettingGalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */; };
 		A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */; };
 		A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */; };
 		A1B94BB81FB0769900929CBC /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A1B94BB71FB0769900929CBC /* LICENSE */; };
-		A1B94BBA1FB0776E00929CBC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A1B94BB91FB0776D00929CBC /* Localizable.strings */; };
 		A1BAD3FD1FA251F400865051 /* AT_TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1BAD3FC1FA251F400865051 /* AT_TabBarController.m */; };
 		A1E504DE1F8BECEB0029146D /* libXMLDictionary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */; };
 		A1EE6B5D1F864E0700F78F24 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EE6B5C1F864E0700F78F24 /* AppDelegate.m */; };
@@ -70,6 +70,7 @@
 		A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingScaleTableViewController.m; sourceTree = "<group>"; };
 		A11E2A561FCEBD16008055E4 /* AT_SettingResolutionTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingResolutionTableViewController.h; sourceTree = "<group>"; };
 		A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingResolutionTableViewController.m; sourceTree = "<group>"; };
+		A1623B261FD30BBE00B6DF49 /* libQBImagePickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libQBImagePickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1780F0D1FB5D807009BFED0 /* AT_SettingTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingTableViewController.h; sourceTree = "<group>"; };
 		A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingTableViewController.m; sourceTree = "<group>"; };
 		A1780F101FB60385009BFED0 /* AT_SettingGalleryTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingGalleryTableViewController.h; sourceTree = "<group>"; };
@@ -79,7 +80,6 @@
 		A1B1E3C61F98E70300C05787 /* AT_GalleryTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_GalleryTableViewController.h; sourceTree = "<group>"; };
 		A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_GalleryTableViewController.m; sourceTree = "<group>"; };
 		A1B94BB71FB0769900929CBC /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		A1B94BB91FB0776D00929CBC /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = Abloadtool/Localizable.strings; sourceTree = SOURCE_ROOT; };
 		A1BAD3FB1FA251F400865051 /* AT_TabBarController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_TabBarController.h; sourceTree = "<group>"; };
 		A1BAD3FC1FA251F400865051 /* AT_TabBarController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_TabBarController.m; sourceTree = "<group>"; };
 		A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libXMLDictionary.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,6 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1623B251FD30BBE00B6DF49 /* libQBImagePickerController.a in Frameworks */,
 				A1E504DE1F8BECEB0029146D /* libXMLDictionary.a in Frameworks */,
 				A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */,
 				3E3A6511E0C2E1EABD867CBC /* libPods-Abloadtool.a in Frameworks */,
@@ -140,6 +141,7 @@
 		15B5AA95DD45F0A80546805E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A1623B261FD30BBE00B6DF49 /* libQBImagePickerController.a */,
 				A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */,
 				A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */,
 				A20A928C3CA6579C7E7B319A /* libPods-Abloadtool.a */,
@@ -157,7 +159,6 @@
 				A11E2A4F1FCEBCA1008055E4 /* outputlinks.plist */,
 				A1EE6B6D1F864E0700F78F24 /* main.m */,
 				A1EE6B6C1F864E0700F78F24 /* Info.plist */,
-				A1B94BB91FB0776D00929CBC /* Localizable.strings */,
 				A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */,
 			);
 			name = "Support Files";
@@ -319,7 +320,7 @@
 		A1EE6B501F864E0700F78F24 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Andreas Kreisl";
 				TargetAttributes = {
 					A1EE6B571F864E0700F78F24 = {
@@ -368,7 +369,6 @@
 				A11E2A491FCEBC39008055E4 /* scalemethods.plist in Resources */,
 				A1B94BB81FB0769900929CBC /* LICENSE in Resources */,
 				A11E2A521FCEBCA1008055E4 /* outputlinks.plist in Resources */,
-				A1B94BBA1FB0776E00929CBC /* Localizable.strings in Resources */,
 				A1EE6B6B1F864E0700F78F24 /* LaunchScreen.storyboard in Resources */,
 				A1EE6B681F864E0700F78F24 /* Assets.xcassets in Resources */,
 			);
@@ -442,9 +442,14 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Abloadtool/Pods-Abloadtool-resources.sh",
+				"$PODS_CONFIGURATION_BUILD_DIR/QBImagePickerController/QBImagePicker.bundle",
+				"${PODS_ROOT}/UzysAssetsPickerController/UzysAssetsPickerController/Library/UzysAssetsPickerController.xib",
+				"${PODS_ROOT}/UzysAssetsPickerController/UzysAssetsPickerController/Library/UzysAssetPickerController.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -631,6 +636,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -686,6 +692,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -739,6 +746,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
 				INFOPLIST_FILE = Abloadtool/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = de.bluepaw.Abloadtool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -754,6 +762,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
 				INFOPLIST_FILE = Abloadtool/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = de.bluepaw.Abloadtool;
 				PRODUCT_NAME = "$(TARGET_NAME)";

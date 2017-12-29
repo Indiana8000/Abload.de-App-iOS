@@ -42,13 +42,22 @@ static NetworkManager *sharedManager = nil;
         self.loggedin = [NSNumber numberWithInteger:0]; // Not Logged In
         self.noad = [NSNumber numberWithInteger:0]; // Show Ad
 
-        //NSLog(@"PATH: %@",[[NSBundle mainBundle] bundlePath] );
+        NSLog(@"NET-bundlePath: %@",[[NSBundle mainBundle] bundlePath]);
         NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"scalemethods" ofType:@"plist"];
         self.listScaling = [NSArray arrayWithContentsOfFile:plistPath];
         
-        self.images = [[NSMutableDictionary alloc] initWithCapacity:100];
-        [self loadDefaults];
+        self.images = [[NSMutableDictionary alloc] initWithCapacity:10];
+
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        self.uploadPath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"images"];
+        NSLog(@"NET-uploadPath: %@",self.uploadPath);
+        if(![[NSFileManager defaultManager] fileExistsAtPath:self.uploadPath]) {
+            [[NSFileManager defaultManager] createDirectoryAtPath:self.uploadPath withIntermediateDirectories:YES attributes:nil error:nil];
+        }
         
+        self.uploadImages = [[NSMutableArray alloc] initWithCapacity:10];
+        
+        [self loadDefaults];
         //[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(initCheck) userInfo:nil repeats:NO];
     }
     return self;
@@ -95,7 +104,7 @@ static NetworkManager *sharedManager = nil;
         textField.secureTextEntry = YES;
     }];
 
-    UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
+    //UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
     [viewController presentViewController:alert animated:YES completion:nil];
     
 }
@@ -258,8 +267,6 @@ static NetworkManager *sharedManager = nil;
     }
 }
 
-#pragma mark - Gallery
-
 - (void)loadDefaults {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if ([defaults objectForKey:@"gallery"]) {
@@ -302,6 +309,14 @@ static NetworkManager *sharedManager = nil;
         NSLog(@"NET - selectedScale NEW");
     }
 
+    if ([defaults objectForKey:@"upload_number"]) {
+        self.uploadNumber = [defaults integerForKey:@"upload_number"];
+        NSLog(@"NET - uploadNumber %ld", (long)self.uploadNumber);
+    } else {
+        self.uploadNumber = 1;
+        NSLog(@"NET - uploadNumber NEW");
+    }
+
 }
 
 - (void)saveGalleryList:(NSArray*) gallery {
@@ -332,6 +347,13 @@ static NetworkManager *sharedManager = nil;
     self.selectedScale = scale;
 }
 
+- (void)saveUploadNumber {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setInteger:self.uploadNumber forKey:@"upload_number"];
+    [defaults synchronize];
+}
+
+#pragma mark - Gallery
 
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];

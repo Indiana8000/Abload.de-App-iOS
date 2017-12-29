@@ -9,6 +9,7 @@
 #define c_ICELLID @"ImageTableViewCell"
 
 #import "AT_UploadTableViewController.h"
+#import "NetworkManager.h"
 
 @interface AT_UploadTableViewController ()
 
@@ -40,7 +41,7 @@
     if(section == 0) {
         return 1;
     } else {
-        return 8;
+        return [[[NetworkManager sharedManager] uploadImages] count];
     }
 }
 
@@ -66,53 +67,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if(indexPath.section == 0) {
-        
-        UIAlertController *sheet;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            sheet = [UIAlertController alertControllerWithTitle:@"Add Picture from"
-                                                        message:nil
-                                                 preferredStyle:UIAlertControllerStyleActionSheet];
-        } else {
-            sheet = [UIAlertController alertControllerWithTitle:@"Add Picture from"
-                                                        message:nil
-                                                 preferredStyle:UIAlertControllerStyleAlert];
-        }
-        
-        if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-            UIAlertAction *btn1 = [UIAlertAction actionWithTitle:NSLocalizedString(@"Single Camera Picture", @"TBD") style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction * action) {
-                                                             [self showImagePickerWithSource:UIImagePickerControllerSourceTypeCamera repeateAdd:NO];
-                                                         }];
-            [sheet addAction:btn1];
-            
-            UIAlertAction *btn2 = [UIAlertAction actionWithTitle:NSLocalizedString(@"Multiple Camera Picture", @"TBD") style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction * action) {
-                                                             [self showImagePickerWithSource:UIImagePickerControllerSourceTypeCamera repeateAdd:YES];
-                                                         }];
-            [sheet addAction:btn2];
-        }
-        
-        if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-            UIAlertAction *btn3 = [UIAlertAction actionWithTitle:NSLocalizedString(@"Single Photo Lybrary", @"TBD") style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction * action) {
-                                                             [self showImagePickerWithSource:UIImagePickerControllerSourceTypePhotoLibrary repeateAdd:NO];
-                                                         }];
-            [sheet addAction:btn3];
-            
-            UIAlertAction *btn4 = [UIAlertAction actionWithTitle:NSLocalizedString(@"Multiple Photo Lybrary", @"TBD") style:UIAlertActionStyleDefault
-                                                         handler:^(UIAlertAction * action) {
-                                                             [self showImagePickerWithSource:UIImagePickerControllerSourceTypePhotoLibrary repeateAdd:YES];
-                                                         }];
-            [sheet addAction:btn4];
-        }
-        
-        UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"TBD") style:UIAlertActionStyleDestructive
-                                                   handler:^(UIAlertAction * action) {
-                                                       [tableView reloadData];
-                                                   }];
-        [sheet addAction:cancel];
 
-        [self presentViewController:sheet animated:YES completion:nil];
+        [self showImagePicker];
+
     } else {
         // Picture tapped
     }
@@ -136,11 +93,25 @@
 }
 
 
-- (void)showImagePickerWithSource:(UIImagePickerControllerSourceType) sourceType repeateAdd:(BOOL) repeat {
+- (void)showImagePicker {
+    UzysAssetsPickerController *picker = [[UzysAssetsPickerController alloc] init];
+    picker.delegate = (id)self;
+    picker.maximumNumberOfSelectionVideo = 0;
+    picker.maximumNumberOfSelectionPhoto = 99;
+    [self presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)uzysAssetsPickerController:(UzysAssetsPickerController *)picker didFinishPickingAssets:(NSArray *)assets
+{
+
+
+        
+        
+    [self.tableView reloadData];
+}
+
+- (void)startUploadingImages:(id) sender {
     
 }
 
-- (void)startUploadingImages {
-    
-}
 @end
