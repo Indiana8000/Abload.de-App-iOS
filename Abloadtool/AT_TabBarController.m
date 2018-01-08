@@ -17,7 +17,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.tabUpload = [[AT_UploadTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    self.tabGallery = [[AT_GalleryTableViewController alloc] initWithStyle:UITableViewStylePlain];
+    self.tabGallery = [[AT_GalleryTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
     self.tabAbout = [[AT_AboutViewController alloc] init];
 
     UINavigationController *navUL = [[UINavigationController alloc] initWithRootViewController:self.tabUpload];

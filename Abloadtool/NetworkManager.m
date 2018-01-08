@@ -7,7 +7,7 @@
 //
 
 
-//#define BASE_URL @"http://www.bluepaw.de/"
+//#define BASE_URL @"https://www.kreisl.com/"
 #define BASE_URL @"https://www.abload.de/api/"
 
 #import "NetworkManager.h"
@@ -41,13 +41,14 @@ static NetworkManager *sharedManager = nil;
     if ((self = [super init])) {
         self.loggedin = [NSNumber numberWithInteger:0]; // Not Logged In
         self.noad = [NSNumber numberWithInteger:0]; // Show Ad
+        self.images = [[NSMutableDictionary alloc] initWithCapacity:10];
 
+        // Init Scaling Enumeration
         NSLog(@"NET-bundlePath: %@",[[NSBundle mainBundle] bundlePath]);
         NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"scalemethods" ofType:@"plist"];
         self.listScaling = [NSArray arrayWithContentsOfFile:plistPath];
-        
-        self.images = [[NSMutableDictionary alloc] initWithCapacity:10];
 
+        // Set Image Cache
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         self.uploadPath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"images"];
         NSLog(@"NET-uploadPath: %@",self.uploadPath);
@@ -55,10 +56,23 @@ static NetworkManager *sharedManager = nil;
             [[NSFileManager defaultManager] createDirectoryAtPath:self.uploadPath withIntermediateDirectories:YES attributes:nil error:nil];
         }
         
+        // Load Cached Upload Images
         self.uploadImages = [[NSMutableArray alloc] initWithCapacity:10];
-        
+        NSFileManager *localFileManager=[[NSFileManager alloc] init];
+        NSDirectoryEnumerator *dirEnum = [localFileManager enumeratorAtPath:self.uploadPath];
+        NSString *file;
+        while ((file = [dirEnum nextObject])) {
+            if ([[file pathExtension] isEqualToString: @"jpeg"]) {
+                [self.uploadImages addObject:[self.uploadPath stringByAppendingPathComponent:file]];
+                //NSLog(@"NET init files: %@", [file lastPathComponent]);
+            }
+        }
+
+        // Load Defaults
         [self loadDefaults];
-        //[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(initCheck) userInfo:nil repeats:NO];
+        
+        // Check for valid token and internet connection
+        [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(initCheck) userInfo:nil repeats:NO];
     }
     return self;
 }
@@ -104,9 +118,7 @@ static NetworkManager *sharedManager = nil;
         textField.secureTextEntry = YES;
     }];
 
-    //UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
     [viewController presentViewController:alert animated:YES completion:nil];
-    
 }
 
 #pragma mark - Helper
@@ -120,10 +132,12 @@ static NetworkManager *sharedManager = nil;
 
 - (id)getSecurityPolicy {
     return [AFSecurityPolicy defaultPolicy];
-    /* AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
+    /*
+    AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
     [policy setAllowInvalidCertificates:YES];
     [policy setValidatesDomainName:NO];
-    return policy; */
+    return policy;
+     */
 }
 
 - (void)showProgressHUD {
@@ -166,9 +180,7 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)tokenCheckWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *token = [defaults objectForKey:@"token"];
-    if (token == nil || [token length] == 0) {
+    if (self.token == nil || [self.token length] == 0) {
         self.loggedin = [NSNumber numberWithInteger:0];
         if (failure != nil) {
             failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
@@ -176,19 +188,18 @@ static NetworkManager *sharedManager = nil;
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:token forKey:@"session"];
+    [params setObject:self.token forKey:@"session"];
     [[self getNetworkingManager] POST:@"user" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
         NSLog(@"NET - tokenCheckWithSuccess:\r\n%@", tmpDict);
         if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
-            NSString *newToken = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
-            [defaults setObject:newToken forKey:@"token"];
+            self.token = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
+            [self saveToken:self.token];
             if ( [tmpDict objectForKey:@"motd"] && [[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue] > [self.motd_time intValue] ) {
                 self.motd_time = [NSNumber numberWithInt:[[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue]];
-                [defaults setObject:self.motd_time forKey:@"motd_time"];
+                [self saveMotdTime:self.motd_time];
                 [NetworkManager showMessage:[[tmpDict objectForKey:@"motd"] objectForKey:@"_text"]];
             }
-            [defaults synchronize];
             self.loggedin = [NSNumber numberWithInteger:1];
             NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
             if ([tmpStr compare:@"true"] == NSOrderedSame) {
@@ -226,15 +237,13 @@ static NetworkManager *sharedManager = nil;
             NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
             NSLog(@"NET - authenticateWithEmail:\r\n%@", tmpDict);
             if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-                NSString *newToken = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
-                [defaults setObject:newToken forKey:@"token"];
+                self.token = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
+                [self saveToken:self.token];
                 if ( [tmpDict objectForKey:@"motd"] && [[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue] > [self.motd_time intValue] ) {
                     self.motd_time = [NSNumber numberWithInt:[[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue]];
-                    [defaults setObject:self.motd_time forKey:@"motd_time"];
+                    [self saveMotdTime:self.motd_time];
                     [NetworkManager showMessage:[[tmpDict objectForKey:@"motd"] objectForKey:@"_text"]];
                 }
-                [defaults synchronize];
                 self.loggedin = [NSNumber numberWithInteger:1];
                 NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
                 if ([tmpStr compare:@"true"] == NSOrderedSame) {
@@ -267,8 +276,19 @@ static NetworkManager *sharedManager = nil;
     }
 }
 
+#pragma mark - Settings
+
 - (void)loadDefaults {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if ([defaults objectForKey:@"token"]) {
+        self.token = [defaults objectForKey:@"token"];
+        NSLog(@"NET - token %@", self.token);
+    } else {
+        self.token = @"";
+        NSLog(@"NET - token NEW");
+    }
+    
     if ([defaults objectForKey:@"gallery"]) {
         self.gallery = [defaults objectForKey:@"gallery"];
         NSLog(@"NET - loadGallery %ld", [self.gallery count]);
@@ -305,18 +325,24 @@ static NetworkManager *sharedManager = nil;
         self.selectedScale = [defaults objectForKey:@"scale_selected"];
         NSLog(@"NET - selectedScale %ld", [self.selectedScale longValue]);
     } else {
-        self.selectedScale =  [NSNumber numberWithInt:0];
+        self.selectedScale =  [NSNumber numberWithInt:1];
         NSLog(@"NET - selectedScale NEW");
     }
 
     if ([defaults objectForKey:@"upload_number"]) {
         self.uploadNumber = [defaults integerForKey:@"upload_number"];
-        NSLog(@"NET - uploadNumber %ld", (long)self.uploadNumber);
+        NSLog(@"NET - uploadNumber %ld / %ld", (long)self.uploadNumber, NSIntegerMax);
     } else {
-        self.uploadNumber = 1;
+        self.uploadNumber = 0;
         NSLog(@"NET - uploadNumber NEW");
     }
 
+}
+
+- (void)saveToken:(NSString*) token {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:token forKey:@"token"];
+    [defaults synchronize];
 }
 
 - (void)saveGalleryList:(NSArray*) gallery {
@@ -353,19 +379,23 @@ static NetworkManager *sharedManager = nil;
     [defaults synchronize];
 }
 
+- (void)saveMotdTime:(NSNumber*) motdTime {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:motdTime forKey:@"motd_time"];
+    [defaults synchronize];
+}
+
 #pragma mark - Gallery
 
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *token = [defaults objectForKey:@"token"];
-    if (token == nil || [token length] == 0) {
+    if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
         }
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:token forKey:@"session"];
+    [params setObject:self.token forKey:@"session"];
     [[self getNetworkingManager] POST:@"gallery/list" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
         NSLog(@"NET - getGalleryList:\r\n%@", tmpDict);
@@ -383,16 +413,14 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *token = [defaults objectForKey:@"token"];
-    if (token == nil || [token length] == 0) {
+    if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
         }
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:token forKey:@"session"];
+    [params setObject:self.token forKey:@"session"];
     [params setObject:name forKey:@"name"];
     [params setObject:desc forKey:@"desc"];
     [[self getNetworkingManager] POST:@"gallery/new" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
@@ -418,16 +446,14 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *token = [defaults objectForKey:@"token"];
-    if (token == nil || [token length] == 0) {
+    if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
         }
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:token forKey:@"session"];
+    [params setObject:self.token forKey:@"session"];
     [params setObject:[NSString stringWithFormat:@"%ld", gid] forKey:@"gid"];
     [params setObject:[NSString stringWithFormat:@"%ld", img] forKey:@"img"];
     [[self getNetworkingManager] POST:@"gallery/del" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
@@ -455,16 +481,14 @@ static NetworkManager *sharedManager = nil;
 #pragma mark - Images
 
 - (void)getImageList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *token = [defaults objectForKey:@"token"];
-    if (token == nil || [token length] == 0) {
+    if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
         }
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:token forKey:@"session"];
+    [params setObject:self.token forKey:@"session"];
     [[self getNetworkingManager] POST:@"images" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
         NSLog(@"NET - getImageList:\r\n%@", tmpDict);
@@ -487,6 +511,48 @@ static NetworkManager *sharedManager = nil;
     }];
 }
 
+- (void)saveImage:(NSData*) image {
+    if(self.uploadNumber >= NSIntegerMax)
+        self.uploadNumber = 1;
+    else
+        self.uploadNumber++;
+    [self saveUploadNumber];
+    NSString *photoFile = [self.uploadPath stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
+    NSLog(@"NET - saveImage: %@", photoFile);
+    [image writeToFile:photoFile atomically:YES];
+    [self.uploadImages addObject:photoFile];
+}
+
+- (void)uploadImagesNow:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if (self.token == nil || [self.token length] == 0) {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
+        }
+        return;
+    }
+    NSMutableDictionary *params = [self getBaseParams];
+    [params setObject:self.token forKey:@"session"];
+
+    [[self getNetworkingManager] POST:@"upload" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        [formData appendPartWithFormData:[self.token dataUsingEncoding:NSUTF8StringEncoding] name:@"session"];
+        [self.uploadImages enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL *stop) {
+            NSString* file = object;
+            [formData appendPartWithFileURL:[NSURL fileURLWithPath:file] name:[NSString stringWithFormat:@"img%ld", idx] fileName:[file lastPathComponent] mimeType:@"image/jpeg" error:nil];
+        }];
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        NSLog(@"NET - NSProgress: %@", uploadProgress);
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"NET - Upload: %@", tmpDict);
+        if (success != nil) {
+            success(tmpDict);
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (failure != nil) {
+            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], 1);
+        }
+    }];
+}
 
 
 @end

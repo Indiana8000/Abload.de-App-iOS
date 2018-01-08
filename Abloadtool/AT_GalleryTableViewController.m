@@ -6,7 +6,7 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
-#define c_GCELLID @"GalleryTableViewCell"
+#define cImageCell @"ImageTableViewCell"
 
 #import "AT_GalleryTableViewController.h"
 #import "NetworkManager.h"
@@ -29,7 +29,8 @@
     self.navigationItem.title = NSLocalizedString(@"Gallery", @"Navigation Title");
     //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(doRefresh:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)];
-    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:c_GCELLID];
+
+    [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -66,15 +67,14 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:c_GCELLID forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
 
     cell.textLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
     cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
     
     NSString *tmpURL = [NSString stringWithFormat:@"https://www.abload.de/mini/%@", [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_cover"]];
     [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
-    [cell.imageView setFrame:CGRectMake(0, 0, 160, 160)];
-
+    
     return cell;
 }
 

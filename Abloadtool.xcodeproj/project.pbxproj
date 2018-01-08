@@ -22,6 +22,7 @@
 		A1623B251FD30BBE00B6DF49 /* libQBImagePickerController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1623B261FD30BBE00B6DF49 /* libQBImagePickerController.a */; };
 		A1780F0F1FB5D807009BFED0 /* AT_SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */; };
 		A1780F121FB60385009BFED0 /* AT_SettingGalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */; };
+		A17DD45A2003A21700642310 /* AT_ImageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */; };
 		A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */; };
 		A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */; };
 		A1B94BB81FB0769900929CBC /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A1B94BB71FB0769900929CBC /* LICENSE */; };
@@ -75,6 +76,8 @@
 		A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingTableViewController.m; sourceTree = "<group>"; };
 		A1780F101FB60385009BFED0 /* AT_SettingGalleryTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingGalleryTableViewController.h; sourceTree = "<group>"; };
 		A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingGalleryTableViewController.m; sourceTree = "<group>"; };
+		A17DD4582003A21700642310 /* AT_ImageTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_ImageTableViewCell.h; sourceTree = "<group>"; };
+		A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_ImageTableViewCell.m; sourceTree = "<group>"; };
 		A18EDF421FA34E6300F8E80E /* AT_UploadTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_UploadTableViewController.h; sourceTree = "<group>"; };
 		A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_UploadTableViewController.m; sourceTree = "<group>"; };
 		A1B1E3C61F98E70300C05787 /* AT_GalleryTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_GalleryTableViewController.h; sourceTree = "<group>"; };
@@ -207,6 +210,8 @@
 				A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */,
 				A11E2A531FCEBCF7008055E4 /* AT_SettingScaleTableViewController.h */,
 				A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */,
+				A17DD4582003A21700642310 /* AT_ImageTableViewCell.h */,
+				A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */,
 				A1067D7F1F866CCF007D1D89 /* NetworkManager.h */,
 				A1067D801F866CCF007D1D89 /* NetworkManager.m */,
 				A1E504E01F8C06BB0029146D /* README.md */,
@@ -443,7 +448,7 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Abloadtool/Pods-Abloadtool-resources.sh",
-				"$PODS_CONFIGURATION_BUILD_DIR/QBImagePickerController/QBImagePicker.bundle",
+				$PODS_CONFIGURATION_BUILD_DIR/QBImagePickerController/QBImagePicker.bundle,
 				"${PODS_ROOT}/UzysAssetsPickerController/UzysAssetsPickerController/Library/UzysAssetsPickerController.xib",
 				"${PODS_ROOT}/UzysAssetsPickerController/UzysAssetsPickerController/Library/UzysAssetPickerController.bundle",
 			);
@@ -547,6 +552,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A17DD45A2003A21700642310 /* AT_ImageTableViewCell.m in Sources */,
 				A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */,
 				A1780F121FB60385009BFED0 /* AT_SettingGalleryTableViewController.m in Sources */,
 				A1EE6B5D1F864E0700F78F24 /* AppDelegate.m in Sources */,

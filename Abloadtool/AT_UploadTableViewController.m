@@ -6,10 +6,10 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
-#define c_ICELLID @"ImageTableViewCell"
+#define cButtonCell @"ButtonTableViewCell"
+#define cImageCell @"ImageTableViewCell"
 
 #import "AT_UploadTableViewController.h"
-#import "NetworkManager.h"
 
 @interface AT_UploadTableViewController ()
 
@@ -23,8 +23,10 @@
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"106-sliders"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettings:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"56-cloud"] style:UIBarButtonItemStylePlain target:self action:@selector(startUploadingImages:)];
-
-    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:c_ICELLID];
+    
+    [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
+    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cButtonCell];
+    //self.tableView.rowHeight = 57.0;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -47,19 +49,31 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:c_ICELLID forIndexPath:indexPath];
-    
+    UITableViewCell *cell;
     if(indexPath.section == 0) {
+        cell = [tableView dequeueReusableCellWithIdentifier:cButtonCell forIndexPath:indexPath];
         cell.textLabel.text = NSLocalizedString(@"Add Pictures", @"Upload");
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
     } else {
+        cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
         cell.textLabel.text = @"Picture #?";
+        cell.detailTextLabel.text = @"Picture #?";
+        [cell.imageView setImageWithURL:[NSURL fileURLWithPath:[[[NetworkManager sharedManager] uploadImages] objectAtIndex:indexPath.row]] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     }
-    
     return cell;
 }
 
 #pragma mark - Table view delegate
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return indexPath.section == 1;
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+
+    }
+}
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     return indexPath;
@@ -67,9 +81,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if(indexPath.section == 0) {
-
         [self showImagePicker];
-
     } else {
         // Picture tapped
     }
@@ -92,26 +104,43 @@
     }
 }
 
-
 - (void)showImagePicker {
-    UzysAssetsPickerController *picker = [[UzysAssetsPickerController alloc] init];
-    picker.delegate = (id)self;
-    picker.maximumNumberOfSelectionVideo = 0;
-    picker.maximumNumberOfSelectionPhoto = 99;
-    [self presentViewController:picker animated:YES completion:nil];
+    NSLog(@"UPLOAD - showImagePicker");
+    self.uzysPicker = [[UzysAssetsPickerController alloc] init];
+    self.uzysPicker.delegate = (id)self;
+    self.uzysPicker.maximumNumberOfSelectionVideo = 0;
+    self.uzysPicker.maximumNumberOfSelectionPhoto = 999;
+    [self presentViewController:self.uzysPicker animated:YES completion:nil];
 }
 
-- (void)uzysAssetsPickerController:(UzysAssetsPickerController *)picker didFinishPickingAssets:(NSArray *)assets
-{
-
-
-        
-        
+- (void)uzysAssetsPickerController:(UzysAssetsPickerController *)picker didFinishPickingAssets:(NSArray *)assets {
+    NSLog(@"UPLOAD - didFinishPickingAssets");
+    [assets enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        ALAsset *asset = obj;
+        ALAssetRepresentation *rep = [asset defaultRepresentation];
+        Byte *buffer = (Byte*)malloc(rep.size);
+        NSUInteger buffered = [rep getBytes:buffer fromOffset:0.0 length:rep.size error:nil];
+        NSData *data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+        [[NetworkManager sharedManager] saveImage:data];
+    }];
+    
     [self.tableView reloadData];
 }
 
 - (void)startUploadingImages:(id) sender {
-    
+    [[NetworkManager sharedManager] uploadImagesNow:^(NSDictionary *responseObject) {
+        [NetworkManager showMessage:@"Done"];
+    } failure:^(NSString *failureReason, NSInteger statusCode) {
+        [NetworkManager showMessage:failureReason];
+    }];
 }
+
+
+
+
+
+
+
+
 
 @end

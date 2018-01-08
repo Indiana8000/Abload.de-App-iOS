@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "AT_ImageTableViewCell.h"
+
 @interface AT_SettingGalleryTableViewController : UITableViewController
 
 @end

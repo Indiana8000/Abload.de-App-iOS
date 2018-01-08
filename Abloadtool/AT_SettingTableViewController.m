@@ -49,7 +49,10 @@
                 long i = [[[NetworkManager sharedManager] gallery] indexOfObjectPassingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                     return ([[obj objectForKey:@"_id"] intValue] == [[[NetworkManager sharedManager] selectedGallery] intValue]);
                 }];
-                cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:i] objectForKey:@"_name"];
+                if(i < [[[NetworkManager sharedManager] gallery] count])
+                    cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:i] objectForKey:@"_name"];
+                else
+                    cell.detailTextLabel.text = NSLocalizedString(@"No Gallery", @"Settings");
             } else {
                 cell.detailTextLabel.text = NSLocalizedString(@"No Gallery", @"Settings");
             }

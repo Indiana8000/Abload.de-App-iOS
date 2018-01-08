@@ -6,6 +6,8 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
+#define cImageCell @"ImageTableViewCell"
+
 #import "AT_SettingGalleryTableViewController.h"
 #import <AFNetworking/UIImageView+AFNetworking.h>
 #import "NetworkManager.h"
@@ -19,6 +21,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.title = NSLocalizedString(@"Gallery", @"Settings");
+
+    [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -40,14 +44,12 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"GalleryListCell"];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"GalleryListCell"];
-    }
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
     
     if(indexPath.section == 0) {
         cell.textLabel.text = NSLocalizedString(@"No Gallery", @"Settings");
-        cell.detailTextLabel.text = nil;
+        cell.detailTextLabel.text = @" ";
+        [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
     } else {
         cell.textLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
         cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
@@ -57,9 +59,10 @@
         [cell.imageView setFrame:CGRectMake(0, 0, 160, 160)];
     }
 
-    // TBD
-    //if( ??? ) cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    //else cell.accessoryType = UITableViewCellAccessoryNone;
+    if(indexPath.section != 0 && [[[NetworkManager sharedManager] selectedGallery] intValue] == [[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_id"] intValue])
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    else
+        cell.accessoryType = UITableViewCellAccessoryNone;
     
     return cell;
 }

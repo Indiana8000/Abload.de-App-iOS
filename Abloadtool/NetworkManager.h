@@ -36,6 +36,11 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
     - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
     - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
+    - (void)saveImage:(NSData*) image;
+    - (void)uploadImagesNow:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+
+
+@property (nonatomic, strong) NSString* token;
 @property (nonatomic, strong) NSNumber* loggedin;
 @property (nonatomic, strong) NSNumber* noad;
 @property (nonatomic, strong) NSNumber* motd_time;
