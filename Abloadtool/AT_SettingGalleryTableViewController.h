@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AFNetworking/UIImageView+AFNetworking.h>
 
+#import "NetworkManager.h"
 #import "AT_ImageTableViewCell.h"
 
 @interface AT_SettingGalleryTableViewController : UITableViewController

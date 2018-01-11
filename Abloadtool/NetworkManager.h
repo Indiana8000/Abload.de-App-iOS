@@ -6,6 +6,9 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
+#define cURL_BASE @"http://www.abload.de"
+#define cURL_API @"http://www.abload.de/api/"
+
 #import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>
 #import <MBProgressHUD/MBProgressHUD.h>
@@ -23,6 +26,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
     - (void)hideProgressHUD;
 
     - (void)showLoginWithViewController:(UIViewController*)viewController andCallback:(void(^)(void))successCallback;
+    - (void)logoutWithCallback:(void(^)(void))successCallback;
     - (void)tokenCheckWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
     - (void)authenticateWithEmail:(NSString*)email password:(NSString*)password success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
@@ -37,7 +41,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
     - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
     - (void)saveImage:(NSData*) image;
-    - (void)uploadImagesNow:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+    - (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
 
 @property (nonatomic, strong) NSString* token;
@@ -51,7 +55,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 @property (nonatomic, strong) NSNumber* selectedScale;
 @property (nonatomic, strong) NSArray* listScaling;
 
-@property (nonatomic, strong) NSMutableDictionary* images;
+@property (nonatomic, strong) NSMutableDictionary* imageList;
 
 @property (nonatomic, strong) NSString* uploadPath;
 @property NSInteger uploadNumber;

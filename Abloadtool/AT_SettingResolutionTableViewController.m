@@ -6,10 +6,9 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
-#define c_RCELLID @"ResolutionTableViewCell"
+#define cResolutionCell @"ResolutionTableViewCell"
 
 #import "AT_SettingResolutionTableViewController.h"
-#import "NetworkManager.h"
 
 @interface AT_SettingResolutionTableViewController ()
 
@@ -19,13 +18,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    // Init Navigation
     self.navigationItem.title = NSLocalizedString(@"Resolution", @"Settings");
     
+    // Init Data
     NSLog(@"PATH: %@",[[NSBundle mainBundle] bundlePath] );
     NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"resolutions" ofType:@"plist"];
     self.listResolutions = [NSArray arrayWithContentsOfFile:plistPath];
 
-    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:c_RCELLID];
+    // Init TableView
+    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cResolutionCell];
 }
 
 #pragma mark - Table view data source
@@ -38,22 +40,23 @@
     return [[[self.listResolutions objectAtIndex:section] objectForKey:@"list"] count];
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     return [[self.listResolutions objectAtIndex:section] objectForKey:@"name"];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:c_RCELLID forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cResolutionCell forIndexPath:indexPath];
+    cell.separatorInset = UIEdgeInsetsZero;
     
     cell.textLabel.text = [[[self.listResolutions objectAtIndex:[indexPath section]] objectForKey:@"list"] objectAtIndex:[indexPath row]];
     
-    if([cell.textLabel.text compare:[[NetworkManager sharedManager] selectedResolution]] == NSOrderedSame) cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    else cell.accessoryType = UITableViewCellAccessoryNone;
+    if([cell.textLabel.text compare:[[NetworkManager sharedManager] selectedResolution]] == NSOrderedSame)
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    else
+        cell.accessoryType = UITableViewCellAccessoryNone;
     
     return cell;
 }
-
 
 #pragma mark - Table view delegate
 
@@ -61,5 +64,7 @@
     [[NetworkManager sharedManager] saveSelectedResolution:[[[self.listResolutions objectAtIndex:[indexPath section]] objectForKey:@"list"] objectAtIndex:[indexPath row]]];
     [self.navigationController popViewControllerAnimated:YES];
 }
+
+
 
 @end

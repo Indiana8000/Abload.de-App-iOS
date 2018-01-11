@@ -9,8 +9,10 @@
 #import <UIKit/UIKit.h>
 #import <AFNetworking/UIImageView+AFNetworking.h>
 
+#import "NetworkManager.h"
 #import "AT_ImageTableViewCell.h"
+#import "AT_ImageTableViewController.h"
 
 @interface AT_GalleryTableViewController : UITableViewController
-
+@property (nonatomic, strong) AT_ImageTableViewController* imageTableViewController;
 @end

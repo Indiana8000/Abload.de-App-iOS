@@ -40,6 +40,7 @@
     
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue2 reuseIdentifier:@"cellSettings"];
+        cell.separatorInset = UIEdgeInsetsZero;
     }
     
     switch (indexPath.row) {

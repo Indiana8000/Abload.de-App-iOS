@@ -6,10 +6,9 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
-#define c_SCELLID @"ScalingTableViewCell"
+#define cScaleCell @"ScalingTableViewCell"
 
 #import "AT_SettingScaleTableViewController.h"
-#import "NetworkManager.h"
 
 @interface AT_SettingScaleTableViewController ()
 
@@ -19,9 +18,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    // Init Navigation
     self.navigationItem.title = NSLocalizedString(@"Scaling", @"Settings");
     
-    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:c_SCELLID];
+    // Init TableView
+    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cScaleCell];
 }
 
 #pragma mark - Table view data source
@@ -34,18 +35,20 @@
     return 1;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
-{
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     return [[[[NetworkManager sharedManager] listScaling] objectAtIndex:section] objectAtIndex:1];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:c_SCELLID forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cScaleCell forIndexPath:indexPath];
+    cell.separatorInset = UIEdgeInsetsZero;
     
     cell.textLabel.text = [[[[NetworkManager sharedManager] listScaling] objectAtIndex:indexPath.section] objectAtIndex:0];
 
-    if([[[NetworkManager sharedManager] selectedScale] longLongValue] == indexPath.section) cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    else cell.accessoryType = UITableViewCellAccessoryNone;
+    if([[[NetworkManager sharedManager] selectedScale] longLongValue] == indexPath.section)
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    else
+        cell.accessoryType = UITableViewCellAccessoryNone;
     
     return cell;
 }

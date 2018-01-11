@@ -21,6 +21,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor lightGrayColor];
     self.navigationItem.title = NSLocalizedString(@"About Us", @"About Us");
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"51-power"] style:UIBarButtonItemStylePlain target:self action:@selector(doLogout:)];
 
     
     self.abloadLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 80.0, self.view.frame.size.width, 30.0)];
@@ -85,6 +86,12 @@
     } else {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://www.bluepaw.de/"] options:tmpDict completionHandler:nil];
     }
+}
+
+- (void)doLogout:(id) sender {
+    [[NetworkManager sharedManager] logoutWithCallback:^{
+        [NetworkManager showMessage:@"Done"];
+    }];
 }
 
 @end

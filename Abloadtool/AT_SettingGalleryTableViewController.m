@@ -9,8 +9,6 @@
 #define cImageCell @"ImageTableViewCell"
 
 #import "AT_SettingGalleryTableViewController.h"
-#import <AFNetworking/UIImageView+AFNetworking.h>
-#import "NetworkManager.h"
 
 @interface AT_SettingGalleryTableViewController ()
 
@@ -20,8 +18,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    // Init Navigation
     self.navigationItem.title = NSLocalizedString(@"Gallery", @"Settings");
 
+    // Init TableView
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
 }
 
@@ -45,18 +45,17 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
-    
+    cell.separatorInset = UIEdgeInsetsZero;
     if(indexPath.section == 0) {
         cell.textLabel.text = NSLocalizedString(@"No Gallery", @"Settings");
         cell.detailTextLabel.text = @" ";
         [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
     } else {
         cell.textLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
-        cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
-        
-        NSString *tmpURL = [NSString stringWithFormat:@"https://www.abload.de/mini/%@", [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_cover"]];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@#  %@", [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_images"], [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"]];
+
+        NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_thumb"]];
         [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
-        [cell.imageView setFrame:CGRectMake(0, 0, 160, 160)];
     }
 
     if(indexPath.section != 0 && [[[NetworkManager sharedManager] selectedGallery] intValue] == [[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_id"] intValue])
@@ -79,5 +78,7 @@
     [[NetworkManager sharedManager] saveSelectedGallery:gid];
     [self.navigationController popViewControllerAnimated:YES];
 }
+
+
 
 @end

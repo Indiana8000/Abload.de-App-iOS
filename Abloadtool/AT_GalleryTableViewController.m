@@ -9,8 +9,6 @@
 #define cImageCell @"ImageTableViewCell"
 
 #import "AT_GalleryTableViewController.h"
-#import "NetworkManager.h"
-
 
 @interface AT_GalleryTableViewController ()
 
@@ -20,17 +18,21 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.clearsSelectionOnViewWillAppear = NO;
+    // Init Navigation Controller + Buttons
+    self.navigationItem.title = NSLocalizedString(@"Gallery & Images", @"Navigation Title");
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)];
 
+    // Init RefreshController
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(doRefresh:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
     
-    self.navigationItem.title = NSLocalizedString(@"Gallery", @"Navigation Title");
-    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(doRefresh:)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)];
-
+    // Init TableView
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
+    //self.clearsSelectionOnViewWillAppear = NO;
+    
+    // Init ImageTable
+    self.imageTableViewController = [[AT_ImageTableViewController alloc] initWithStyle:UITableViewStylePlain];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -55,37 +57,71 @@
     }
 }
 
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[[NetworkManager sharedManager] gallery] count];
+    if(section == 0) {
+        return 1;
+    } else {
+        return [[[NetworkManager sharedManager] gallery] count];
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
-
-    cell.textLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
-    cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
+    cell.separatorInset = UIEdgeInsetsZero;
     
-    NSString *tmpURL = [NSString stringWithFormat:@"https://www.abload.de/mini/%@", [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_cover"]];
-    [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
-    
+    if(indexPath.section == 0) {
+        cell.textLabel.text = NSLocalizedString(@"No Gallery", @"Settings");
+        cell.detailTextLabel.text = @" ";
+        [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
+    } else {
+        cell.textLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@#  %@", [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_images"], [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"]];
+        
+        NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_thumb"]];
+        [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
+    }
     return cell;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
+    return (indexPath.section == 1);
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         [self doDeleteGallery:indexPath.row];
     }
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    return indexPath;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Gallery tapped
+    NSLog(@"Gallery Tapped: %@", indexPath);
+    [[NetworkManager sharedManager] showProgressHUD];
+    if(indexPath.section == 0) {
+        self.imageTableViewController.gid = @"x";
+        self.imageTableViewController.navigationItem.title = NSLocalizedString(@"No Gallery", @"Settings");
+    } else {
+        self.imageTableViewController.gid = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_id"];
+        self.imageTableViewController.navigationItem.title = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+    }
+
+    [[NetworkManager sharedManager] getImageList:^(NSDictionary *responseObject) {
+        [[NetworkManager sharedManager] hideProgressHUD];
+        [self.navigationController pushViewController:self.imageTableViewController animated:YES];
+    } failure:^(NSString *failureReason, NSInteger statusCode) {
+        [[NetworkManager sharedManager] hideProgressHUD];
+        [NetworkManager showMessage:failureReason];
+    }];
 }
 
 #pragma mark - RefreshController
@@ -203,6 +239,7 @@
     
     [self presentViewController:alert animated:YES completion:nil];
 }
+
 
 
 @end

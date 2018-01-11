@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "NetworkManager.h"
+
 @interface AT_AboutViewController : UIViewController
 
 @end

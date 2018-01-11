@@ -7,9 +7,6 @@
 //
 
 
-//#define BASE_URL @"https://www.kreisl.com/"
-#define BASE_URL @"https://www.abload.de/api/"
-
 #import "NetworkManager.h"
 
 
@@ -41,7 +38,7 @@ static NetworkManager *sharedManager = nil;
     if ((self = [super init])) {
         self.loggedin = [NSNumber numberWithInteger:0]; // Not Logged In
         self.noad = [NSNumber numberWithInteger:0]; // Show Ad
-        self.images = [[NSMutableDictionary alloc] initWithCapacity:10];
+        self.imageList = [[NSMutableDictionary alloc] initWithCapacity:10];
 
         // Init Scaling Enumeration
         NSLog(@"NET-bundlePath: %@",[[NSBundle mainBundle] bundlePath]);
@@ -63,8 +60,11 @@ static NetworkManager *sharedManager = nil;
         NSString *file;
         while ((file = [dirEnum nextObject])) {
             if ([[file pathExtension] isEqualToString: @"jpeg"]) {
-                [self.uploadImages addObject:[self.uploadPath stringByAppendingPathComponent:file]];
-                //NSLog(@"NET init files: %@", [file lastPathComponent]);
+                NSString* filePath = [self.uploadPath stringByAppendingPathComponent:file];
+                NSNumber* fileSize = [NSNumber numberWithLong:[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize]];
+                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", file, @"_name", fileSize, @"_size", @"0", @"_uploaded", nil];
+                [self.uploadImages addObject:photoDict];
+                NSLog(@"NET init files: %@", photoDict);
             }
         }
 
@@ -121,6 +121,14 @@ static NetworkManager *sharedManager = nil;
     [viewController presentViewController:alert animated:YES completion:nil];
 }
 
+- (void)logoutWithCallback:(void(^)(void))successCallback {
+    self.token = @"";
+    [self setToken:@""];
+    self.loggedin = [NSNumber numberWithInteger:0];;
+    self.noad = [NSNumber numberWithInteger:0];;
+    successCallback();
+}
+
 #pragma mark - Helper
 
 - (NSMutableDictionary*)getBaseParams {
@@ -137,7 +145,7 @@ static NetworkManager *sharedManager = nil;
     [policy setAllowInvalidCertificates:YES];
     [policy setValidatesDomainName:NO];
     return policy;
-     */
+    */
 }
 
 - (void)showProgressHUD {
@@ -169,7 +177,7 @@ static NetworkManager *sharedManager = nil;
 
 - (AFHTTPSessionManager*)getNetworkingManager {
     if (self.networkingManager == nil) {
-        self.networkingManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:BASE_URL]];
+        self.networkingManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:cURL_API]];
         self.networkingManager.requestSerializer = [AFHTTPRequestSerializer serializer];
         [self.networkingManager.requestSerializer setValue:@"Abloadtool" forHTTPHeaderField:@"User-Agent"];
         self.networkingManager.responseSerializer = [AFXMLParserResponseSerializer serializer];
@@ -491,11 +499,23 @@ static NetworkManager *sharedManager = nil;
     [params setObject:self.token forKey:@"session"];
     [[self getNetworkingManager] POST:@"images" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"NET - getImageList:\r\n%@", tmpDict);
+        //NSLog(@"NET - getImageList:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"images"] objectForKey:@"image"] ) {
-            //[self setImages:[[tmpDict objectForKey:@"images"] objectForKey:@"image"]];
+            self.imageList = [[NSMutableDictionary alloc] initWithCapacity:[self.gallery count]];
+            for(long i = 0;i < [[[tmpDict objectForKey:@"images"] objectForKey:@"image"] count];i++) {
+                NSString* gid = [[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i] objectForKey:@"_gid"];
+                if(!([gid intValue] > 0)) {
+                    gid = @"x";
+                }
+                //NSLog(@"%@ - %@", [gid class], gid);
+                if(![self.imageList objectForKey:gid]) {
+                    [self.imageList setObject:[[NSMutableArray alloc] initWithCapacity:1] forKey:gid];
+                }
+                [[self.imageList objectForKey:gid] addObject:[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i]];
+            }
+            NSLog(@"%@", self.imageList);
         }
-        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
+        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 || [[tmpDict objectForKey:@"images"] objectForKey:@"image"]) {
             if (success != nil) {
                 success(tmpDict);
             }
@@ -520,10 +540,12 @@ static NetworkManager *sharedManager = nil;
     NSString *photoFile = [self.uploadPath stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
     NSLog(@"NET - saveImage: %@", photoFile);
     [image writeToFile:photoFile atomically:YES];
-    [self.uploadImages addObject:photoFile];
+    
+    NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:photoFile, @"_path", [photoFile lastPathComponent], @"_name", [NSNumber numberWithLong:[image length]], @"_size", @"0", @"_uploaded", nil];
+    [self.uploadImages addObject:photoDict];
 }
 
-- (void)uploadImagesNow:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+- (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
@@ -532,15 +554,15 @@ static NetworkManager *sharedManager = nil;
     }
     NSMutableDictionary *params = [self getBaseParams];
     [params setObject:self.token forKey:@"session"];
-
     [[self getNetworkingManager] POST:@"upload" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         [formData appendPartWithFormData:[self.token dataUsingEncoding:NSUTF8StringEncoding] name:@"session"];
-        [self.uploadImages enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL *stop) {
-            NSString* file = object;
-            [formData appendPartWithFileURL:[NSURL fileURLWithPath:file] name:[NSString stringWithFormat:@"img%ld", idx] fileName:[file lastPathComponent] mimeType:@"image/jpeg" error:nil];
-        }];
+        [formData appendPartWithFileURL:[NSURL fileURLWithPath:[metaImage objectForKey:@"_path"]] name:@"img0" fileName:[metaImage objectForKey:@"_name"] mimeType:@"image/jpeg" error:nil];
     } progress:^(NSProgress * _Nonnull uploadProgress) {
-        NSLog(@"NET - NSProgress: %@", uploadProgress);
+        //NSLog(@"NET - NSProgress: %@", uploadProgress);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            UIProgressView* tmpPV = [metaImage objectForKey:@"progressView"];
+            [tmpPV setProgress:uploadProgress.fractionCompleted];
+        });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
         NSLog(@"NET - Upload: %@", tmpDict);
