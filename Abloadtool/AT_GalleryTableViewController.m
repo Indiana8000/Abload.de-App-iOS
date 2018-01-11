@@ -32,7 +32,7 @@
     //self.clearsSelectionOnViewWillAppear = NO;
     
     // Init ImageTable
-    self.imageTableViewController = [[AT_ImageTableViewController alloc] initWithStyle:UITableViewStylePlain];
+    self.imageTableViewController = [[AT_ImageTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
 }
 
 - (void)didReceiveMemoryWarning {

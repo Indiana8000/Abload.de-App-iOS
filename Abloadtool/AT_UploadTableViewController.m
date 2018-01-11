@@ -63,19 +63,21 @@
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
     } else {
         cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
+        AT_UploadTableViewCell* tmpCell = (id)cell;
         cell.separatorInset = UIEdgeInsetsZero;
         cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"];
         cell.detailTextLabel.text = [self bytesToUIString:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_size"]];
 
-        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] == 0) {
+        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] < 1) {
             [cell.imageView setImageWithURL:[NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            [tmpCell.progressView setProgress:0.0];
         } else {
             NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"]];
             [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
-        AT_UploadTableViewCell* tmpCell = (id)cell;
         [[self.uploadImages objectAtIndex:indexPath.row] setObject:tmpCell.progressView forKey:@"progressView"];
-        [tmpCell.progressView setProgress:0.0];
     }
     return cell;
 }
@@ -83,12 +85,11 @@
 #pragma mark - Table view delegate
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return (indexPath.section == 1);
+    return ((indexPath.section == 1) && ([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] == 0));
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete Image
         [[NSFileManager defaultManager] removeItemAtPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]  error:nil];
         [self.uploadImages removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
@@ -103,7 +104,7 @@
     if(indexPath.section == 0) {
         [self showImagePicker];
     } else {
-        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] == 0) {
+        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] < 1) {
             self.detailedViewController.imageURL = [NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]];
         } else {
             self.detailedViewController.imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/img/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"]]];
@@ -165,6 +166,8 @@
 }
 
 - (void)startUploadingImages {
+    [self.navigationItem.leftBarButtonItem setEnabled:NO];
+    [self.navigationItem.rightBarButtonItem setEnabled:NO];
     [self uploadNextImage];
 }
 
@@ -173,24 +176,46 @@
     for(i = 0;i < [self.uploadImages count];i++) {
         NSLog(@"Checking: %ld", i);
         if([[[self.uploadImages objectAtIndex:i] objectForKey:@"_uploaded"] intValue] == 0) {
+            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:1] atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
             [self uploadImage:i];
             return;
         }
     }
+    [self.tableView scrollsToTop];
+    //[self.tableView reloadData];
+    [NSTimer scheduledTimerWithTimeInterval:0.4 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
     [NetworkManager showMessage:@"Done!"];
+    [self.navigationItem.leftBarButtonItem setEnabled:YES];
+    [self.navigationItem.rightBarButtonItem setEnabled:YES];
 }
 
 - (void)uploadImage:(unsigned long) idx {
+    [[self.uploadImages objectAtIndex:idx] setObject:@"-1" forKey:@"_uploaded"];
     [[NetworkManager sharedManager] uploadImagesNow:[self.uploadImages objectAtIndex:idx] success:^(NSDictionary *responseObject) {
         if ( [[responseObject objectForKey:@"images"] objectForKey:@"image"] ) {
             NSLog(@"Upload Success: %@", [[[responseObject objectForKey:@"images"] objectForKey:@"image"] objectForKey:@"_newname"]);
             [[self.uploadImages objectAtIndex:idx] setObject:@"1" forKey:@"_uploaded"];
             [[self.uploadImages objectAtIndex:idx] setObject:[[[responseObject objectForKey:@"images"] objectForKey:@"image"] objectForKey:@"_newname"] forKey:@"_name"];
             [[NSFileManager defaultManager] removeItemAtPath:[[self.uploadImages objectAtIndex:idx] objectForKey:@"_path"]  error:nil];
+
+            UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];
+            [tmpPV setProgress:0.0];
+            UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
+            tmpCell.accessoryType = UITableViewCellAccessoryCheckmark;
+            
             [self uploadNextImage];
         }
     } failure:^(NSString *failureReason, NSInteger statusCode) {
+        [[self.uploadImages objectAtIndex:idx] setObject:@"0" forKey:@"_uploaded"];
         [NetworkManager showMessage:failureReason];
+
+        UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];
+        [tmpPV setProgress:0.0];
+        UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
+        tmpCell.accessoryType = UITableViewCellAccessoryNone;
+        
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
+        [self.navigationItem.rightBarButtonItem setEnabled:YES];
     }];
 }
 

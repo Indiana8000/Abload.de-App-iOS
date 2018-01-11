@@ -117,7 +117,7 @@
 }
 
 - (void)changeZoom {
-    NSLog(@"\n\no:%ld - w:%0.1lf h:%0.1lf - w:%0.1lf h:%0.1lf   \n\n", self.imageView.image.imageOrientation, self.imageView.image.size.width, self.imageView.image.size.height, self.detailedScrollView.contentSize.width, self.detailedScrollView.contentSize.height);
+    //NSLog(@"\n\no:%ld - w:%0.1lf h:%0.1lf - w:%0.1lf h:%0.1lf   \n\n", self.imageView.image.imageOrientation, self.imageView.image.size.width, self.imageView.image.size.height, self.detailedScrollView.contentSize.width, self.detailedScrollView.contentSize.height);
     if(self.detailedScrollView.zoomScale != 1.0) {
         [self.detailedScrollView setZoomScale:1.0 animated:YES];
         self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"Zoom: %.2fx", @"Zoom Title"),1.0];
