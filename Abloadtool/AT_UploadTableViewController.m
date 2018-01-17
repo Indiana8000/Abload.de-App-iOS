@@ -12,6 +12,7 @@
 #import "AT_UploadTableViewController.h"
 
 @interface AT_UploadTableViewController ()
+@property (nonatomic, strong) NSString* uploadStatus;
 @property (nonatomic, strong) NSMutableArray* uploadImages;
 @end
 
@@ -22,7 +23,7 @@
     // Init Navigation Controller + Buttons
     self.navigationItem.title = NSLocalizedString(@"Upload", @"Navigation Title");
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"106-sliders"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettings)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"56-cloud"] style:UIBarButtonItemStylePlain target:self action:@selector(startUploadingImages)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"56-cloud"] style:UIBarButtonItemStylePlain target:self action:@selector(startUploadingImages)];
 
     // Init TableView
     [self.tableView registerClass:[AT_UploadTableViewCell class] forCellReuseIdentifier:cImageCell];
@@ -31,6 +32,8 @@
     
     // Link uploadImages
     self.uploadImages = [[NetworkManager sharedManager] uploadImages];
+    
+    self.uploadStatus = @"ADD";
     
     // Init detailed View
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
@@ -43,11 +46,14 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    if([self.uploadStatus caseInsensitiveCompare:@"ADD"] == NSOrderedSame)
+        return 3;
+    else
+        return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if(section == 0) {
+    if(section == 0 || section == 2) {
         return 1;
     } else {
         return [self.uploadImages count];
@@ -57,10 +63,24 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell;
     if(indexPath.section == 0) {
+        NSLog(@"DEBUG: %@", self.uploadStatus);
         cell = [tableView dequeueReusableCellWithIdentifier:cButtonCell forIndexPath:indexPath];
         cell.separatorInset = UIEdgeInsetsZero;
-        cell.textLabel.text = NSLocalizedString(@"Add Pictures", @"Upload");
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        if([self.uploadStatus caseInsensitiveCompare:@"ADD"] == NSOrderedSame) {
+            cell.textLabel.text = NSLocalizedString(@"Start Upload", @"Upload");
+        } else if([self.uploadStatus caseInsensitiveCompare:@"UPLOAD"] == NSOrderedSame) {
+            cell.textLabel.text = NSLocalizedString(@"Cancel Upload", @"Upload");
+        } else if([self.uploadStatus caseInsensitiveCompare:@"DONE"] == NSOrderedSame) {
+            cell.textLabel.text = NSLocalizedString(@"Clear Upload", @"Upload");
+        } else {
+            cell.textLabel.text = NSLocalizedString(@"ERROR!", @"Upload");
+        }
+    } else if(indexPath.section == 2) {
+        cell = [tableView dequeueReusableCellWithIdentifier:cButtonCell forIndexPath:indexPath];
+        cell.separatorInset = UIEdgeInsetsZero;
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
+        cell.textLabel.text = NSLocalizedString(@"Add Pictures", @"Upload");
     } else {
         cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
         AT_UploadTableViewCell* tmpCell = (id)cell;
@@ -102,6 +122,22 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if(indexPath.section == 0) {
+        
+        if([self.uploadStatus caseInsensitiveCompare:@"ADD"] == NSOrderedSame) {
+            [self startUploadingImages];
+        } else if([self.uploadStatus caseInsensitiveCompare:@"UPLOAD"] == NSOrderedSame) {
+            [[[NetworkManager sharedManager] uploadTask] cancel];
+            self.uploadStatus = @"ADD";
+            [self.tableView reloadData];
+        } else if([self.uploadStatus caseInsensitiveCompare:@"DONE"] == NSOrderedSame) {
+            self.uploadStatus = @"ADD";
+            for(int i = (int)[self.uploadImages count];i > 0;i--) {
+                if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] >= 1)
+                    [self.uploadImages removeObjectAtIndex:(i -1)];
+            }
+            [self.tableView reloadData];
+        }
+    } else if(indexPath.section == 2) {
         [self showImagePicker];
     } else {
         if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] < 1) {
@@ -167,8 +203,10 @@
 
 - (void)startUploadingImages {
     [self.navigationItem.leftBarButtonItem setEnabled:NO];
-    [self.navigationItem.rightBarButtonItem setEnabled:NO];
-    [self uploadNextImage];
+    self.uploadStatus = @"UPLOAD";
+    //[self uploadNextImage];
+    [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
 }
 
 - (void)uploadNextImage {
@@ -181,12 +219,12 @@
             return;
         }
     }
+    self.uploadStatus = @"DONE";
     [self.tableView scrollsToTop];
     //[self.tableView reloadData];
     [NSTimer scheduledTimerWithTimeInterval:0.4 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
     [NetworkManager showMessage:@"Done!"];
     [self.navigationItem.leftBarButtonItem setEnabled:YES];
-    [self.navigationItem.rightBarButtonItem setEnabled:YES];
 }
 
 - (void)uploadImage:(unsigned long) idx {
@@ -203,7 +241,8 @@
             UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
             tmpCell.accessoryType = UITableViewCellAccessoryCheckmark;
             
-            [self uploadNextImage];
+            //[self uploadNextImage];
+            [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
         }
     } failure:^(NSString *failureReason, NSInteger statusCode) {
         [[self.uploadImages objectAtIndex:idx] setObject:@"0" forKey:@"_uploaded"];

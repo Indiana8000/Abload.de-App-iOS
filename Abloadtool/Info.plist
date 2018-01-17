@@ -21,9 +21,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Du hast geklickt, nicht ich!</string>
+	<string>ask_for_Access_Images</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Test String</string>
+	<string>ask_for_Access_Camera</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

@@ -20,4 +20,8 @@
     @property (nonatomic, strong) UINavigationController* navSetting;
     @property (nonatomic, strong) UzysAssetsPickerController* uzysPicker;
     @property (nonatomic, strong) AT_DetailedViewController* detailedViewController;
+
+- (void)uploadNextImage;
 @end
+
+

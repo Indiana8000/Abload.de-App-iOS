@@ -554,11 +554,14 @@ static NetworkManager *sharedManager = nil;
     }
     NSMutableDictionary *params = [self getBaseParams];
     [params setObject:self.token forKey:@"session"];
-    [[self getNetworkingManager] POST:@"upload" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-        [formData appendPartWithFormData:[self.token dataUsingEncoding:NSUTF8StringEncoding] name:@"session"];
+    if([self.selectedGallery intValue] > 0) {
+        [params setObject:@"1243654" forKey:@"gallery"];
+    }
+    self.uploadTask = [[self getNetworkingManager] POST:@"upload" parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        //[formData appendPartWithFormData:[self.token dataUsingEncoding:NSUTF8StringEncoding] name:@"session"];
         [formData appendPartWithFileURL:[NSURL fileURLWithPath:[metaImage objectForKey:@"_path"]] name:@"img0" fileName:[metaImage objectForKey:@"_name"] mimeType:@"image/jpeg" error:nil];
     } progress:^(NSProgress * _Nonnull uploadProgress) {
-        //NSLog(@"NET - NSProgress: %@", uploadProgress);
+        //NSLog(@"uploadProgress: %@", uploadProgress);
         dispatch_async(dispatch_get_main_queue(), ^{
             UIProgressView* tmpPV = [metaImage objectForKey:@"progressView"];
             [tmpPV setProgress:uploadProgress.fractionCompleted];

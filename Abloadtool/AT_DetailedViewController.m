@@ -59,12 +59,13 @@
 #pragma mark - View lifecycle
 
 - (void)viewWillAppear:(BOOL)animated {
+    __unsafe_unretained typeof(self) weakSelf = self;
     [super viewWillAppear:animated];
     [self.imageView setFrame:CGRectMake(0, 0, 128, 128)];
     [self.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:self.imageURL] placeholderImage:[UIImage imageNamed:@"AppIcon"] success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull image) {
-        self.imageView.image = image;
-        [self.imageView setFrame:CGRectMake(0, 0, self.imageView.image.size.width, self.imageView.image.size.height)];
-        [self changeZoom];
+        weakSelf.imageView.image = image;
+        [weakSelf.imageView setFrame:CGRectMake(0, 0, weakSelf.imageView.image.size.width, weakSelf.imageView.image.size.height)];
+        [weakSelf changeZoom];
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, NSError * _Nonnull error) {
         NSLog(@"ERROR");
     }];

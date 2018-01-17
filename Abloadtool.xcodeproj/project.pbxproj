@@ -20,11 +20,11 @@
 		A11E2A551FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */; };
 		A11E2A581FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */; };
 		A12E2276200759CF000623E5 /* AT_DetailedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E2275200759CF000623E5 /* AT_DetailedViewController.m */; };
-		A1623B251FD30BBE00B6DF49 /* libQBImagePickerController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1623B261FD30BBE00B6DF49 /* libQBImagePickerController.a */; };
 		A1780F0F1FB5D807009BFED0 /* AT_SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */; };
 		A1780F121FB60385009BFED0 /* AT_SettingGalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */; };
 		A17DD45A2003A21700642310 /* AT_ImageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */; };
 		A17DD45D2003CD0500642310 /* AT_UploadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */; };
+		A1866B982008D8DA00752895 /* libUzysAssetsPickerController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1866B992008D8DA00752895 /* libUzysAssetsPickerController.a */; };
 		A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */; };
 		A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */; };
 		A1B94BB81FB0769900929CBC /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A1B94BB71FB0769900929CBC /* LICENSE */; };
@@ -85,6 +85,8 @@
 		A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_ImageTableViewCell.m; sourceTree = "<group>"; };
 		A17DD45B2003CD0500642310 /* AT_UploadTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_UploadTableViewCell.h; sourceTree = "<group>"; };
 		A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_UploadTableViewCell.m; sourceTree = "<group>"; };
+		A1866B992008D8DA00752895 /* libUzysAssetsPickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUzysAssetsPickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1866B9A2008DB3B00752895 /* Abloadtool.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Abloadtool.entitlements; sourceTree = "<group>"; };
 		A18EDF421FA34E6300F8E80E /* AT_UploadTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_UploadTableViewController.h; sourceTree = "<group>"; };
 		A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_UploadTableViewController.m; sourceTree = "<group>"; };
 		A1B1E3C61F98E70300C05787 /* AT_GalleryTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_GalleryTableViewController.h; sourceTree = "<group>"; };
@@ -124,7 +126,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1623B251FD30BBE00B6DF49 /* libQBImagePickerController.a in Frameworks */,
+				A1866B982008D8DA00752895 /* libUzysAssetsPickerController.a in Frameworks */,
 				A1E504DE1F8BECEB0029146D /* libXMLDictionary.a in Frameworks */,
 				A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */,
 				3E3A6511E0C2E1EABD867CBC /* libPods-Abloadtool.a in Frameworks */,
@@ -153,6 +155,7 @@
 		15B5AA95DD45F0A80546805E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A1866B992008D8DA00752895 /* libUzysAssetsPickerController.a */,
 				A1623B261FD30BBE00B6DF49 /* libQBImagePickerController.a */,
 				A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */,
 				A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */,
@@ -169,6 +172,7 @@
 				A11E2A471FCEBC39008055E4 /* scalemethods.plist */,
 				A11E2A4B1FCEBC97008055E4 /* resolutions.plist */,
 				A11E2A4F1FCEBCA1008055E4 /* outputlinks.plist */,
+				A1866B9A2008DB3B00752895 /* Abloadtool.entitlements */,
 				A1EE6B6D1F864E0700F78F24 /* main.m */,
 				A1EE6B6C1F864E0700F78F24 /* Info.plist */,
 				A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */,
@@ -346,6 +350,11 @@
 					A1EE6B571F864E0700F78F24 = {
 						CreatedOnToolsVersion = 9.0;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 0;
+							};
+						};
 					};
 					A1EE6B721F864E0700F78F24 = {
 						CreatedOnToolsVersion = 9.0;

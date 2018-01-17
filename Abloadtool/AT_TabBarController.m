@@ -21,15 +21,15 @@
     self.tabAbout = [[AT_AboutViewController alloc] init];
 
     UINavigationController *navUL = [[UINavigationController alloc] initWithRootViewController:self.tabUpload];
-    navUL.tabBarItem.title = NSLocalizedString(@"Upload", @"Tab Bar Title");
-    navUL.tabBarItem.image = [UIImage imageNamed:@"266-upload"];
+    navUL.tabBarItem.title = NSLocalizedString(@"Upload", @"TabBarController");
+    navUL.tabBarItem.image = [UIImage imageNamed:@"56-cloud"];
 
     UINavigationController *navGL = [[UINavigationController alloc] initWithRootViewController:self.tabGallery];
-    navGL.tabBarItem.title = NSLocalizedString(@"Gallery & Images", @"Tab Bar Title");
+    navGL.tabBarItem.title = NSLocalizedString(@"Gallery & Images", @"TabBarController");
     navGL.tabBarItem.image = [UIImage imageNamed:@"42-photos"];
 
     UINavigationController *navAB = [[UINavigationController alloc] initWithRootViewController:self.tabAbout];
-    navAB.tabBarItem.title = NSLocalizedString(@"About Us", @"Tab Bar Title");
+    navAB.tabBarItem.title = NSLocalizedString(@"About Us", @"TabBarController");
     navAB.tabBarItem.image = [UIImage imageNamed:@"999-logo"];
 
     [self setViewControllers:@[navUL, navGL, navAB]];
