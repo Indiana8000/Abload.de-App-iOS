@@ -217,7 +217,7 @@
                                                }];
     [alert addAction:ok];
     
-    UIAlertAction *ok2 = [UIAlertAction actionWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_btn_withimage", @"Gallery"), bc] style:UIAlertActionStyleDefault
+    UIAlertAction *ok2 = [UIAlertAction actionWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_btn_withimage %ld", @"Gallery"), bc] style:UIAlertActionStyleDefault
                                                handler:^(UIAlertAction * action) {
                                                    [[NetworkManager sharedManager] deleteGalleryWithID:gid andImages:1 success:^(NSDictionary *responseObject) {
                                                        [self.tableView reloadData];

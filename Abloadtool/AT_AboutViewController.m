@@ -25,7 +25,7 @@
     
     self.abloadLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 80.0, self.view.frame.size.width, 30.0)];
     [self initLabel:self.abloadLabel];
-    self.abloadLabel.text = NSLocalizedString(@"label_abload_slogan", @"About"); // This service is brought to you by
+    self.abloadLabel.text = NSLocalizedString(@"label_abload_slogan", @"About");
     [self.view addSubview:self.abloadLabel];
     
     self.abloadImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_abload"]];

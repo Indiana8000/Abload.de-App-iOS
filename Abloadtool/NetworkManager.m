@@ -322,7 +322,7 @@ static NetworkManager *sharedManager = nil;
         self.selectedResolution = [defaults objectForKey:@"resolution_selected"];
         NSLog(@"NET - selectedResolution %@", self.selectedResolution);
     } else {
-        self.selectedResolution = NSLocalizedString(@"Keep Original", @"Settings");
+        self.selectedResolution = NSLocalizedString(@"label_keeporiginal", @"Settings");
         NSLog(@"NET - selectedResolution NEW");
     }
 
@@ -559,7 +559,7 @@ static NetworkManager *sharedManager = nil;
     NSMutableDictionary *params = [self getBaseParams];
     [params setObject:self.token forKey:@"session"];
     if([self.selectedGallery intValue] > 0) {
-        [params setObject:@"1243654" forKey:@"gallery"];
+        [params setObject:[self.selectedGallery stringValue] forKey:@"gallery"];
     }
     self.uploadTask = [[self getNetworkingManager] POST:@"upload" parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         //[formData appendPartWithFormData:[self.token dataUsingEncoding:NSUTF8StringEncoding] name:@"session"];

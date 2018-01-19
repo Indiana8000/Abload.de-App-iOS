@@ -73,6 +73,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     self.detailedViewController.imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/img/%@", cURL_BASE, [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:indexPath.row] objectForKey:@"_filename"]]];
+    self.detailedViewController.navigationController.title = NSLocalizedString(@"label_loading", @"Image");
     [self.navigationController pushViewController:self.detailedViewController animated:YES];
 }
 

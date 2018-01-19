@@ -217,10 +217,12 @@
 }
 
 - (void)startUploadingImages {
-    [self.navigationItem.leftBarButtonItem setEnabled:NO];
-    self.uploadStatus = @"UPLOAD";
-    [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
-    [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
+    if([self.uploadImages count] > 0) {
+        [self.navigationItem.leftBarButtonItem setEnabled:NO];
+        self.uploadStatus = @"UPLOAD";
+        [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
+        [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
+    }
 }
 
 - (void)uploadNextImage {

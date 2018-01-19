@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<array>
+		<string>Stretch</string>
+		<string>Scales the picture to fit the size by changing the aspect ratio of the picture if necessary.</string>
+	</array>
+	<array>
+		<string>Aspect Fit</string>
+		<string>Scales the picture to fit the size by maintaining the aspect ratio. Any remaining area get&apos;s cut.</string>
+	</array>
+	<array>
+		<string>Aspect Fill</string>
+		<string>Scales the picture to fill the size. Some portion of the picture may be clipped to fill the size.</string>
+	</array>
+</array>
+</plist>

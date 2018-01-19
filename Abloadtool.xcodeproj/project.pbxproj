@@ -15,19 +15,19 @@
 		A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */; };
 		A1067D811F866CCF007D1D89 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1067D801F866CCF007D1D89 /* NetworkManager.m */; };
 		A1067D821F866CCF007D1D89 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1067D801F866CCF007D1D89 /* NetworkManager.m */; };
-		A11E2A491FCEBC39008055E4 /* scalemethods.plist in Resources */ = {isa = PBXBuildFile; fileRef = A11E2A471FCEBC39008055E4 /* scalemethods.plist */; };
-		A11E2A4E1FCEBC97008055E4 /* resolutions.plist in Resources */ = {isa = PBXBuildFile; fileRef = A11E2A4B1FCEBC97008055E4 /* resolutions.plist */; };
-		A11E2A521FCEBCA1008055E4 /* outputlinks.plist in Resources */ = {isa = PBXBuildFile; fileRef = A11E2A4F1FCEBCA1008055E4 /* outputlinks.plist */; };
 		A11E2A551FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */; };
 		A11E2A581FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */; };
 		A12E2276200759CF000623E5 /* AT_DetailedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E2275200759CF000623E5 /* AT_DetailedViewController.m */; };
 		A146C1F42012612B0070BC92 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A146C1F32012612B0070BC92 /* Info.plist */; };
-		A146C1F7201261920070BC92 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A146C1F9201261920070BC92 /* InfoPlist.strings */; };
 		A1780F0F1FB5D807009BFED0 /* AT_SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */; };
 		A1780F121FB60385009BFED0 /* AT_SettingGalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */; };
 		A17DD45A2003A21700642310 /* AT_ImageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */; };
 		A17DD45D2003CD0500642310 /* AT_UploadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */; };
 		A1866B982008D8DA00752895 /* libUzysAssetsPickerController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1866B992008D8DA00752895 /* libUzysAssetsPickerController.a */; };
+		A18B58EF201266DA00379284 /* outputlinks.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F1201266DA00379284 /* outputlinks.plist */; };
+		A18B58F3201266ED00379284 /* resolutions.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F5201266ED00379284 /* resolutions.plist */; };
+		A18B58F7201266F500379284 /* scalemethods.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F9201266F500379284 /* scalemethods.plist */; };
+		A18B58FE2012686100379284 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A18B58FC2012686100379284 /* Localizable.strings */; };
 		A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */; };
 		A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */; };
 		A1B94BB81FB0769900929CBC /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A1B94BB71FB0769900929CBC /* LICENSE */; };
@@ -69,12 +69,6 @@
 		A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAFNetworking.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1067D7F1F866CCF007D1D89 /* NetworkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetworkManager.h; sourceTree = "<group>"; };
 		A1067D801F866CCF007D1D89 /* NetworkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetworkManager.m; sourceTree = "<group>"; };
-		A11E2A481FCEBC39008055E4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = en; path = ../../Abloadtool_v2/Abloadtool/en.lproj/scalemethods.plist; sourceTree = "<group>"; };
-		A11E2A4A1FCEBC4C008055E4 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = de; path = ../../Abloadtool_v2/Abloadtool/de.lproj/scalemethods.plist; sourceTree = "<group>"; };
-		A11E2A4C1FCEBC97008055E4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = en; path = ../../Abloadtool_v2/Abloadtool/en.lproj/resolutions.plist; sourceTree = "<group>"; };
-		A11E2A4D1FCEBC97008055E4 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = de; path = ../../Abloadtool_v2/Abloadtool/de.lproj/resolutions.plist; sourceTree = "<group>"; };
-		A11E2A501FCEBCA1008055E4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = en; path = ../../Abloadtool_v2/Abloadtool/en.lproj/outputlinks.plist; sourceTree = "<group>"; };
-		A11E2A511FCEBCA1008055E4 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = de; path = ../../Abloadtool_v2/Abloadtool/de.lproj/outputlinks.plist; sourceTree = "<group>"; };
 		A11E2A531FCEBCF7008055E4 /* AT_SettingScaleTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingScaleTableViewController.h; sourceTree = "<group>"; };
 		A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingScaleTableViewController.m; sourceTree = "<group>"; };
 		A11E2A561FCEBD16008055E4 /* AT_SettingResolutionTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingResolutionTableViewController.h; sourceTree = "<group>"; };
@@ -82,8 +76,6 @@
 		A12E2274200759CF000623E5 /* AT_DetailedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_DetailedViewController.h; sourceTree = "<group>"; };
 		A12E2275200759CF000623E5 /* AT_DetailedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_DetailedViewController.m; sourceTree = "<group>"; };
 		A146C1F32012612B0070BC92 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A146C1F8201261920070BC92 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		A146C1FA201261950070BC92 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A1623B261FD30BBE00B6DF49 /* libQBImagePickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libQBImagePickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1780F0D1FB5D807009BFED0 /* AT_SettingTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingTableViewController.h; sourceTree = "<group>"; };
 		A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingTableViewController.m; sourceTree = "<group>"; };
@@ -95,6 +87,15 @@
 		A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_UploadTableViewCell.m; sourceTree = "<group>"; };
 		A1866B992008D8DA00752895 /* libUzysAssetsPickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUzysAssetsPickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1866B9A2008DB3B00752895 /* Abloadtool.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Abloadtool.entitlements; sourceTree = "<group>"; };
+		A18B58F0201266DA00379284 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = en; path = en.lproj/outputlinks.plist; sourceTree = "<group>"; };
+		A18B58F2201266DC00379284 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = de; path = de.lproj/outputlinks.plist; sourceTree = "<group>"; };
+		A18B58F4201266ED00379284 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = en; path = en.lproj/resolutions.plist; sourceTree = "<group>"; };
+		A18B58F6201266EF00379284 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = de; path = de.lproj/resolutions.plist; sourceTree = "<group>"; };
+		A18B58F8201266F500379284 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = en; path = en.lproj/scalemethods.plist; sourceTree = "<group>"; };
+		A18B58FA201266F700379284 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = de; path = de.lproj/scalemethods.plist; sourceTree = "<group>"; };
+		A18B58FB2012675D00379284 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A18B58FD2012686100379284 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A18B58FF2012686A00379284 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A18EDF421FA34E6300F8E80E /* AT_UploadTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_UploadTableViewController.h; sourceTree = "<group>"; };
 		A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_UploadTableViewController.m; sourceTree = "<group>"; };
 		A1B1E3C61F98E70300C05787 /* AT_GalleryTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_GalleryTableViewController.h; sourceTree = "<group>"; };
@@ -111,7 +112,6 @@
 		A1EE6B5B1F864E0700F78F24 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		A1EE6B5C1F864E0700F78F24 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		A1EE6B671F864E0700F78F24 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A1EE6B6A1F864E0700F78F24 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A1EE6B6D1F864E0700F78F24 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A1EE6B731F864E0700F78F24 /* AbloadtoolTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbloadtoolTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1EE6B771F864E0700F78F24 /* AbloadtoolTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AbloadtoolTests.m; sourceTree = "<group>"; };
@@ -193,14 +193,14 @@
 		A18EDF461FA3510500F8E80E /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				A11E2A471FCEBC39008055E4 /* scalemethods.plist */,
-				A11E2A4B1FCEBC97008055E4 /* resolutions.plist */,
-				A11E2A4F1FCEBCA1008055E4 /* outputlinks.plist */,
-				A146C1F9201261920070BC92 /* InfoPlist.strings */,
+				A18B58FC2012686100379284 /* Localizable.strings */,
+				A18B58F1201266DA00379284 /* outputlinks.plist */,
+				A18B58F5201266ED00379284 /* resolutions.plist */,
+				A18B58F9201266F500379284 /* scalemethods.plist */,
 				A1866B9A2008DB3B00752895 /* Abloadtool.entitlements */,
-				A1EE6B6D1F864E0700F78F24 /* main.m */,
 				A146C1F32012612B0070BC92 /* Info.plist */,
 				A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */,
+				A1EE6B6D1F864E0700F78F24 /* main.m */,
 			);
 			name = "Support Files";
 			sourceTree = "<group>";
@@ -392,7 +392,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 				de,
 			);
 			mainGroup = A1EE6B4F1F864E0700F78F24;
@@ -412,13 +411,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A11E2A4E1FCEBC97008055E4 /* resolutions.plist in Resources */,
-				A146C1F7201261920070BC92 /* InfoPlist.strings in Resources */,
-				A11E2A491FCEBC39008055E4 /* scalemethods.plist in Resources */,
+				A18B58F3201266ED00379284 /* resolutions.plist in Resources */,
 				A1B94BB81FB0769900929CBC /* LICENSE in Resources */,
-				A11E2A521FCEBCA1008055E4 /* outputlinks.plist in Resources */,
 				A1EE6B6B1F864E0700F78F24 /* LaunchScreen.storyboard in Resources */,
 				A1EE6B681F864E0700F78F24 /* Assets.xcassets in Resources */,
+				A18B58EF201266DA00379284 /* outputlinks.plist in Resources */,
+				A18B58FE2012686100379284 /* Localizable.strings in Resources */,
+				A18B58F7201266F500379284 /* scalemethods.plist in Resources */,
 				A146C1F42012612B0070BC92 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -648,46 +647,46 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		A11E2A471FCEBC39008055E4 /* scalemethods.plist */ = {
+		A18B58F1201266DA00379284 /* outputlinks.plist */ = {
 			isa = PBXVariantGroup;
 			children = (
-				A11E2A481FCEBC39008055E4 /* en */,
-				A11E2A4A1FCEBC4C008055E4 /* de */,
-			);
-			name = scalemethods.plist;
-			sourceTree = "<group>";
-		};
-		A11E2A4B1FCEBC97008055E4 /* resolutions.plist */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A11E2A4C1FCEBC97008055E4 /* en */,
-				A11E2A4D1FCEBC97008055E4 /* de */,
-			);
-			name = resolutions.plist;
-			sourceTree = "<group>";
-		};
-		A11E2A4F1FCEBCA1008055E4 /* outputlinks.plist */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A11E2A501FCEBCA1008055E4 /* en */,
-				A11E2A511FCEBCA1008055E4 /* de */,
+				A18B58F0201266DA00379284 /* en */,
+				A18B58F2201266DC00379284 /* de */,
 			);
 			name = outputlinks.plist;
 			sourceTree = "<group>";
 		};
-		A146C1F9201261920070BC92 /* InfoPlist.strings */ = {
+		A18B58F5201266ED00379284 /* resolutions.plist */ = {
 			isa = PBXVariantGroup;
 			children = (
-				A146C1F8201261920070BC92 /* en */,
-				A146C1FA201261950070BC92 /* de */,
+				A18B58F4201266ED00379284 /* en */,
+				A18B58F6201266EF00379284 /* de */,
 			);
-			name = InfoPlist.strings;
+			name = resolutions.plist;
+			sourceTree = "<group>";
+		};
+		A18B58F9201266F500379284 /* scalemethods.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A18B58F8201266F500379284 /* en */,
+				A18B58FA201266F700379284 /* de */,
+			);
+			name = scalemethods.plist;
+			sourceTree = "<group>";
+		};
+		A18B58FC2012686100379284 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A18B58FD2012686100379284 /* en */,
+				A18B58FF2012686A00379284 /* de */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 		A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				A1EE6B6A1F864E0700F78F24 /* Base */,
+				A18B58FB2012675D00379284 /* en */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";

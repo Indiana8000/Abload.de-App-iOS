@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>name</key>
+		<string>Standard</string>
+		<key>list</key>
+		<array>
+			<string>Original beibehalten</string>
+		</array>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Portrait</string>
+		<key>list</key>
+		<array>
+			<string>320x480</string>
+			<string>640x960</string>
+			<string>768x1024</string>
+			<string>1536x2048</string>
+		</array>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Normal (4:3)</string>
+		<key>list</key>
+		<array>
+			<string>640x480</string>
+			<string>800x600</string>
+			<string>1024x768</string>
+			<string>1280x1024</string>
+		</array>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Widescreen (16:9)</string>
+		<key>list</key>
+		<array>
+			<string>1280x720</string>
+			<string>1366x768</string>
+			<string>1600x900</string>
+			<string>1920x1080</string>
+			<string>2560x1440</string>
+		</array>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Widescreen (16:10)</string>
+		<key>list</key>
+		<array>
+			<string>1024x600</string>
+			<string>1280x800</string>
+			<string>1440x900</string>
+			<string>1680x1050</string>
+			<string>1920x1200</string>
+			<string>2560x1600</string>
+		</array>
+	</dict>
+</array>
+</plist>
