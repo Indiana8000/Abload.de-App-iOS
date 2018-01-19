@@ -19,13 +19,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Init Navigation Controller + Buttons
-    //self.navigationItem.title = NSLocalizedString(@"Images", @"Navigation Title");
+    //self.navigationItem.title =
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
 
     // Init TableView
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
-    //self.clearsSelectionOnViewWillAppear = NO;
 
+    // Init detailedViewController
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
 }
 
@@ -34,7 +34,6 @@
 }
 
 - (void) viewWillAppear:(BOOL)animated {
-    //NSLog(@"image Table: - gid: %@", self.gid);
     [self.tableView reloadData];
 }
 
@@ -45,7 +44,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    //NSLog(@"image Table: %ld", [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count]);
     return [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count];
 }
 
@@ -59,6 +57,14 @@
     NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
     [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     return cell;
+}
+
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewRowAction *modifyAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:NSLocalizedString(@"btn_slide_copylink", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath *indexPath) {
+        [UIPasteboard generalPasteboard].string = [[NetworkManager sharedManager] generateLink:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
+    }];
+    modifyAction.backgroundColor = [UIColor orangeColor];
+    return @[modifyAction];
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -89,12 +95,12 @@
     NSMutableString* linkX = [[NSMutableString alloc] init];
     unsigned long i;
     for(i = 0;i < [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count];i++) {
-        //NSLog(@"Checking: %@", [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:i] objectForKey:@"_filename"]);
         [linkX appendString:[[NetworkManager sharedManager] generateLink:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:i] objectForKey:@"_filename"]]];
     }
-    NSLog(@"%@", linkX);
     [UIPasteboard generalPasteboard].string = linkX;
-    [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"Kopies %ld Links to clipboard", @"TBD"), i]];
+    [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_copylink_done %ld", @"Upload Tab"), i]];
 }
+
+
 
 @end

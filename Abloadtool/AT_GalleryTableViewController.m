@@ -19,7 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Init Navigation Controller + Buttons
-    self.navigationItem.title = NSLocalizedString(@"Gallery & Images", @"Navigation Title");
+    self.navigationItem.title = NSLocalizedString(@"nav_title_gallery", @"Navigation");
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)];
 
     // Init RefreshController
@@ -29,7 +29,6 @@
     
     // Init TableView
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
-    //self.clearsSelectionOnViewWillAppear = NO;
     
     // Init ImageTable
     self.imageTableViewController = [[AT_ImageTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
@@ -76,7 +75,7 @@
     cell.separatorInset = UIEdgeInsetsZero;
     
     if(indexPath.section == 0) {
-        cell.textLabel.text = NSLocalizedString(@"No Gallery", @"Settings");
+        cell.textLabel.text = NSLocalizedString(@"label_nogallery", @"Settings");
         cell.detailTextLabel.text = @" ";
         [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
     } else {
@@ -104,12 +103,10 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Gallery tapped
-    NSLog(@"Gallery Tapped: %@", indexPath);
     [[NetworkManager sharedManager] showProgressHUD];
     if(indexPath.section == 0) {
         self.imageTableViewController.gid = @"x";
-        self.imageTableViewController.navigationItem.title = NSLocalizedString(@"No Gallery", @"Settings");
+        self.imageTableViewController.navigationItem.title = NSLocalizedString(@"label_nogallery", @"Settings");
     } else {
         self.imageTableViewController.gid = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_id"];
         self.imageTableViewController.navigationItem.title = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
@@ -158,7 +155,7 @@
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"de_DE"]];
     [formatter setDateFormat:@"d. MMM, H:mm"];
-    NSString *lastUpdated = [NSString stringWithFormat:NSLocalizedString(@"Letzte Aktualisierung am %@", @"Gallery Refresh"),
+    NSString *lastUpdated = [NSString stringWithFormat:NSLocalizedString(@"label_lastrefresh %@", @"Gallery"),
                              [formatter stringFromDate:[NSDate date]]];
     self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:lastUpdated];
 }
@@ -166,11 +163,11 @@
 #pragma mark - Manage Gallerys
 
 - (void)doAddGallery:(id)sender {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Abloadtool"
-                                                                   message:NSLocalizedString(@"Name and Description of the new Gallery", @"Name and Description of the new Gallery")
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Abloadtool", @"Abloadtool")
+                                                                   message:NSLocalizedString(@"newgallery_title", @"Gallery")
                                                             preferredStyle:UIAlertControllerStyleAlert];
 
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"Create", @"Create") style:UIAlertActionStyleDefault
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"newgallery_btn_create", @"Gallery") style:UIAlertActionStyleDefault
                                                handler:^(UIAlertAction * action) {
                                                    [[NetworkManager sharedManager] showProgressHUD];
                                                    [[NetworkManager sharedManager] createGalleryWithName:[[alert.textFields objectAtIndex:0] text] andDesc:[[alert.textFields objectAtIndex:1] text] success:^(id responseObject) {
@@ -183,19 +180,19 @@
                                                }];
     [alert addAction:ok];
 
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel") style:UIAlertActionStyleDefault
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"newgallery_btn_chancel", @"Gallery") style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
                                                        [alert dismissViewControllerAnimated:YES completion:nil];
                                                    }];
     [alert addAction:cancel];
 
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = NSLocalizedString(@"Name", @"Name");
+        textField.placeholder = NSLocalizedString(@"newgallery_label_name", @"Gallery");
         textField.keyboardType = UIKeyboardTypeDefault;
     }];
 
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = NSLocalizedString(@"Description", @"Description");
+        textField.placeholder = NSLocalizedString(@"newgallery_label_description", @"Gallery");
         textField.keyboardType = UIKeyboardTypeDefault;
     }];
 
@@ -206,11 +203,11 @@
     long gid = [[[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_id"] intValue];
     long bc = [[[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_images"] intValue];
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Abloadtool"
-                                                                   message:[NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete the Gallery:\r\n%@", @"Do you really want to delete the Gallery:\r\n%@"), [[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_name"]]
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Abloadtool", @"Abloadtool")
+                                                                   message:[NSString stringWithFormat:NSLocalizedString(@"delgallery_question %@", @"Gallery"), [[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_name"]]
                                                             preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes, only the Gallery", @"Yes, only the Gallery") style:UIAlertActionStyleDefault
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"delgallery_btn_withoutimage", @"Gallery") style:UIAlertActionStyleDefault
                                                handler:^(UIAlertAction * action) {
                                                    [[NetworkManager sharedManager] deleteGalleryWithID:gid andImages:0 success:^(NSDictionary *responseObject) {
                                                        [self.tableView reloadData];
@@ -220,7 +217,7 @@
                                                }];
     [alert addAction:ok];
     
-    UIAlertAction *ok2 = [UIAlertAction actionWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Yes, and all %ld images", @"Yes, and all %ld images"), bc] style:UIAlertActionStyleDefault
+    UIAlertAction *ok2 = [UIAlertAction actionWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_btn_withimage", @"Gallery"), bc] style:UIAlertActionStyleDefault
                                                handler:^(UIAlertAction * action) {
                                                    [[NetworkManager sharedManager] deleteGalleryWithID:gid andImages:1 success:^(NSDictionary *responseObject) {
                                                        [self.tableView reloadData];
@@ -230,12 +227,11 @@
                                                }];
     [alert addAction:ok2];
     
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"No, changed my mind", @"No, changed my mind") style:UIAlertActionStyleDefault
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"delgallery_btn_chancel", @"Gallery") style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
                                                        [alert dismissViewControllerAnimated:YES completion:nil];
                                                    }];
     [alert addAction:cancel];
-
     
     [self presentViewController:alert animated:YES completion:nil];
 }

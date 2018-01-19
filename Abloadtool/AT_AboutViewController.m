@@ -20,13 +20,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor lightGrayColor];
-    self.navigationItem.title = NSLocalizedString(@"About Us", @"About Us");
+    self.navigationItem.title = NSLocalizedString(@"nav_title_about", @"Navigation");
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"51-power"] style:UIBarButtonItemStylePlain target:self action:@selector(doLogout:)];
-
     
     self.abloadLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 80.0, self.view.frame.size.width, 30.0)];
     [self initLabel:self.abloadLabel];
-    self.abloadLabel.text = NSLocalizedString(@"This service is brought to you by", @"This service is brought to you by");
+    self.abloadLabel.text = NSLocalizedString(@"label_abload_slogan", @"About"); // This service is brought to you by
     [self.view addSubview:self.abloadLabel];
     
     self.abloadImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_abload"]];
@@ -34,10 +33,9 @@
     self.abloadImage.center = CGPointMake(self.view.center.x, self.abloadImage.frame.size.height/2 + 80 +30);
     [self.view addSubview:self.abloadImage];
 
-    
     self.bluepawLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 240.0, self.view.frame.size.width, 30.0)];
     [self initLabel:self.bluepawLabel];
-    self.bluepawLabel.text = NSLocalizedString(@"App developed by", @"App developed by");
+    self.bluepawLabel.text = NSLocalizedString(@"label_bluepaw_slogan", @"About");
     [self.view addSubview:self.bluepawLabel];
     
     self.bluepawImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_bluepaw"]];
@@ -66,7 +64,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)viewWillLayoutSubviews {
@@ -82,7 +79,7 @@
     UITouch *touch = [[event allTouches] anyObject];
     NSDictionary *tmpDict = [[NSDictionary alloc] initWithObjectsAndKeys: @"x", @"x", nil];
     if ( [touch locationInView:self.view].y < self.view.center.y ) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://www.abload.de/"] options:tmpDict completionHandler:nil];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.abload.de/"] options:tmpDict completionHandler:nil];
     } else {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://www.bluepaw.de/"] options:tmpDict completionHandler:nil];
     }
@@ -90,8 +87,10 @@
 
 - (void)doLogout:(id) sender {
     [[NetworkManager sharedManager] logoutWithCallback:^{
-        [NetworkManager showMessage:@"Done"];
+        [NetworkManager showMessage:NSLocalizedString(@"label_logout_successfull", @"About")];
     }];
 }
+
+
 
 @end

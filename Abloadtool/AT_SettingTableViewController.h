@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+
+#import "NetworkManager.h"
 #import "AT_SettingGalleryTableViewController.h"
 #import "AT_SettingResolutionTableViewController.h"
 #import "AT_SettingScaleTableViewController.h"

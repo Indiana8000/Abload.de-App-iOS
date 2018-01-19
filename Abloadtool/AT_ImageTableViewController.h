@@ -14,6 +14,6 @@
 #import "AT_DetailedViewController.h"
 
 @interface AT_ImageTableViewController : UITableViewController
-@property (nonatomic) NSString* gid;
-@property (nonatomic, strong) AT_DetailedViewController* detailedViewController;
+    @property (nonatomic) NSString* gid;
+    @property (nonatomic, strong) AT_DetailedViewController* detailedViewController;
 @end

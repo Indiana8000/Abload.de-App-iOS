@@ -19,7 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Init Navigation
-    self.navigationItem.title = NSLocalizedString(@"Scaling", @"Settings");
+    self.navigationItem.title = NSLocalizedString(@"nav_title_scaling", @"Navigation");
     
     // Init TableView
     [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cScaleCell];

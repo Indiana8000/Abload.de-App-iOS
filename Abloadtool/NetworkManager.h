@@ -8,6 +8,7 @@
 
 #define cURL_BASE @"http://abload.de"
 #define cURL_API @"http://abload.de/api/"
+#define cURL_AGENT @"Abloadtool"
 
 #import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>
@@ -19,30 +20,31 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 
 @interface NetworkManager : NSObject {
 }
-    + (id)sharedManager;
-    + (void)showMessage:(NSString*) msg;
 
-    - (void)showProgressHUD;
-    - (void)hideProgressHUD;
++ (id)sharedManager;
++ (void)showMessage:(NSString*) msg;
 
-    - (void)showLoginWithViewController:(UIViewController*)viewController andCallback:(void(^)(void))successCallback;
-    - (void)logoutWithCallback:(void(^)(void))successCallback;
-    - (void)tokenCheckWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-    - (void)authenticateWithEmail:(NSString*)email password:(NSString*)password success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)showProgressHUD;
+- (void)hideProgressHUD;
 
-    - (void)saveSelectedGallery:(NSNumber*) gid;
-    - (void)saveSelectedResolution:(NSString*) name;
-    - (void)saveSelectedScale:(NSNumber*) scale;
-    - (void)saveSelectedOutputLinks:(NSNumber*) outputLinks;
+- (void)showLoginWithViewController:(UIViewController*)viewController andCallback:(void(^)(void))successCallback;
+- (void)logoutWithCallback:(void(^)(void))successCallback;
+- (void)tokenCheckWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)authenticateWithEmail:(NSString*)email password:(NSString*)password success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
-    - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-    - (void)getImageList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)saveSelectedGallery:(NSNumber*) gid;
+- (void)saveSelectedResolution:(NSString*) name;
+- (void)saveSelectedScale:(NSNumber*) scale;
+- (void)saveSelectedOutputLinks:(NSNumber*) outputLinks;
 
-    - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-    - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)getImageList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
-    - (void)saveImage:(NSData*) image;
-    - (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+
+- (void)saveImage:(NSData*) image;
+- (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
 - (NSString*)generateLink:(NSString*) name;
 

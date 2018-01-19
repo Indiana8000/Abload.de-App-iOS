@@ -21,9 +21,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>ask_for_Access_Images_??</string>
+	<string>ask_for_Access_Images_DE</string>
 	<key>NSCameraUsageDescription</key>
-	<string>ask_for_Access_Camera_??</string>
+	<string>ask_for_Access_Camera_DE</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

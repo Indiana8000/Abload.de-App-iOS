@@ -12,7 +12,7 @@
 #import "NetworkManager.h"
 
 @interface AT_DetailedViewController : UIViewController <UIScrollViewDelegate>
-@property (nonatomic, strong) UIScrollView* detailedScrollView;
-@property (nonatomic, strong) NSURL* imageURL;
-@property (nonatomic, strong) UIImageView* imageView;
+    @property (nonatomic, strong) UIScrollView* detailedScrollView;
+    @property (nonatomic, strong) NSURL* imageURL;
+    @property (nonatomic, strong) UIImageView* imageView;
 @end

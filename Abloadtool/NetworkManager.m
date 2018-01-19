@@ -41,7 +41,6 @@ static NetworkManager *sharedManager = nil;
         self.imageList = [[NSMutableDictionary alloc] initWithCapacity:10];
 
         // Init Scaling Enumeration
-        NSLog(@"NET-bundlePath: %@",[[NSBundle mainBundle] bundlePath]);
         NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"scalemethods" ofType:@"plist"];
         self.listScaling = [NSArray arrayWithContentsOfFile:plistPath];
         
@@ -49,10 +48,9 @@ static NetworkManager *sharedManager = nil;
         plistPath = [[NSBundle mainBundle] pathForResource:@"outputlinks" ofType:@"plist"];
         self.listOutputLinks = [NSArray arrayWithContentsOfFile:plistPath];
 
-        // Set Image Cache
+        // Set Image Upload Path
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         self.uploadPath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"images"];
-        NSLog(@"NET-uploadPath: %@",self.uploadPath);
         if(![[NSFileManager defaultManager] fileExistsAtPath:self.uploadPath]) {
             [[NSFileManager defaultManager] createDirectoryAtPath:self.uploadPath withIntermediateDirectories:YES attributes:nil error:nil];
         }
@@ -68,7 +66,6 @@ static NetworkManager *sharedManager = nil;
                 NSNumber* fileSize = [NSNumber numberWithLong:[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize]];
                 NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", file, @"_name", fileSize, @"_size", @"0", @"_uploaded", nil];
                 [self.uploadImages addObject:photoDict];
-                NSLog(@"NET init files: %@", photoDict);
             }
         }
 
@@ -90,11 +87,11 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)showLoginWithViewController:(UIViewController*)viewController andCallback:(void(^)(void))successCallback  {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Abloadtool"
-                                                                   message:NSLocalizedString(@"Login", @"Dialog Login")
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Abloadtool", @"Abloadtool")
+                                                                   message:NSLocalizedString(@"net_login_title", @"NetworkManager")
                                                             preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"Dialog Login") style:UIAlertActionStyleDefault
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_ok", @"NetworkManager") style:UIAlertActionStyleDefault
                                                handler:^(UIAlertAction * action) {
                                                    [self authenticateWithEmail:[[alert.textFields objectAtIndex:0] text] password:[[alert.textFields objectAtIndex:1] text] success:^(id responseObject) {
                                                        successCallback();
@@ -103,7 +100,7 @@ static NetworkManager *sharedManager = nil;
                                                    }];
                                                }];
 
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Dialog Login") style:UIAlertActionStyleDefault
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
                                                        [alert dismissViewControllerAnimated:YES completion:nil];
                                                    }];
@@ -112,12 +109,12 @@ static NetworkManager *sharedManager = nil;
     [alert addAction:cancel];
     
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = NSLocalizedString(@"Userid or Email", @"Dialog Login");
+        textField.placeholder = NSLocalizedString(@"net_login_label_userid", @"NetworkManager");
         textField.keyboardType = UIKeyboardTypeEmailAddress;
     }];
     
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = NSLocalizedString(@"Password", @"Dialog Login");
+        textField.placeholder = NSLocalizedString(@"net_login_label_password", @"NetworkManager");
         textField.keyboardType = UIKeyboardTypeDefault;
         textField.secureTextEntry = YES;
     }];
@@ -169,10 +166,10 @@ static NetworkManager *sharedManager = nil;
 }
 
 + (void)showMessage:(NSString*) msg {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Abloadtool"
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Abloadtool", @"Abloadtool")
                                                                    message:msg
                                                             preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"Dialog Generic") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_ok", @"Abloadtool") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
     [alert addAction:ok];
     [[[UIApplication sharedApplication] delegate].window.rootViewController presentViewController:alert animated:YES completion:nil];
 }
@@ -183,7 +180,7 @@ static NetworkManager *sharedManager = nil;
     if (self.networkingManager == nil) {
         self.networkingManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:cURL_API]];
         self.networkingManager.requestSerializer = [AFHTTPRequestSerializer serializer];
-        [self.networkingManager.requestSerializer setValue:@"Abloadtool" forHTTPHeaderField:@"User-Agent"];
+        [self.networkingManager.requestSerializer setValue:cURL_AGENT forHTTPHeaderField:@"User-Agent"];
         self.networkingManager.responseSerializer = [AFXMLParserResponseSerializer serializer];
         self.networkingManager.responseSerializer.acceptableContentTypes = [self.networkingManager.responseSerializer.acceptableContentTypes setByAddingObjectsFromArray:@[@"text/html", @"application/xml", @"text/xml"]];
         self.networkingManager.securityPolicy = [self getSecurityPolicy];
@@ -195,7 +192,7 @@ static NetworkManager *sharedManager = nil;
     if (self.token == nil || [self.token length] == 0) {
         self.loggedin = [NSNumber numberWithInteger:0];
         if (failure != nil) {
-            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
@@ -203,7 +200,6 @@ static NetworkManager *sharedManager = nil;
     [params setObject:self.token forKey:@"session"];
     [[self getNetworkingManager] POST:@"user" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"NET - tokenCheckWithSuccess:\r\n%@", tmpDict);
         if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
             self.token = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
             [self saveToken:self.token];
@@ -215,7 +211,6 @@ static NetworkManager *sharedManager = nil;
             self.loggedin = [NSNumber numberWithInteger:1];
             NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
             if ([tmpStr compare:@"true"] == NSOrderedSame) {
-                NSLog(@"NO AD's!");
                 self.noad = [NSNumber numberWithInteger:1];
             }
             if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
@@ -247,7 +242,6 @@ static NetworkManager *sharedManager = nil;
         [[self getNetworkingManager] POST:@"login" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
             [self hideProgressHUD];
             NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-            NSLog(@"NET - authenticateWithEmail:\r\n%@", tmpDict);
             if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
                 self.token = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
                 [self saveToken:self.token];
@@ -259,7 +253,6 @@ static NetworkManager *sharedManager = nil;
                 self.loggedin = [NSNumber numberWithInteger:1];
                 NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
                 if ([tmpStr compare:@"true"] == NSOrderedSame) {
-                    NSLog(@"NO AD's!");
                     self.noad = [NSNumber numberWithInteger:1];
                 }
                 if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
@@ -283,7 +276,7 @@ static NetworkManager *sharedManager = nil;
         }];
     } else {
         if (failure != nil) {
-            failure(@"Userid/Email and Password Required", -1);
+            failure(NSLocalizedString(@"net_login_error_missingvalues", @"NetworkManager"), -1);
         }
     }
 }
@@ -356,7 +349,6 @@ static NetworkManager *sharedManager = nil;
         self.uploadNumber = 0;
         NSLog(@"NET - uploadNumber NEW");
     }
-
 }
 
 - (void)saveToken:(NSString*) token {
@@ -417,7 +409,7 @@ static NetworkManager *sharedManager = nil;
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
-            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
@@ -425,7 +417,6 @@ static NetworkManager *sharedManager = nil;
     [params setObject:self.token forKey:@"session"];
     [[self getNetworkingManager] POST:@"gallery/list" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"NET - getGalleryList:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
             [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
         }
@@ -442,7 +433,7 @@ static NetworkManager *sharedManager = nil;
 - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
-            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
@@ -452,7 +443,6 @@ static NetworkManager *sharedManager = nil;
     [params setObject:desc forKey:@"desc"];
     [[self getNetworkingManager] POST:@"gallery/new" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"NET - createGalleryWithName:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
             [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
         }
@@ -475,7 +465,7 @@ static NetworkManager *sharedManager = nil;
 - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
-            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
@@ -485,7 +475,6 @@ static NetworkManager *sharedManager = nil;
     [params setObject:[NSString stringWithFormat:@"%ld", img] forKey:@"img"];
     [[self getNetworkingManager] POST:@"gallery/del" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"NET - deleteGalleryWithID:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
             [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
         }
@@ -510,7 +499,7 @@ static NetworkManager *sharedManager = nil;
 - (void)getImageList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
-            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
@@ -518,7 +507,6 @@ static NetworkManager *sharedManager = nil;
     [params setObject:self.token forKey:@"session"];
     [[self getNetworkingManager] POST:@"images" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        //NSLog(@"NET - getImageList:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"images"] objectForKey:@"image"] ) {
             self.imageList = [[NSMutableDictionary alloc] initWithCapacity:[self.gallery count]];
             for(long i = 0;i < [[[tmpDict objectForKey:@"images"] objectForKey:@"image"] count];i++) {
@@ -526,13 +514,11 @@ static NetworkManager *sharedManager = nil;
                 if(!([gid intValue] > 0)) {
                     gid = @"x";
                 }
-                //NSLog(@"%@ - %@", [gid class], gid);
                 if(![self.imageList objectForKey:gid]) {
                     [self.imageList setObject:[[NSMutableArray alloc] initWithCapacity:1] forKey:gid];
                 }
                 [[self.imageList objectForKey:gid] addObject:[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i]];
             }
-            NSLog(@"%@", self.imageList);
         }
         if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 || [[tmpDict objectForKey:@"images"] objectForKey:@"image"]) {
             if (success != nil) {
@@ -557,7 +543,6 @@ static NetworkManager *sharedManager = nil;
         self.uploadNumber++;
     [self saveUploadNumber];
     NSString *photoFile = [self.uploadPath stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
-    NSLog(@"NET - saveImage: %@", photoFile);
     [image writeToFile:photoFile atomically:YES];
     
     NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:photoFile, @"_path", [photoFile lastPathComponent], @"_name", [NSNumber numberWithLong:[image length]], @"_size", @"0", @"_uploaded", nil];
@@ -567,7 +552,7 @@ static NetworkManager *sharedManager = nil;
 - (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
-            failure(NSLocalizedString(@"Invalid Session", @"AFNetworking"), -1);
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
@@ -580,7 +565,6 @@ static NetworkManager *sharedManager = nil;
         //[formData appendPartWithFormData:[self.token dataUsingEncoding:NSUTF8StringEncoding] name:@"session"];
         [formData appendPartWithFileURL:[NSURL fileURLWithPath:[metaImage objectForKey:@"_path"]] name:@"img0" fileName:[metaImage objectForKey:@"_name"] mimeType:@"image/jpeg" error:nil];
     } progress:^(NSProgress * _Nonnull uploadProgress) {
-        //NSLog(@"uploadProgress: %@", uploadProgress);
         dispatch_async(dispatch_get_main_queue(), ^{
             float p = uploadProgress.fractionCompleted;
             if(p > 0.995) p = 0.995;
@@ -590,7 +574,6 @@ static NetworkManager *sharedManager = nil;
         });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"NET - Upload: %@", tmpDict);
         if (success != nil) {
             success(tmpDict);
         }

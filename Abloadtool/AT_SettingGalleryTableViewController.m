@@ -19,7 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Init Navigation
-    self.navigationItem.title = NSLocalizedString(@"Gallery", @"Settings");
+    self.navigationItem.title = NSLocalizedString(@"nav_title_uploadgallery", @"Navigation");
 
     // Init TableView
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
@@ -47,7 +47,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
     cell.separatorInset = UIEdgeInsetsZero;
     if(indexPath.section == 0) {
-        cell.textLabel.text = NSLocalizedString(@"No Gallery", @"Settings");
+        cell.textLabel.text = NSLocalizedString(@"label_nogallery", @"Settings");
         cell.detailTextLabel.text = @" ";
         [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
     } else {
@@ -58,7 +58,8 @@
         [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     }
 
-    if(indexPath.section != 0 && [[[NetworkManager sharedManager] selectedGallery] intValue] == [[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_id"] intValue])
+    if(((indexPath.section == 1) && ([[[NetworkManager sharedManager] selectedGallery] intValue] == [[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_id"] intValue])) || ((indexPath.section == 0) && ([[[NetworkManager sharedManager] selectedGallery] intValue] == 0)))
+
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     else
         cell.accessoryType = UITableViewCellAccessoryNone;

@@ -19,7 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Init Navigation
-    self.navigationItem.title = NSLocalizedString(@"Link Types", @"Settings");
+    self.navigationItem.title = NSLocalizedString(@"nav_title_linktype", @"Navigation");
     
     // Init TableView
     [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cOLinksCell];
@@ -59,6 +59,7 @@
     [[NetworkManager sharedManager] saveSelectedOutputLinks:[NSNumber numberWithLong:indexPath.row]];
     [self.navigationController popViewControllerAnimated:YES];
 }
+
 
 
 @end

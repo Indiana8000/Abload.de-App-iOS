@@ -14,13 +14,12 @@
 
 @implementation AT_DetailedViewController
 
-- (id)init
-{
+- (id)init {
     self = [super init];
     if (self) {
         // Init Navigation Controller + Buttons
-        self.navigationItem.title = @"---";
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Zoom", @"Zoom") style:UIBarButtonItemStylePlain target:self action:@selector(changeZoom)];
+        self.navigationItem.title = NSLocalizedString(@"label_loading", @"Image");
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_zoom", @"Image") style:UIBarButtonItemStylePlain target:self action:@selector(changeZoom)];
 
         // Init Scroll View
         self.detailedScrollView = [[UIScrollView alloc] init];
@@ -67,7 +66,7 @@
         [weakSelf.imageView setFrame:CGRectMake(0, 0, weakSelf.imageView.image.size.width, weakSelf.imageView.image.size.height)];
         [weakSelf changeZoom];
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, NSError * _Nonnull error) {
-        NSLog(@"ERROR");
+        // Error
     }];
 }
 
@@ -97,7 +96,7 @@
     if(s2 < s1) s1 = s2;
     if(s1 >= self.detailedScrollView.minimumZoomScale && s1 <= self.detailedScrollView.maximumZoomScale)
         [self.detailedScrollView setZoomScale:s1 animated:YES];
-    self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"Zoom: %.2fx", @"Zoom Title"),s1];
+    self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),s1];
 }
 
 #pragma mark - ScrollView
@@ -114,21 +113,20 @@
         if(s1 >= scrollView.minimumZoomScale && s1 <= scrollView.maximumZoomScale)
             [scrollView setZoomScale:s1 animated:YES];
     }
-    self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"Zoom: %.2fx", @"Zoom Title"),scale];
+    self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),scale];
 }
 
 - (void)changeZoom {
-    //NSLog(@"\n\no:%ld - w:%0.1lf h:%0.1lf - w:%0.1lf h:%0.1lf   \n\n", self.imageView.image.imageOrientation, self.imageView.image.size.width, self.imageView.image.size.height, self.detailedScrollView.contentSize.width, self.detailedScrollView.contentSize.height);
     if(self.detailedScrollView.zoomScale != 1.0) {
         [self.detailedScrollView setZoomScale:1.0 animated:YES];
-        self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"Zoom: %.2fx", @"Zoom Title"),1.0];
+        self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),1.0];
     } else {
         float s1 = self.detailedScrollView.frame.size.width / self.imageView.image.size.width;
         float s2 = self.detailedScrollView.frame.size.height / self.imageView.image.size.height;
         if(s2 < s1) s1 = s2;
         if(s1 >= self.detailedScrollView.minimumZoomScale && s1 <= self.detailedScrollView.maximumZoomScale)
             [self.detailedScrollView setZoomScale:s1 animated:YES];
-        self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"Zoom: %.2fx", @"Zoom Title"),s1];
+        self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),s1];
     }
 }
 

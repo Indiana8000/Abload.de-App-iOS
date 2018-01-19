@@ -6,8 +6,9 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
+#define cSettingsCell @"settingsTableViewCell"
+
 #import "AT_SettingTableViewController.h"
-#import "NetworkManager.h"
 
 @interface AT_SettingTableViewController ()
 
@@ -17,7 +18,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.title = NSLocalizedString(@"Settings", @"Settings");
+    self.navigationItem.title = NSLocalizedString(@"nav_title_settings", @"Navigation");
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -31,7 +32,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if((section == 1) && ([[[NetworkManager sharedManager] selectedResolution] compare:NSLocalizedString(@"Keep Original", @"Settings")] != NSOrderedSame)) {
+    if((section == 1) && ([[[NetworkManager sharedManager] selectedResolution] compare:NSLocalizedString(@"label_keeporiginal", @"Settings")] != NSOrderedSame)) {
         return 2;
     } else {
         return 1;
@@ -39,15 +40,15 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cellSettings"];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cSettingsCell];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"cellSettings"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cSettingsCell];
         cell.separatorInset = UIEdgeInsetsZero;
     }
     
     switch (indexPath.section) {
-        case 0:
-            cell.textLabel.text = NSLocalizedString(@"Gallery",@"Settings");
+        case 0: {
+            cell.textLabel.text = NSLocalizedString(@"label_gallery",@"Settings");
             if([[[NetworkManager sharedManager] selectedGallery] intValue] > 0) {
                 long i = [[[NetworkManager sharedManager] gallery] indexOfObjectPassingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                     return ([[obj objectForKey:@"_id"] intValue] == [[[NetworkManager sharedManager] selectedGallery] intValue]);
@@ -55,29 +56,31 @@
                 if(i < [[[NetworkManager sharedManager] gallery] count])
                     cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:i] objectForKey:@"_name"];
                 else
-                    cell.detailTextLabel.text = NSLocalizedString(@"No Gallery", @"Settings");
+                    cell.detailTextLabel.text = NSLocalizedString(@"label_nogallery", @"Settings");
             } else {
-                cell.detailTextLabel.text = NSLocalizedString(@"No Gallery", @"Settings");
+                cell.detailTextLabel.text = NSLocalizedString(@"label_nogallery", @"Settings");
+            }
             }
             break;
-        case 1:
+        case 1: {
             if(indexPath.row == 0) {
-                cell.textLabel.text = NSLocalizedString(@"Resize",@"Settings");
+                cell.textLabel.text = NSLocalizedString(@"label_resize",@"Settings");
                 cell.detailTextLabel.text = [[NetworkManager sharedManager] selectedResolution];
             } else {
-                cell.textLabel.text = NSLocalizedString(@"Scale Method",@"Settings");
+                cell.textLabel.text = NSLocalizedString(@"label_scale",@"Settings");
                 cell.detailTextLabel.text = [[[[NetworkManager sharedManager] listScaling] objectAtIndex:[[[NetworkManager sharedManager] selectedScale] intValue]] objectAtIndex:0];
             }
+            }
             break;
-        case 2:
-            cell.textLabel.text = NSLocalizedString(@"Copy Link Type",@"Settings");
+        case 2: {
+            cell.textLabel.text = NSLocalizedString(@"label_linktype",@"Settings");
             cell.detailTextLabel.text = [[[[NetworkManager sharedManager] listOutputLinks] objectAtIndex:[[[NetworkManager sharedManager] selectedOutputLinks] intValue]] objectForKey:@"name"];
+            }
             break;
         default:
-            cell.textLabel.text = @"ERROR!";
+            cell.textLabel.text = @"Error Code: 2";
             break;
     }
-    
     return cell;
 }
 
@@ -88,12 +91,11 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     switch (indexPath.section) {
         case 0: {
             AT_SettingGalleryTableViewController* tmpSGTC = [[AT_SettingGalleryTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
             [self.navigationController pushViewController:tmpSGTC animated:YES];
-        }
+            }
             break;
         case 1:
             if(indexPath.row == 0) {

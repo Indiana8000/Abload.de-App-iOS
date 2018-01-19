@@ -21,7 +21,5 @@
     @property (nonatomic, strong) UzysAssetsPickerController* uzysPicker;
     @property (nonatomic, strong) AT_DetailedViewController* detailedViewController;
 
-- (void)uploadNextImage;
+    - (void)uploadNextImage;
 @end
-
-

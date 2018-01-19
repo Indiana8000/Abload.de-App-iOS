@@ -19,10 +19,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Init Navigation
-    self.navigationItem.title = NSLocalizedString(@"Resolution", @"Settings");
+    self.navigationItem.title = NSLocalizedString(@"nav_title_resolution", @"Navigation");
     
     // Init Data
-    NSLog(@"PATH: %@",[[NSBundle mainBundle] bundlePath] );
     NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"resolutions" ofType:@"plist"];
     self.listResolutions = [NSArray arrayWithContentsOfFile:plistPath];
 
