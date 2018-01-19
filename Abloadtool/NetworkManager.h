@@ -6,8 +6,8 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
-#define cURL_BASE @"http://www.abload.de"
-#define cURL_API @"http://www.abload.de/api/"
+#define cURL_BASE @"http://abload.de"
+#define cURL_API @"http://abload.de/api/"
 
 #import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>
@@ -33,6 +33,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
     - (void)saveSelectedGallery:(NSNumber*) gid;
     - (void)saveSelectedResolution:(NSString*) name;
     - (void)saveSelectedScale:(NSNumber*) scale;
+    - (void)saveSelectedOutputLinks:(NSNumber*) outputLinks;
 
     - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
     - (void)getImageList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
@@ -43,6 +44,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
     - (void)saveImage:(NSData*) image;
     - (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
+- (NSString*)generateLink:(NSString*) name;
 
 @property (nonatomic, strong) NSString* token;
 @property (nonatomic, strong) NSNumber* loggedin;
@@ -52,8 +54,12 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 @property (nonatomic, strong) NSArray* gallery;
 @property (nonatomic, strong) NSNumber* selectedGallery;
 @property (nonatomic, strong) NSString* selectedResolution;
+
 @property (nonatomic, strong) NSNumber* selectedScale;
 @property (nonatomic, strong) NSArray* listScaling;
+
+@property (nonatomic, strong) NSNumber* selectedOutputLinks;
+@property (nonatomic, strong) NSArray* listOutputLinks;
 
 @property (nonatomic, strong) NSMutableDictionary* imageList;
 

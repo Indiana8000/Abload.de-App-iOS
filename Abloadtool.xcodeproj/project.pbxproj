@@ -11,6 +11,7 @@
 		529FF7221FECEF0686558678 /* libPods-AbloadtoolTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1F4B2B0D37E50350CA4BDA /* libPods-AbloadtoolTests.a */; };
 		980CAF9CA9736392507CE62B /* libPods-AbloadtoolUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAB2C2A8A42CF26F810AB14 /* libPods-AbloadtoolUITests.a */; };
 		A1031EFB1FA3839F00C1A3F1 /* AT_AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1031EFA1FA3839F00C1A3F1 /* AT_AboutViewController.m */; };
+		A1049B23201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1049B22201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m */; };
 		A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */; };
 		A1067D811F866CCF007D1D89 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1067D801F866CCF007D1D89 /* NetworkManager.m */; };
 		A1067D821F866CCF007D1D89 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1067D801F866CCF007D1D89 /* NetworkManager.m */; };
@@ -61,6 +62,8 @@
 		07340EA2D57CB46617C65DED /* Pods-AbloadtoolUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbloadtoolUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AbloadtoolUITests/Pods-AbloadtoolUITests.release.xcconfig"; sourceTree = "<group>"; };
 		A1031EF91FA3839F00C1A3F1 /* AT_AboutViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_AboutViewController.h; sourceTree = "<group>"; };
 		A1031EFA1FA3839F00C1A3F1 /* AT_AboutViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_AboutViewController.m; sourceTree = "<group>"; };
+		A1049B21201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingOutputLinksTableViewController.h; sourceTree = "<group>"; };
+		A1049B22201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingOutputLinksTableViewController.m; sourceTree = "<group>"; };
 		A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAFNetworking.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1067D7F1F866CCF007D1D89 /* NetworkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetworkManager.h; sourceTree = "<group>"; };
 		A1067D801F866CCF007D1D89 /* NetworkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetworkManager.m; sourceTree = "<group>"; };
@@ -166,6 +169,23 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		A1049B24201105B50099A2AE /* SettingsViews */ = {
+			isa = PBXGroup;
+			children = (
+				A1780F0D1FB5D807009BFED0 /* AT_SettingTableViewController.h */,
+				A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */,
+				A1780F101FB60385009BFED0 /* AT_SettingGalleryTableViewController.h */,
+				A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */,
+				A11E2A561FCEBD16008055E4 /* AT_SettingResolutionTableViewController.h */,
+				A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */,
+				A11E2A531FCEBCF7008055E4 /* AT_SettingScaleTableViewController.h */,
+				A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */,
+				A1049B21201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.h */,
+				A1049B22201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m */,
+			);
+			name = SettingsViews;
+			sourceTree = "<group>";
+		};
 		A18EDF461FA3510500F8E80E /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -211,6 +231,7 @@
 				A1BAD3FC1FA251F400865051 /* AT_TabBarController.m */,
 				A18EDF421FA34E6300F8E80E /* AT_UploadTableViewController.h */,
 				A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */,
+				A1049B24201105B50099A2AE /* SettingsViews */,
 				A1B1E3C61F98E70300C05787 /* AT_GalleryTableViewController.h */,
 				A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */,
 				A1C5492920065BA900121C46 /* AT_ImageTableViewController.h */,
@@ -219,14 +240,6 @@
 				A12E2275200759CF000623E5 /* AT_DetailedViewController.m */,
 				A1031EF91FA3839F00C1A3F1 /* AT_AboutViewController.h */,
 				A1031EFA1FA3839F00C1A3F1 /* AT_AboutViewController.m */,
-				A1780F0D1FB5D807009BFED0 /* AT_SettingTableViewController.h */,
-				A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */,
-				A1780F101FB60385009BFED0 /* AT_SettingGalleryTableViewController.h */,
-				A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */,
-				A11E2A561FCEBD16008055E4 /* AT_SettingResolutionTableViewController.h */,
-				A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */,
-				A11E2A531FCEBCF7008055E4 /* AT_SettingScaleTableViewController.h */,
-				A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */,
 				A17DD4582003A21700642310 /* AT_ImageTableViewCell.h */,
 				A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */,
 				A17DD45B2003CD0500642310 /* AT_UploadTableViewCell.h */,
@@ -576,6 +589,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1049B23201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m in Sources */,
 				A17DD45A2003A21700642310 /* AT_ImageTableViewCell.m in Sources */,
 				A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */,
 				A1C5492B20065BA900121C46 /* AT_ImageTableViewController.m in Sources */,

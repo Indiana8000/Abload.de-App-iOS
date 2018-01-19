@@ -44,6 +44,10 @@ static NetworkManager *sharedManager = nil;
         NSLog(@"NET-bundlePath: %@",[[NSBundle mainBundle] bundlePath]);
         NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"scalemethods" ofType:@"plist"];
         self.listScaling = [NSArray arrayWithContentsOfFile:plistPath];
+        
+        // Init OutpuLink Enumeration
+        plistPath = [[NSBundle mainBundle] pathForResource:@"outputlinks" ofType:@"plist"];
+        self.listOutputLinks = [NSArray arrayWithContentsOfFile:plistPath];
 
         // Set Image Cache
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -337,6 +341,14 @@ static NetworkManager *sharedManager = nil;
         NSLog(@"NET - selectedScale NEW");
     }
 
+    if ([defaults objectForKey:@"outputlinks_selected"]) {
+        self.selectedOutputLinks = [defaults objectForKey:@"outputlinks_selected"];
+        NSLog(@"NET - selectedOutputLinks %ld", [self.selectedOutputLinks longValue]);
+    } else {
+        self.selectedOutputLinks =  [NSNumber numberWithInt:0];
+        NSLog(@"NET - selectedOutputLinks NEW");
+    }
+
     if ([defaults objectForKey:@"upload_number"]) {
         self.uploadNumber = [defaults integerForKey:@"upload_number"];
         NSLog(@"NET - uploadNumber %ld / %ld", (long)self.uploadNumber, NSIntegerMax);
@@ -379,6 +391,13 @@ static NetworkManager *sharedManager = nil;
     [defaults setObject:scale forKey:@"scale_selected"];
     [defaults synchronize];
     self.selectedScale = scale;
+}
+
+- (void)saveSelectedOutputLinks:(NSNumber*) outputLinks {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:outputLinks forKey:@"outputlinks_selected"];
+    [defaults synchronize];
+    self.selectedOutputLinks = outputLinks;
 }
 
 - (void)saveUploadNumber {
@@ -563,8 +582,11 @@ static NetworkManager *sharedManager = nil;
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         //NSLog(@"uploadProgress: %@", uploadProgress);
         dispatch_async(dispatch_get_main_queue(), ^{
+            float p = uploadProgress.fractionCompleted;
+            if(p > 0.995) p = 0.995;
             UIProgressView* tmpPV = [metaImage objectForKey:@"progressView"];
-            [tmpPV setProgress:uploadProgress.fractionCompleted];
+            [tmpPV setProgress:p];
+            [tmpPV setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
         });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
@@ -579,5 +601,10 @@ static NetworkManager *sharedManager = nil;
     }];
 }
 
+- (NSString*)generateLink:(NSString*) name {
+    NSString* link = [[[self.listOutputLinks objectAtIndex:[self.selectedOutputLinks unsignedLongLongValue]] objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"$B$" withString:cURL_BASE];
+    link = [link stringByReplacingOccurrencesOfString:@"$I$" withString:name];
+    return link;
+}
 
 @end

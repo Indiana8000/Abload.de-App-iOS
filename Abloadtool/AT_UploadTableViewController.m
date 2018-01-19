@@ -23,7 +23,7 @@
     // Init Navigation Controller + Buttons
     self.navigationItem.title = NSLocalizedString(@"Upload", @"Navigation Title");
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"106-sliders"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettings)];
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"56-cloud"] style:UIBarButtonItemStylePlain target:self action:@selector(startUploadingImages)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
 
     // Init TableView
     [self.tableView registerClass:[AT_UploadTableViewCell class] forCellReuseIdentifier:cImageCell];
@@ -33,6 +33,7 @@
     // Link uploadImages
     self.uploadImages = [[NetworkManager sharedManager] uploadImages];
     
+    // Init uploadStatus
     self.uploadStatus = @"ADD";
     
     // Init detailed View
@@ -92,6 +93,7 @@
             [cell.imageView setImageWithURL:[NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
             cell.accessoryType = UITableViewCellAccessoryNone;
             [tmpCell.progressView setProgress:0.0];
+            [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
         } else {
             NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"]];
             [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
@@ -238,6 +240,7 @@
 
             UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];
             [tmpPV setProgress:0.0];
+            [tmpPV setBackgroundColor:[UIColor clearColor]];
             UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
             tmpCell.accessoryType = UITableViewCellAccessoryCheckmark;
             
@@ -258,6 +261,24 @@
     }];
 }
 
+- (void) doCopyLinks {
+    NSMutableString* linkX = [[NSMutableString alloc] init];
+    unsigned long i;
+    unsigned long k = 0;
+    for(i = 0;i < [self.uploadImages count];i++) {
+        NSLog(@"Checking: %ld", i);
+        if([[[self.uploadImages objectAtIndex:i] objectForKey:@"_uploaded"] intValue] == 1) {
+            k++;
+            //NSLog(@"Checking: %@", [self.uploadImages objectAtIndex:i] );
+            [linkX appendString:[[NetworkManager sharedManager] generateLink:[[self.uploadImages objectAtIndex:i] objectForKey:@"_name"]]];
+        }
+    }
+    if(k > 0) {
+        NSLog(@"%@", linkX);
+        [UIPasteboard generalPasteboard].string = linkX;
+        [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"Kopies %ld Links to clipboard", @"TBD"), k]];
+    }
+}
 
 
 @end

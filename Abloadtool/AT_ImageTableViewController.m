@@ -20,8 +20,8 @@
     [super viewDidLoad];
     // Init Navigation Controller + Buttons
     //self.navigationItem.title = NSLocalizedString(@"Images", @"Navigation Title");
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)];
-    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
+
     // Init TableView
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
     //self.clearsSelectionOnViewWillAppear = NO;
@@ -85,5 +85,16 @@
     return [NSString stringWithFormat:@"%.1f %@", size, [extension objectAtIndex:i]];
 }
 
+- (void) doCopyLinks {
+    NSMutableString* linkX = [[NSMutableString alloc] init];
+    unsigned long i;
+    for(i = 0;i < [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count];i++) {
+        //NSLog(@"Checking: %@", [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:i] objectForKey:@"_filename"]);
+        [linkX appendString:[[NetworkManager sharedManager] generateLink:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:i] objectForKey:@"_filename"]]];
+    }
+    NSLog(@"%@", linkX);
+    [UIPasteboard generalPasteboard].string = linkX;
+    [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"Kopies %ld Links to clipboard", @"TBD"), i]];
+}
 
 @end

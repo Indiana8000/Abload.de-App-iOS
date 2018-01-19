@@ -25,6 +25,10 @@
     [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cScaleCell];
 }
 
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

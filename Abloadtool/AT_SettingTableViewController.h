@@ -10,6 +10,7 @@
 #import "AT_SettingGalleryTableViewController.h"
 #import "AT_SettingResolutionTableViewController.h"
 #import "AT_SettingScaleTableViewController.h"
+#import "AT_SettingOutputLinksTableViewController.h"
 
 @interface AT_SettingTableViewController : UITableViewController
 
