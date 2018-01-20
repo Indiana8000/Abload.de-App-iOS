@@ -556,6 +556,33 @@ static NetworkManager *sharedManager = nil;
         }
         return;
     }
+    // Resize if necessary
+    NSArray* resolutionString = [self.selectedResolution componentsSeparatedByString:@" "];
+    NSArray* resolutionSize = [[resolutionString objectAtIndex:0] componentsSeparatedByString:@"x"];
+    if([resolutionSize count] > 1) {
+        UIImage* imageOriginal = [[UIImage alloc] initWithContentsOfFile:[metaImage objectForKey:@"_path"]];
+        UIImage* imageNew;
+        switch ([self.selectedScale intValue]) {
+            case 1:
+                imageNew = [imageOriginal panToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
+                break;
+            case 2:
+                imageNew = [imageOriginal cutToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
+                break;
+            case 0:
+            default:
+                imageNew = [imageOriginal scaleToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
+                break;
+        }
+        float jpegQuality = 0.95;
+        if((imageNew.size.width > 500 && imageNew.size.height > 500) || imageNew.size.width > 2500 || imageNew.size.height > 2500) {
+            jpegQuality = 0.85;
+        }
+        NSData* imageData = UIImageJPEGRepresentation(imageNew, jpegQuality);
+        [imageData writeToFile:[metaImage objectForKey:@"_path"] atomically:YES];
+        [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_size"];
+    }
+    // Upload Image
     NSMutableDictionary *params = [self getBaseParams];
     [params setObject:self.token forKey:@"session"];
     if([self.selectedGallery intValue] > 0) {

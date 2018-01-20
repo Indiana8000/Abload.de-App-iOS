@@ -15,6 +15,8 @@
 #import <MBProgressHUD/MBProgressHUD.h>
 #import <XMLDictionary/XMLDictionary.h>
 
+#import "UIImage+Scale.h"
+
 typedef void (^NetworkManagerSuccess)(NSDictionary *responseObject);
 typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusCode);
 

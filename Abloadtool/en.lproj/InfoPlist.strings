@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Abloadtool
+
+  Created by Andreas Kreisl on 20.01.18.
+  Copyright © 2018 Andreas Kreisl. All rights reserved.
+*/
+
+NSPhotoLibraryUsageDescription = "This App require access to you photos in order to be able to upload them.";
+NSCameraUsageDescription = "This App require access to you camera in order to be able to make and add photos.";

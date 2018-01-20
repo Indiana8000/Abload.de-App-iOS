@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Abloadtool
+
+  Created by Andreas Kreisl on 20.01.18.
+  Copyright © 2018 Andreas Kreisl. All rights reserved.
+*/
+
+NSPhotoLibraryUsageDescription = "Ohne zugriff auf deine Bilder ist diese App nutzlos.";
+NSCameraUsageDescription = "Mit zugriff auf deine Kamera kannst du direkt Fotos machen und hinzufügen.";

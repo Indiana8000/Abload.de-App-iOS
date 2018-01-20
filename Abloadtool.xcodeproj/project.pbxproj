@@ -29,6 +29,8 @@
 		A18B58F7201266F500379284 /* scalemethods.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F9201266F500379284 /* scalemethods.plist */; };
 		A18B58FE2012686100379284 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A18B58FC2012686100379284 /* Localizable.strings */; };
 		A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */; };
+		A1B00A662013734600059ADE /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B00A652013734600059ADE /* UIImage+Scale.m */; };
+		A1B00A6F20139A9000059ADE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A1B00A7120139A9000059ADE /* InfoPlist.strings */; };
 		A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */; };
 		A1B94BB81FB0769900929CBC /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A1B94BB71FB0769900929CBC /* LICENSE */; };
 		A1BAD3FD1FA251F400865051 /* AT_TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1BAD3FC1FA251F400865051 /* AT_TabBarController.m */; };
@@ -98,6 +100,10 @@
 		A18B58FF2012686A00379284 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A18EDF421FA34E6300F8E80E /* AT_UploadTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_UploadTableViewController.h; sourceTree = "<group>"; };
 		A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_UploadTableViewController.m; sourceTree = "<group>"; };
+		A1B00A642013734600059ADE /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Scale.h"; sourceTree = "<group>"; };
+		A1B00A652013734600059ADE /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Scale.m"; sourceTree = "<group>"; };
+		A1B00A7020139A9000059ADE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A1B00A7220139A9400059ADE /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A1B1E3C61F98E70300C05787 /* AT_GalleryTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_GalleryTableViewController.h; sourceTree = "<group>"; };
 		A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_GalleryTableViewController.m; sourceTree = "<group>"; };
 		A1B94BB71FB0769900929CBC /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -201,6 +207,7 @@
 				A146C1F32012612B0070BC92 /* Info.plist */,
 				A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */,
 				A1EE6B6D1F864E0700F78F24 /* main.m */,
+				A1B00A7120139A9000059ADE /* InfoPlist.strings */,
 			);
 			name = "Support Files";
 			sourceTree = "<group>";
@@ -251,6 +258,8 @@
 				A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */,
 				A1067D7F1F866CCF007D1D89 /* NetworkManager.h */,
 				A1067D801F866CCF007D1D89 /* NetworkManager.m */,
+				A1B00A642013734600059ADE /* UIImage+Scale.h */,
+				A1B00A652013734600059ADE /* UIImage+Scale.m */,
 				A1E504E01F8C06BB0029146D /* README.md */,
 				A1B94BB71FB0769900929CBC /* LICENSE */,
 				A1E504E11F8C06C70029146D /* API.md */,
@@ -418,6 +427,7 @@
 				A18B58EF201266DA00379284 /* outputlinks.plist in Resources */,
 				A18B58FE2012686100379284 /* Localizable.strings in Resources */,
 				A18B58F7201266F500379284 /* scalemethods.plist in Resources */,
+				A1B00A6F20139A9000059ADE /* InfoPlist.strings in Resources */,
 				A146C1F42012612B0070BC92 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -611,6 +621,7 @@
 				A1EE6B6E1F864E0700F78F24 /* main.m in Sources */,
 				A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */,
 				A1067D811F866CCF007D1D89 /* NetworkManager.m in Sources */,
+				A1B00A662013734600059ADE /* UIImage+Scale.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -681,6 +692,15 @@
 				A18B58FF2012686A00379284 /* de */,
 			);
 			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		A1B00A7120139A9000059ADE /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A1B00A7020139A9000059ADE /* en */,
+				A1B00A7220139A9400059ADE /* de */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 		A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */ = {

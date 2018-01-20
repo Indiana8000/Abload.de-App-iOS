@@ -38,6 +38,10 @@
     
     // Init detailed View
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
+    
+    if(([[NetworkManager sharedManager] token] == nil) || ([[[NetworkManager sharedManager] token] length] == 0)) {
+        [[NetworkManager sharedManager] showLoginWithViewController:self andCallback:nil];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -154,6 +158,7 @@
             }
             [self.tableView reloadData];
         }
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     } else if(indexPath.section == 2) {
         [self showImagePicker];
     } else {
@@ -163,6 +168,7 @@
             self.detailedViewController.imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/img/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"]]];
         }
         [self.navigationController pushViewController:self.detailedViewController animated:YES];
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
 
@@ -218,10 +224,14 @@
 
 - (void)startUploadingImages {
     if([self.uploadImages count] > 0) {
-        [self.navigationItem.leftBarButtonItem setEnabled:NO];
-        self.uploadStatus = @"UPLOAD";
-        [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
-        [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
+        if(([[NetworkManager sharedManager] token] == nil) || ([[[NetworkManager sharedManager] token] length] == 0)) {
+            [[NetworkManager sharedManager] showLoginWithViewController:self andCallback:nil];
+        } else {
+            [self.navigationItem.leftBarButtonItem setEnabled:NO];
+            self.uploadStatus = @"UPLOAD";
+            [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
+            [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
+        }
     }
 }
 
@@ -238,7 +248,7 @@
     [self.tableView scrollsToTop];
     [self.navigationItem.leftBarButtonItem setEnabled:YES];
     [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
-    [NetworkManager showMessage:@"Done!"];
+    [NetworkManager showMessage:NSLocalizedString(@"msg_upload_done", @"Upload Tab")];
 }
 
 - (void)uploadImage:(unsigned long) idx {
@@ -267,8 +277,6 @@
         tmpCell.accessoryType = UITableViewCellAccessoryNone;
         
         [self.navigationItem.leftBarButtonItem setEnabled:YES];
-        [self.navigationItem.rightBarButtonItem setEnabled:YES];
-
         [NetworkManager showMessage:failureReason];
     }];
 }
