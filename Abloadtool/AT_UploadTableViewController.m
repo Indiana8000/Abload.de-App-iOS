@@ -225,7 +225,9 @@
 - (void)startUploadingImages {
     if([self.uploadImages count] > 0) {
         if(([[NetworkManager sharedManager] token] == nil) || ([[[NetworkManager sharedManager] token] length] == 0)) {
-            [[NetworkManager sharedManager] showLoginWithViewController:self andCallback:nil];
+            [[NetworkManager sharedManager] showLoginWithViewController:self andCallback:^{
+                [self startUploadingImages];
+            }];
         } else {
             [self.navigationItem.leftBarButtonItem setEnabled:NO];
             self.uploadStatus = @"UPLOAD";

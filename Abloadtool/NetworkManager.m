@@ -94,7 +94,7 @@ static NetworkManager *sharedManager = nil;
     UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_ok", @"NetworkManager") style:UIAlertActionStyleDefault
                                                handler:^(UIAlertAction * action) {
                                                    [self authenticateWithEmail:[[alert.textFields objectAtIndex:0] text] password:[[alert.textFields objectAtIndex:1] text] success:^(id responseObject) {
-                                                       successCallback();
+                                                       if(successCallback != nil) successCallback();
                                                    } failure:^(NSString *failureReason, NSInteger statusCode) {
                                                        [NetworkManager showMessage:failureReason];
                                                    }];
