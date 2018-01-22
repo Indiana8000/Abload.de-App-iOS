@@ -43,8 +43,26 @@
         UITapGestureRecognizer *tapTwice = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeZoom)];
         tapTwice.numberOfTapsRequired = 2;
         [self.view addGestureRecognizer:tapTwice];
+        
+        UISwipeGestureRecognizer *swipeLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(loadNext)];
+        swipeLeft.direction = UISwipeGestureRecognizerDirectionLeft;
+        
+        [self.view addGestureRecognizer:swipeLeft];
+
+        UISwipeGestureRecognizer *swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(loadPrev)];
+        swipeRight.direction = UISwipeGestureRecognizerDirectionRight;
+        [self.view addGestureRecognizer:swipeRight];
+
     }
     return self;
+}
+
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    return YES;
 }
 
 - (void)viewDidLoad {
@@ -58,20 +76,12 @@
 #pragma mark - View lifecycle
 
 - (void)viewWillAppear:(BOOL)animated {
-    __unsafe_unretained typeof(self) weakSelf = self;
     [super viewWillAppear:animated];
-    [self.imageView setFrame:CGRectMake(0, 0, 128, 128)];
-    [self.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:self.imageURL] placeholderImage:[UIImage imageNamed:@"AppIcon"] success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull image) {
-        weakSelf.imageView.image = image;
-        [weakSelf.imageView setFrame:CGRectMake(0, 0, weakSelf.imageView.image.size.width, weakSelf.imageView.image.size.height)];
-        [weakSelf changeZoom];
-    } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, NSError * _Nonnull error) {
-        // Error
-    }];
+    [self loadImage];
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
-    [self.detailedScrollView setZoomScale:1.0 animated:NO];
+    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -130,6 +140,57 @@
     }
 }
 
+#pragma mark - Image
+
+- (void)loadImage {
+    if([[self.imageList objectAtIndex:self.imageID] objectForKey:@"_uploaded"] && ([[[self.imageList objectAtIndex:self.imageID] objectForKey:@"_uploaded"] intValue] < 1)) {
+        self.imageURL = [NSURL fileURLWithPath:[[self.imageList objectAtIndex:self.imageID] objectForKey:@"_path"]];
+
+    } else {
+        self.imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/img/%@", cURL_BASE, [[self.imageList objectAtIndex:self.imageID] objectForKey:@"_filename"]]];
+    }
+
+    __unsafe_unretained typeof(self) weakSelf = self;
+    [self.detailedScrollView setZoomScale:1.0 animated:NO];
+    [self.imageView setFrame:CGRectMake(0, 0, 128, 128)];
+    [[NetworkManager sharedManager] showProgressHUD];
+    self.imageView.hidden = YES;
+    [self.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:self.imageURL] placeholderImage:[UIImage imageNamed:@"AppIcon"] success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull image) {
+        weakSelf.imageView.hidden = NO;
+        [[NetworkManager sharedManager] hideProgressHUD];
+        weakSelf.imageView.image = image;
+        [weakSelf.imageView setFrame:CGRectMake(0, 0, weakSelf.imageView.image.size.width, weakSelf.imageView.image.size.height)];
+        
+        float s1 = self.detailedScrollView.frame.size.width / self.imageView.image.size.width;
+        float s2 = self.detailedScrollView.frame.size.height / self.imageView.image.size.height;
+        if(s2 < s1) s1 = s2;
+        if(s1 >= self.detailedScrollView.minimumZoomScale && s1 <= self.detailedScrollView.maximumZoomScale)
+            [weakSelf.detailedScrollView setZoomScale:s1 animated:NO];
+        weakSelf.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),s1];
+        [weakSelf.imageView becomeFirstResponder];
+    } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, NSError * _Nonnull error) {
+        [[NetworkManager sharedManager] hideProgressHUD];
+        [NetworkManager showMessage:[error localizedDescription]];
+    }];
+}
+
+- (void)loadNext {
+    NSLog(@"loadNext");
+    if([self.imageList count] > (++self.imageID)) {
+        [self loadImage];
+    } else {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
+
+- (void)loadPrev {
+    NSLog(@"loadPrev");
+    if(0 <= (--self.imageID)) {
+        [self loadImage];
+    } else {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
 
 
 @end

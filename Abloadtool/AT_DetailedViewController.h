@@ -13,6 +13,12 @@
 
 @interface AT_DetailedViewController : UIViewController <UIScrollViewDelegate>
     @property (nonatomic, strong) UIScrollView* detailedScrollView;
+
+    @property (nonatomic, strong) NSArray* imageList;
+    @property NSInteger imageID;
     @property (nonatomic, strong) NSURL* imageURL;
+
     @property (nonatomic, strong) UIImageView* imageView;
 @end
+
+

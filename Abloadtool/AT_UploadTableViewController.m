@@ -89,15 +89,16 @@
         cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
         AT_UploadTableViewCell* tmpCell = (id)cell;
         cell.separatorInset = UIEdgeInsetsZero;
-        cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"];
         cell.detailTextLabel.text = [self bytesToUIString:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_size"]];
 
         if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] < 1) {
+            cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"];
             [cell.imageView setImageWithURL:[NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
             cell.accessoryType = UITableViewCellAccessoryNone;
             [tmpCell.progressView setProgress:0.0];
             [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
         } else {
+            cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"];
             NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"]];
             [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -162,11 +163,8 @@
     } else if(indexPath.section == 2) {
         [self showImagePicker];
     } else {
-        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] < 1) {
-            self.detailedViewController.imageURL = [NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]];
-        } else {
-            self.detailedViewController.imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/img/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"]]];
-        }
+        self.detailedViewController.imageList = self.uploadImages;
+        self.detailedViewController.imageID = indexPath.row;
         [self.navigationController pushViewController:self.detailedViewController animated:YES];
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
@@ -258,7 +256,7 @@
     [[NetworkManager sharedManager] uploadImagesNow:[self.uploadImages objectAtIndex:idx] success:^(NSDictionary *responseObject) {
         if ( [[responseObject objectForKey:@"images"] objectForKey:@"image"] ) {
             [[self.uploadImages objectAtIndex:idx] setObject:@"1" forKey:@"_uploaded"];
-            [[self.uploadImages objectAtIndex:idx] setObject:[[[responseObject objectForKey:@"images"] objectForKey:@"image"] objectForKey:@"_newname"] forKey:@"_name"];
+            [[self.uploadImages objectAtIndex:idx] setObject:[[[responseObject objectForKey:@"images"] objectForKey:@"image"] objectForKey:@"_newname"] forKey:@"_filename"];
             [[NSFileManager defaultManager] removeItemAtPath:[[self.uploadImages objectAtIndex:idx] objectForKey:@"_path"]  error:nil];
 
             UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];

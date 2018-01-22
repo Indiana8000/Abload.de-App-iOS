@@ -6,8 +6,8 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
-#define cURL_BASE @"http://abload.de"
-#define cURL_API @"http://abload.de/api/"
+#define cURL_BASE @"https://abload.de"
+#define cURL_API @"https://abload.de/api/"
 #define cURL_AGENT @"Abloadtool"
 
 #import <Foundation/Foundation.h>
