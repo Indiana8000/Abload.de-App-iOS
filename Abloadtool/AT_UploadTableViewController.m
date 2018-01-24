@@ -40,7 +40,9 @@
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
     
     if(([[NetworkManager sharedManager] token] == nil) || ([[[NetworkManager sharedManager] token] length] == 0)) {
-        [[NetworkManager sharedManager] showLoginWithViewController:self andCallback:nil];
+        [[NetworkManager sharedManager] showLoginWithViewController:self andCallback:^{
+            [[NetworkManager sharedManager] getGalleryList:nil failure:nil];
+        }];
     }
 }
 
@@ -99,7 +101,7 @@
             [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
         } else {
             cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"];
-            NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_name"]];
+            NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
             [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
@@ -244,6 +246,7 @@
             return;
         }
     }
+    [[NetworkManager sharedManager] getGalleryList:nil failure:nil];
     self.uploadStatus = @"DONE";
     [self.tableView scrollsToTop];
     [self.navigationItem.leftBarButtonItem setEnabled:YES];
