@@ -7,7 +7,7 @@
 //
 
 #define cURL_BASE @"https://abload.de"
-#define cURL_API @"https://abload.de/api/"
+#define cURL_API  @"https://abload.de/api/"
 #define cURL_AGENT @"Abloadtool"
 
 #import <Foundation/Foundation.h>

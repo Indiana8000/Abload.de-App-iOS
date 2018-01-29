@@ -229,8 +229,9 @@
                 [self startUploadingImages];
             }];
         } else {
-            [self.navigationItem.leftBarButtonItem setEnabled:NO];
             self.uploadStatus = @"UPLOAD";
+            [self.navigationItem.leftBarButtonItem setEnabled:NO];
+            [UIApplication sharedApplication].idleTimerDisabled = YES;
             [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
             [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
         }
@@ -248,8 +249,9 @@
     }
     [[NetworkManager sharedManager] getGalleryList:nil failure:nil];
     self.uploadStatus = @"DONE";
-    [self.tableView scrollsToTop];
     [self.navigationItem.leftBarButtonItem setEnabled:YES];
+    [UIApplication sharedApplication].idleTimerDisabled = NO;
+    [self.tableView scrollsToTop];
     [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
     [NetworkManager showMessage:NSLocalizedString(@"msg_upload_done", @"Upload Tab")];
 }

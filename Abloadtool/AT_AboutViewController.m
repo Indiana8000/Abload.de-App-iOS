@@ -13,6 +13,7 @@
     @property (nonatomic) UILabel* bluepawLabel;
     @property (nonatomic) UIImageView* abloadImage;
     @property (nonatomic) UIImageView* bluepawImage;
+    @property (nonatomic) UILabel* bluepawVersion;
 @end
 
 @implementation AT_AboutViewController
@@ -33,6 +34,7 @@
     self.abloadImage.center = CGPointMake(self.view.center.x, self.abloadImage.frame.size.height/2 + 80 +30);
     [self.view addSubview:self.abloadImage];
 
+    
     self.bluepawLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 240.0, self.view.frame.size.width, 30.0)];
     [self initLabel:self.bluepawLabel];
     self.bluepawLabel.text = NSLocalizedString(@"label_bluepaw_slogan", @"About");
@@ -42,6 +44,13 @@
     [self initImage:self.bluepawImage];
     self.bluepawImage.center = CGPointMake(self.view.center.x, self.bluepawImage.frame.size.height/2 + 240 + 30);
     [self.view addSubview:self.bluepawImage];
+    
+    NSString* appBuildString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    self.bluepawVersion = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 490.0, self.view.frame.size.width, 30.0)];
+    [self initLabel:self.bluepawVersion];
+    self.bluepawVersion.text = [NSString stringWithFormat:@"Build: %@", appBuildString];
+    self.bluepawVersion.font = [UIFont systemFontOfSize:14];
+    [self.view addSubview:self.bluepawVersion];
 }
 
 - (void)initLabel:(UILabel*)lbl {
@@ -69,9 +78,11 @@
 - (void)viewWillLayoutSubviews {
     self.abloadLabel.frame = CGRectMake(0.0, self.view.center.y - self.abloadImage.frame.size.height -50, self.view.frame.size.width, 30.0);
     self.abloadImage.center = CGPointMake(self.view.center.x, self.view.center.y - self.abloadImage.frame.size.height/2 -15);
-
+    
     self.bluepawLabel.frame = CGRectMake(0.0, self.view.center.y + 10, self.view.frame.size.width, 30.0);
     self.bluepawImage.center = CGPointMake(self.view.center.x, self.view.center.y + self.bluepawImage.frame.size.height/2 +45);
+    
+    self.bluepawVersion.frame = CGRectMake(0.0, self.view.center.y  + self.bluepawImage.frame.size.height + 50, self.view.frame.size.width, 30.0);
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
