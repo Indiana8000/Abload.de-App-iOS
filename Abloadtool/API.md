@@ -40,8 +40,15 @@ session
 gid
 img = 1 // Delete all images in the Gallery!
 
+
 ### images
 
 session
 gid
+
+
+### image/del
+
+session
+filename
 

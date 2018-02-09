@@ -12,6 +12,7 @@
 
 #import "NetworkManager.h"
 #import "AT_UploadTableViewCell.h"
+#import "AT_ImageTableViewCell.h"
 #import "AT_SettingTableViewController.h"
 #import "AT_DetailedViewController.h"
 

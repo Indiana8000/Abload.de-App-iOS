@@ -21,8 +21,16 @@
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
     // Init Text
+    self.dateTextLabel = [[UILabel alloc] init];
+    self.dateTextLabel.textAlignment = NSTextAlignmentRight;
+    self.dateTextLabel.adjustsFontSizeToFitWidth = YES;
+    [self addSubview:self.dateTextLabel];
+    
+    // Debug
     //self.textLabel.backgroundColor = [UIColor greenColor];
     //self.detailTextLabel.backgroundColor = [UIColor blueColor];
+    //self.dateTextLabel.backgroundColor = [UIColor yellowColor];
+
     return self;
 }
 
@@ -47,9 +55,11 @@
     self.imageView.frame = CGRectMake(10, cellOffset, 50, 50);
     self.imageView.layer.masksToBounds = YES;
 
-    self.textLabel.frame = CGRectMake(70, cellOffset, self.frame.size.width - 80, self.frame.size.height/2 - cellOffset);
-    
-    self.detailTextLabel.frame = CGRectMake(70, self.frame.size.height/2, self.frame.size.width - 80, self.frame.size.height/2 - cellOffset);
+    self.textLabel.frame = CGRectMake(70, cellOffset, self.frame.size.width - 75 - 105, self.frame.size.height/2 - cellOffset);
+    self.dateTextLabel.frame = CGRectMake(self.frame.size.width - 105, cellOffset , 100, self.frame.size.height/2 - cellOffset);
+    //[self.dateTextLabel setAdjustsFontSizeToFitWidth:YES];
+
+    self.detailTextLabel.frame = CGRectMake(70, self.frame.size.height/2, self.frame.size.width - 75, self.frame.size.height/2 - cellOffset);
 }
 
 @end

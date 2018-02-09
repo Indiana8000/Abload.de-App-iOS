@@ -6,8 +6,8 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
-#define cURL_BASE @"https://abload.de"
-#define cURL_API  @"https://abload.de/api/"
+#define cURL_BASE @"http://abload.de"
+#define cURL_API  @"http://abload.de/api/"
 #define cURL_AGENT @"Abloadtool"
 
 #import <Foundation/Foundation.h>
@@ -38,17 +38,21 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 - (void)saveSelectedResolution:(NSString*) name;
 - (void)saveSelectedScale:(NSNumber*) scale;
 - (void)saveSelectedOutputLinks:(NSNumber*) outputLinks;
+- (void)saveSortedGallery:(NSNumber*) sortedGallery;
 
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-- (void)getImageList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)saveGalleryList:(NSArray*) gallery;
 
 - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
+- (void)getImageListForGroup:(NSString*) gid success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)saveImage:(NSData*) image;
 - (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)deleteImageWithName:(NSString*) filename success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
-- (NSString*)generateLink:(NSString*) name;
+- (NSString*)generateLinkForImage:(NSString*) name;
+- (NSString*)generateLinkForGallery:(NSString*) name;
 
 @property (nonatomic, strong) NSString* token;
 @property (nonatomic, strong) NSNumber* loggedin;
@@ -58,6 +62,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 @property (nonatomic, strong) NSArray* gallery;
 @property (nonatomic, strong) NSNumber* selectedGallery;
 @property (nonatomic, strong) NSString* selectedResolution;
+@property (nonatomic, strong) NSNumber* sortedGallery;
 
 @property (nonatomic, strong) NSNumber* selectedScale;
 @property (nonatomic, strong) NSArray* listScaling;
@@ -66,6 +71,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 @property (nonatomic, strong) NSArray* listOutputLinks;
 
 @property (nonatomic, strong) NSMutableDictionary* imageList;
+@property (nonatomic, strong) NSArray* imageLast;
 
 @property (nonatomic, strong) NSString* uploadPath;
 @property NSInteger uploadNumber;

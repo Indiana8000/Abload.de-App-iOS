@@ -98,6 +98,7 @@
 
 - (void)doLogout:(id) sender {
     [[NetworkManager sharedManager] logoutWithCallback:^{
+        [[NetworkManager sharedManager] saveGalleryList:[[NSArray alloc] init]];
         [NetworkManager showMessage:NSLocalizedString(@"label_logout_successfull", @"About")];
     }];
 }

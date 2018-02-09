@@ -195,6 +195,17 @@
 			name = SettingsViews;
 			sourceTree = "<group>";
 		};
+		A181C69B202E0F9400DA6282 /* ExtraClasses */ = {
+			isa = PBXGroup;
+			children = (
+				A17DD4582003A21700642310 /* AT_ImageTableViewCell.h */,
+				A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */,
+				A17DD45B2003CD0500642310 /* AT_UploadTableViewCell.h */,
+				A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */,
+			);
+			name = ExtraClasses;
+			sourceTree = "<group>";
+		};
 		A18EDF461FA3510500F8E80E /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -251,10 +262,7 @@
 				A12E2275200759CF000623E5 /* AT_DetailedViewController.m */,
 				A1031EF91FA3839F00C1A3F1 /* AT_AboutViewController.h */,
 				A1031EFA1FA3839F00C1A3F1 /* AT_AboutViewController.m */,
-				A17DD4582003A21700642310 /* AT_ImageTableViewCell.h */,
-				A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */,
-				A17DD45B2003CD0500642310 /* AT_UploadTableViewCell.h */,
-				A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */,
+				A181C69B202E0F9400DA6282 /* ExtraClasses */,
 				A1067D7F1F866CCF007D1D89 /* NetworkManager.h */,
 				A1067D801F866CCF007D1D89 /* NetworkManager.m */,
 				A1B00A642013734600059ADE /* UIImage+Scale.h */,

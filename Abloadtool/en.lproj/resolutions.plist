@@ -10,56 +10,58 @@
 			<string>Keep Original</string>
 		</array>
 	</dict>
-	<dict>
-		<key>name</key>
-		<string>Portrait</string>
-		<key>list</key>
-		<array>
-			<string>320x480</string>
-			<string>640x960</string>
-			<string>768x1024</string>
-			<string>1536x2048</string>
-		</array>
-	</dict>
-	<dict>
-		<key>name</key>
-		<string>Normal (4:3)</string>
-		<key>list</key>
-		<array>
-			<string>640x480</string>
-			<string>800x600</string>
-			<string>1024x768</string>
-			<string>1280x1024</string>
-			<string>1600x1200</string>
-			<string>2048x1536</string>
-		</array>
-	</dict>
-	<dict>
-		<key>name</key>
-		<string>Widescreen (16:9)</string>
-		<key>list</key>
-		<array>
-			<string>1280x720</string>
-			<string>1366x768</string>
-			<string>1600x900</string>
-			<string>1920x1080</string>
-			<string>2560x1440</string>
-			<string>3840x2160 (4K UHD)</string>
-			<string>7680x4320 (9K UHD)</string>
-		</array>
-	</dict>
-	<dict>
-		<key>name</key>
-		<string>Widescreen (16:10)</string>
-		<key>list</key>
-		<array>
-			<string>1024x600</string>
-			<string>1280x800</string>
-			<string>1440x900</string>
-			<string>1680x1050</string>
-			<string>1920x1200</string>
-			<string>2560x1600</string>
-		</array>
-	</dict>
+    <dict>
+        <key>name</key>
+        <string>Square (1:1)</string>
+        <key>list</key>
+        <array>
+            <string>640x640</string>
+            <string>960x960</string>
+            <string>1080x1080</string>
+            <string>1200x1200</string>
+            <string>2048x2048</string>
+        </array>
+    </dict>
+    <dict>
+        <key>name</key>
+        <string>Normal (4:3)</string>
+        <key>list</key>
+        <array>
+            <string>640x480 VGA</string>
+            <string>800x600 SVGA</string>
+            <string>1024x768 EVGA</string>
+            <string>1280x1024 SXGA</string>
+            <string>1600x1200 UXGA</string>
+            <string>2048x1536 QXGA</string>
+        </array>
+    </dict>
+    <dict>
+        <key>name</key>
+        <string>Widescreen (16:9)</string>
+        <key>list</key>
+        <array>
+            <string>1280x720 HD Ready</string>
+            <string>1366x768 WXGA</string>
+            <string>1600x900 WSXGA</string>
+            <string>1920x1080 Full HD</string>
+            <string>2560x1440 WQHD</string>
+            <string>3840x2160 UHD 4K</string>
+            <string>7680x4320 FUHD 8K</string>
+        </array>
+    </dict>
+    <dict>
+        <key>name</key>
+        <string>Widescreen (16:10)</string>
+        <key>list</key>
+        <array>
+            <string>1024x600 WSVGA</string>
+            <string>1280x800 WXGA</string>
+            <string>1440x900 WXGA+</string>
+            <string>1680x1050 WSXGA+</string>
+            <string>1920x1200 WUXGA</string>
+            <string>2560x1600 WQXGA</string>
+        </array>
+    </dict>
 </array>
 </plist>
+

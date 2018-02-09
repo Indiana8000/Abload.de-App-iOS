@@ -145,7 +145,6 @@
 - (void)loadImage {
     if([[self.imageList objectAtIndex:self.imageID] objectForKey:@"_uploaded"] && ([[[self.imageList objectAtIndex:self.imageID] objectForKey:@"_uploaded"] intValue] < 1)) {
         self.imageURL = [NSURL fileURLWithPath:[[self.imageList objectAtIndex:self.imageID] objectForKey:@"_path"]];
-
     } else {
         self.imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/img/%@", cURL_BASE, [[self.imageList objectAtIndex:self.imageID] objectForKey:@"_filename"]]];
     }

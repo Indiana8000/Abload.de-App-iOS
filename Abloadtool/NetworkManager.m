@@ -39,6 +39,7 @@ static NetworkManager *sharedManager = nil;
         self.loggedin = [NSNumber numberWithInteger:0]; // Not Logged In
         self.noad = [NSNumber numberWithInteger:0]; // Show Ad
         self.imageList = [[NSMutableDictionary alloc] initWithCapacity:10];
+        self.imageLast = [[NSArray alloc] init];
 
         // Init Scaling Enumeration
         NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"scalemethods" ofType:@"plist"];
@@ -73,7 +74,8 @@ static NetworkManager *sharedManager = nil;
         [self loadDefaults];
         
         // Check for valid token and internet connection
-        [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(initCheck) userInfo:nil repeats:NO];
+        // moved to UploadTableViewController
+        //[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(initCheck) userInfo:nil repeats:NO];
     }
     return self;
 }
@@ -135,6 +137,7 @@ static NetworkManager *sharedManager = nil;
 - (NSMutableDictionary*)getBaseParams {
     NSMutableDictionary *baseParams = [NSMutableDictionary dictionary];
     [baseParams setObject:@"1.0.0" forKey:@"api_version"];
+    [baseParams setObject:@"iOS" forKey:@"device_vendor"];
     [baseParams setObject:[NSString stringWithFormat:@"%ld", UIDevice.currentDevice.userInterfaceIdiom] forKey:@"device_type"];
     return baseParams;
 }
@@ -200,6 +203,7 @@ static NetworkManager *sharedManager = nil;
     [params setObject:self.token forKey:@"session"];
     [[self getNetworkingManager] POST:@"user" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"tokenCheckWithSuccess:\r\n%@", tmpDict);
         if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
             self.token = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
             [self saveToken:self.token];
@@ -215,6 +219,9 @@ static NetworkManager *sharedManager = nil;
             }
             if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
                 [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+            }
+            if ( [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] ) {
+                self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
             }
             if (success != nil) {
                 success(tmpDict);
@@ -257,6 +264,9 @@ static NetworkManager *sharedManager = nil;
                 }
                 if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
                     [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+                }
+                if ( [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] ) {
+                    self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
                 }
                 if (success != nil) {
                     success(tmpDict);
@@ -349,6 +359,15 @@ static NetworkManager *sharedManager = nil;
         self.uploadNumber = 0;
         NSLog(@"NET - uploadNumber NEW");
     }
+    
+    if ([defaults objectForKey:@"gallery_sorted"]) {
+        self.sortedGallery = [defaults objectForKey:@"gallery_sorted"];
+        NSLog(@"NET - selectedScale %ld", [self.sortedGallery longValue]);
+    } else {
+        self.sortedGallery =  [NSNumber numberWithInt:0];
+        NSLog(@"NET - selectedScale NEW");
+    }
+    
 }
 
 - (void)saveToken:(NSString*) token {
@@ -358,10 +377,26 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)saveGalleryList:(NSArray*) gallery {
+    switch ([self.sortedGallery intValue]) {
+        case 1:
+            self.gallery = [gallery sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+                NSString *first = [(NSDictionary*)a objectForKey:@"_lastchange"];
+                NSString *second = [(NSDictionary*)b objectForKey:@"_lastchange"];
+                return [second compare:first];
+            }];
+            break;
+        default:
+            self.gallery = [gallery sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+                NSString *first = [(NSDictionary*)a objectForKey:@"_name"];
+                NSString *second = [(NSDictionary*)b objectForKey:@"_name"];
+                return [first compare:second];
+            }];
+            break;
+    }
+
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:gallery forKey:@"gallery"];
+    [defaults setObject:self.gallery forKey:@"gallery"];
     [defaults synchronize];
-    self.gallery = gallery;
 }
 
 - (void)saveSelectedGallery:(NSNumber*) gid {
@@ -404,6 +439,13 @@ static NetworkManager *sharedManager = nil;
     [defaults synchronize];
 }
 
+- (void)saveSortedGallery:(NSNumber*) sortedGallery {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:sortedGallery forKey:@"gallery_sorted"];
+    [defaults synchronize];
+    self.sortedGallery = sortedGallery;
+}
+
 #pragma mark - Gallery
 
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
@@ -419,6 +461,10 @@ static NetworkManager *sharedManager = nil;
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
         if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
             [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+            NSLog(@"%@", tmpDict);
+        }
+        if ( [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] ) {
+            self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
         }
         if (success != nil) {
             success(tmpDict);
@@ -443,6 +489,7 @@ static NetworkManager *sharedManager = nil;
     [params setObject:desc forKey:@"desc"];
     [[self getNetworkingManager] POST:@"gallery/new" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"createGalleryWithName:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
             [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
         }
@@ -475,6 +522,7 @@ static NetworkManager *sharedManager = nil;
     [params setObject:[NSString stringWithFormat:@"%ld", img] forKey:@"img"];
     [[self getNetworkingManager] POST:@"gallery/del" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"deleteGalleryWithID:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
             [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
         }
@@ -496,7 +544,7 @@ static NetworkManager *sharedManager = nil;
 
 #pragma mark - Images
 
-- (void)getImageList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+- (void)getImageListForGroup:(NSString*) gid success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if (self.token == nil || [self.token length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
@@ -505,20 +553,35 @@ static NetworkManager *sharedManager = nil;
     }
     NSMutableDictionary *params = [self getBaseParams];
     [params setObject:self.token forKey:@"session"];
+    if([gid caseInsensitiveCompare:@"x"] != NSOrderedSame) [params setObject:gid forKey:@"gid"];
     [[self getNetworkingManager] POST:@"images" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
         if ( [[tmpDict objectForKey:@"images"] objectForKey:@"image"] ) {
             self.imageList = [[NSMutableDictionary alloc] initWithCapacity:[self.gallery count]];
-            for(long i = 0;i < [[[tmpDict objectForKey:@"images"] objectForKey:@"image"] count];i++) {
-                NSString* gid = [[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i] objectForKey:@"_gid"];
+            if([[[tmpDict objectForKey:@"images"] objectForKey:@"image"] isKindOfClass:[NSArray class]]) {
+                for(long i = 0;i < [[[tmpDict objectForKey:@"images"] objectForKey:@"image"] count];i++) {
+                    NSString* gid = [[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i] objectForKey:@"_gid"];
+                    if(!([gid intValue] > 0)) {
+                        gid = @"x";
+                    }
+                    if(![self.imageList objectForKey:gid]) {
+                        [self.imageList setObject:[[NSMutableArray alloc] initWithCapacity:1] forKey:gid];
+                    }
+                    [[self.imageList objectForKey:gid] addObject:[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i]];
+                }
+            } else { // Single Object
+                NSString* gid = [[[tmpDict objectForKey:@"images"] objectForKey:@"image"]  objectForKey:@"_gid"];
                 if(!([gid intValue] > 0)) {
                     gid = @"x";
                 }
                 if(![self.imageList objectForKey:gid]) {
                     [self.imageList setObject:[[NSMutableArray alloc] initWithCapacity:1] forKey:gid];
                 }
-                [[self.imageList objectForKey:gid] addObject:[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i]];
+                [[self.imageList objectForKey:gid] addObject:[[tmpDict objectForKey:@"images"] objectForKey:@"image"]];
             }
+        }
+        if ( [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] ) {
+            self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
         }
         if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 || [[tmpDict objectForKey:@"images"] objectForKey:@"image"]) {
             if (success != nil) {
@@ -601,6 +664,7 @@ static NetworkManager *sharedManager = nil;
         });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"uploadImagesNow:\r\n%@", tmpDict);
         if (success != nil) {
             success(tmpDict);
         }
@@ -611,10 +675,48 @@ static NetworkManager *sharedManager = nil;
     }];
 }
 
-- (NSString*)generateLink:(NSString*) name {
+- (void)deleteImageWithName:(NSString*) filename success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if (self.token == nil || [self.token length] == 0) {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
+        }
+        return;
+    }
+    NSMutableDictionary *params = [self getBaseParams];
+    [params setObject:self.token forKey:@"session"];
+    [params setObject:filename forKey:@"filename"];
+    [[self getNetworkingManager] POST:@"image/del" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"deleteImageWithName:\r\n%@", tmpDict);
+        if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
+            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+        }
+        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 703 ) {
+            if (success != nil) {
+                success(tmpDict);
+            }
+        } else {
+            if (failure != nil) {
+                failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+            }
+        }
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        if (failure != nil) {
+            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
+        }
+    }];
+}
+
+#pragma mark - Others
+
+- (NSString*)generateLinkForImage:(NSString*) name {
     NSString* link = [[[self.listOutputLinks objectAtIndex:[self.selectedOutputLinks unsignedLongLongValue]] objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"$B$" withString:cURL_BASE];
     link = [link stringByReplacingOccurrencesOfString:@"$I$" withString:name];
     return link;
+}
+
+- (NSString*)generateLinkForGallery:(NSString*) name {
+    return [NSString stringWithFormat:@"%@/gallery.php?key=%@", cURL_BASE, name];
 }
 
 @end

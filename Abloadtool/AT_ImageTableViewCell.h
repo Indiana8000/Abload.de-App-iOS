@@ -10,5 +10,5 @@
 #import <AFNetworking/UIImageView+AFNetworking.h>
 
 @interface AT_ImageTableViewCell : UITableViewCell
-
+    @property (nonatomic, strong) UILabel* dateTextLabel;
 @end

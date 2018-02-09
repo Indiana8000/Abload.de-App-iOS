@@ -20,7 +20,12 @@
     [super viewDidLoad];
     // Init Navigation Controller + Buttons
     self.navigationItem.title = NSLocalizedString(@"nav_title_gallery", @"Navigation");
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)];
+    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"155-sort"] style:UIBarButtonItemStylePlain target:self action:@selector(sortGalleery)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)];
+    self.navigationItem.rightBarButtonItems =  @[
+                                                [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)],
+                                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"155-sort"] style:UIBarButtonItemStylePlain target:self action:@selector(sortGalleery)]
+                                                ];
 
     // Init RefreshController
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
@@ -40,6 +45,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     if([[[NetworkManager sharedManager] loggedin] intValue] == 0) {
+        [self.tableView reloadData];
         [[NetworkManager sharedManager] showLoginWithViewController:[self parentViewController] andCallback:^(void) {
             [self doRefresh:nil];
         }];
@@ -71,25 +77,47 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
+    AT_ImageTableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
     cell.separatorInset = UIEdgeInsetsZero;
-    
+
     if(indexPath.section == 0) {
         cell.textLabel.text = NSLocalizedString(@"label_nogallery", @"Settings");
         cell.detailTextLabel.text = @" ";
+        cell.dateTextLabel.text = @" ";
         [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
     } else {
         cell.textLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@#  %@", [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_images"], [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"]];
-        
+        if([[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"] length] > 0) {
+            cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
+        } else {
+            cell.detailTextLabel.text = @" ";
+        }
+        cell.dateTextLabel.text = [[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_lastchange"] substringToIndex:16];
+
         NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_thumb"]];
         [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     }
     return cell;
 }
 
+#pragma mark - Table view delegate
+
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     return (indexPath.section == 1);
+}
+
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+        UITableViewRowAction *modifyAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:NSLocalizedString(@"btn_slide_copylink", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath *indexPath) {
+            [UIPasteboard generalPasteboard].string = [[NetworkManager sharedManager] generateLinkForGallery:[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_code"]];
+        }];
+        modifyAction.backgroundColor = [UIColor orangeColor];
+
+        UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"btn_slide_delete", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
+            //[[NSFileManager defaultManager] removeItemAtPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]  error:nil];
+            //[self.uploadImages removeObjectAtIndex:indexPath.row];
+            [self doDeleteGallery:indexPath.row];
+        }];
+        return @[modifyAction, deleteAction];
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -112,7 +140,7 @@
         self.imageTableViewController.navigationItem.title = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
     }
 
-    [[NetworkManager sharedManager] getImageList:^(NSDictionary *responseObject) {
+    [[NetworkManager sharedManager] getImageListForGroup:self.imageTableViewController.gid success:^(NSDictionary *responseObject) {
         [[NetworkManager sharedManager] hideProgressHUD];
         [self.navigationController pushViewController:self.imageTableViewController animated:YES];
     } failure:^(NSString *failureReason, NSInteger statusCode) {
@@ -162,9 +190,34 @@
 
 #pragma mark - Manage Gallerys
 
+- (void)sortGalleery {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"sort_title", @"Gallery")
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+
+    
+    UIAlertAction *sort1 = [UIAlertAction actionWithTitle:NSLocalizedString(@"sort_by_name", @"Gallery")  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * action) {
+                                                    [[NetworkManager sharedManager] saveSortedGallery:[NSNumber numberWithInt:0]];
+                                                    [[NetworkManager sharedManager] saveGalleryList:[[NetworkManager sharedManager] gallery]];
+                                                    [self.tableView reloadData];
+                                                }];
+    [alert addAction:sort1];
+    
+    UIAlertAction *sort2 = [UIAlertAction actionWithTitle:NSLocalizedString(@"sort_by_date", @"Gallery")  style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       [[NetworkManager sharedManager] saveSortedGallery:[NSNumber numberWithInt:1]];
+                                                       [[NetworkManager sharedManager] saveGalleryList:[[NetworkManager sharedManager] gallery]];
+                                                       [self.tableView reloadData];
+                                                   }];
+    [alert addAction:sort2];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
 - (void)doAddGallery:(id)sender {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Abloadtool", @"Abloadtool")
-                                                                   message:NSLocalizedString(@"newgallery_title", @"Gallery")
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"newgallery_title", @"Gallery")
+                                                                   message:nil
                                                             preferredStyle:UIAlertControllerStyleAlert];
 
     UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"newgallery_btn_create", @"Gallery") style:UIAlertActionStyleDefault
@@ -203,8 +256,8 @@
     long gid = [[[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_id"] intValue];
     long bc = [[[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_images"] intValue];
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Abloadtool", @"Abloadtool")
-                                                                   message:[NSString stringWithFormat:NSLocalizedString(@"delgallery_question %@", @"Gallery"), [[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_name"]]
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_question %@", @"Gallery"), [[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_name"]]
+                                                                   message:nil
                                                             preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"delgallery_btn_withoutimage", @"Gallery") style:UIAlertActionStyleDefault

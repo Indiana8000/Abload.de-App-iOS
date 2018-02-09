@@ -39,6 +39,16 @@
     }
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if(section == 0) {
+        return NSLocalizedString(@"title_settings_upload", @"Settings");
+    } else if(section == 2) {
+        return NSLocalizedString(@"title_settings_other", @"Settings");
+    } else {
+        return nil;
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cSettingsCell];
     if (cell == nil) {

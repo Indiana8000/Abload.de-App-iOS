@@ -26,7 +26,7 @@
     self.listResolutions = [NSArray arrayWithContentsOfFile:plistPath];
 
     // Init TableView
-    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cResolutionCell];
+    //[self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cResolutionCell];
 }
 
 #pragma mark - Table view data source
@@ -44,10 +44,29 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cResolutionCell forIndexPath:indexPath];
-    cell.separatorInset = UIEdgeInsetsZero;
+    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cResolutionCell forIndexPath:indexPath];
+    //cell.separatorInset = UIEdgeInsetsZero;
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cResolutionCell];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cResolutionCell];
+        cell.separatorInset = UIEdgeInsetsZero;
+        cell.detailTextLabel.textAlignment = NSTextAlignmentLeft;
+    }
     
-    cell.textLabel.text = [[[self.listResolutions objectAtIndex:[indexPath section]] objectForKey:@"list"] objectAtIndex:[indexPath row]];
+    if(indexPath.section == 0 && indexPath.row == 0) {
+        cell.textLabel.text = NSLocalizedString(@"label_keeporiginal", @"Settings");
+        cell.detailTextLabel.text = @"";
+    } else {
+        NSArray* resolutionString = [[[[self.listResolutions objectAtIndex:[indexPath section]] objectForKey:@"list"] objectAtIndex:indexPath.row] componentsSeparatedByString:@" "];
+        cell.textLabel.text = [resolutionString objectAtIndex:0];
+        if([resolutionString count] > 2) {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ %@", [resolutionString objectAtIndex:1], [resolutionString objectAtIndex:2]];
+        } else if([resolutionString count] > 1) {
+            cell.detailTextLabel.text = [resolutionString objectAtIndex:1];
+        } else {
+            cell.detailTextLabel.text = @"";
+        }
+    }
     
     if([cell.textLabel.text compare:[[NetworkManager sharedManager] selectedResolution]] == NSOrderedSame)
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -60,7 +79,12 @@
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [[NetworkManager sharedManager] saveSelectedResolution:[[[self.listResolutions objectAtIndex:[indexPath section]] objectForKey:@"list"] objectAtIndex:[indexPath row]]];
+    if(indexPath.section == 0 && indexPath.row == 0) {
+        [[NetworkManager sharedManager] saveSelectedResolution:NSLocalizedString(@"label_keeporiginal", @"Settings")];
+    } else {
+        NSArray* resolutionString = [[[[self.listResolutions objectAtIndex:[indexPath section]] objectForKey:@"list"] objectAtIndex:indexPath.row] componentsSeparatedByString:@" "];
+        [[NetworkManager sharedManager] saveSelectedResolution:[resolutionString objectAtIndex:0]];
+    }
     [self.navigationController popViewControllerAnimated:YES];
 }
 
