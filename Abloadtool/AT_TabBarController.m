@@ -18,7 +18,7 @@
     [super viewDidLoad];
     self.tabUpload = [[AT_UploadTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
     self.tabGallery = [[AT_GalleryTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    self.tabAbout = [[AT_AboutViewController alloc] init];
+    self.tabAbout = [[AT_AboutTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
 
     UINavigationController *navUL = [[UINavigationController alloc] initWithRootViewController:self.tabUpload];
     navUL.tabBarItem.title = NSLocalizedString(@"nav_tabbar_upload", @"Navigation");

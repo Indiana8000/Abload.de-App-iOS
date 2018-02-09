@@ -22,6 +22,7 @@
 		A1780F121FB60385009BFED0 /* AT_SettingGalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */; };
 		A17DD45A2003A21700642310 /* AT_ImageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */; };
 		A17DD45D2003CD0500642310 /* AT_UploadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */; };
+		A181C69E202E104700DA6282 /* AT_AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A181C69D202E104700DA6282 /* AT_AboutTableViewController.m */; };
 		A1866B982008D8DA00752895 /* libUzysAssetsPickerController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1866B992008D8DA00752895 /* libUzysAssetsPickerController.a */; };
 		A18B58EF201266DA00379284 /* outputlinks.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F1201266DA00379284 /* outputlinks.plist */; };
 		A18B58F3201266ED00379284 /* resolutions.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F5201266ED00379284 /* resolutions.plist */; };
@@ -86,6 +87,8 @@
 		A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_ImageTableViewCell.m; sourceTree = "<group>"; };
 		A17DD45B2003CD0500642310 /* AT_UploadTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_UploadTableViewCell.h; sourceTree = "<group>"; };
 		A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_UploadTableViewCell.m; sourceTree = "<group>"; };
+		A181C69C202E104700DA6282 /* AT_AboutTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_AboutTableViewController.h; sourceTree = "<group>"; };
+		A181C69D202E104700DA6282 /* AT_AboutTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_AboutTableViewController.m; sourceTree = "<group>"; };
 		A1866B992008D8DA00752895 /* libUzysAssetsPickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUzysAssetsPickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1866B9A2008DB3B00752895 /* Abloadtool.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Abloadtool.entitlements; sourceTree = "<group>"; };
 		A18B58F0201266DA00379284 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = en; path = en.lproj/outputlinks.plist; sourceTree = "<group>"; };
@@ -262,6 +265,8 @@
 				A12E2275200759CF000623E5 /* AT_DetailedViewController.m */,
 				A1031EF91FA3839F00C1A3F1 /* AT_AboutViewController.h */,
 				A1031EFA1FA3839F00C1A3F1 /* AT_AboutViewController.m */,
+				A181C69C202E104700DA6282 /* AT_AboutTableViewController.h */,
+				A181C69D202E104700DA6282 /* AT_AboutTableViewController.m */,
 				A181C69B202E0F9400DA6282 /* ExtraClasses */,
 				A1067D7F1F866CCF007D1D89 /* NetworkManager.h */,
 				A1067D801F866CCF007D1D89 /* NetworkManager.m */,
@@ -619,6 +624,7 @@
 				A1EE6B5D1F864E0700F78F24 /* AppDelegate.m in Sources */,
 				A1BAD3FD1FA251F400865051 /* AT_TabBarController.m in Sources */,
 				A1780F0F1FB5D807009BFED0 /* AT_SettingTableViewController.m in Sources */,
+				A181C69E202E104700DA6282 /* AT_AboutTableViewController.m in Sources */,
 				A11E2A581FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m in Sources */,
 				A12E2276200759CF000623E5 /* AT_DetailedViewController.m in Sources */,
 				A1031EFB1FA3839F00C1A3F1 /* AT_AboutViewController.m in Sources */,

@@ -110,7 +110,6 @@
         cell.separatorInset = UIEdgeInsetsZero;
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.textLabel.font = [UIFont boldSystemFontOfSize:18.0];
-        //cell.backgroundColor = [UIColor clearColor];
         cell.textLabel.textColor = [UIColor darkTextColor];
         if([self.uploadStatus caseInsensitiveCompare:@"ADD"] == NSOrderedSame) {
             if([self.uploadImages count] == 0) cell.textLabel.textColor = [UIColor lightGrayColor];
@@ -128,7 +127,6 @@
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.textLabel.font = [UIFont boldSystemFontOfSize:18.0];
         cell.textLabel.text = NSLocalizedString(@"btn_image_add", @"Upload Tab");
-        //cell.backgroundColor = [UIColor clearColor];
     } else if(indexPath.section == 3) {
         cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
         cell.separatorInset = UIEdgeInsetsZero;

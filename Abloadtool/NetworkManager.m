@@ -89,8 +89,8 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)showLoginWithViewController:(UIViewController*)viewController andCallback:(void(^)(void))successCallback  {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Abloadtool", @"Abloadtool")
-                                                                   message:NSLocalizedString(@"net_login_title", @"NetworkManager")
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"net_login_title", @"NetworkManager")
+                                                                   message:nil
                                                             preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_ok", @"NetworkManager") style:UIAlertActionStyleDefault
@@ -169,8 +169,8 @@ static NetworkManager *sharedManager = nil;
 }
 
 + (void)showMessage:(NSString*) msg {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Abloadtool", @"Abloadtool")
-                                                                   message:msg
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:msg
+                                                                   message:nil
                                                             preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_ok", @"Abloadtool") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
     [alert addAction:ok];

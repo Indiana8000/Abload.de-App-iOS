@@ -10,10 +10,10 @@
 
 #import "AT_UploadTableViewController.h"
 #import "AT_GalleryTableViewController.h"
-#import "AT_AboutViewController.h"
+#import "AT_AboutTableViewController.h"
 
 @interface AT_TabBarController : UITabBarController
     @property (nonatomic, strong) AT_UploadTableViewController* tabUpload;
     @property (nonatomic, strong) AT_GalleryTableViewController* tabGallery;
-    @property (nonatomic, strong) AT_AboutViewController* tabAbout;
+    @property (nonatomic, strong) AT_AboutTableViewController* tabAbout;
 @end
