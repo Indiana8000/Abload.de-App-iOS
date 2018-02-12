@@ -58,6 +58,11 @@
 
     NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
     [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
+    
+    
+    UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onSelfLongpressDetected:)];
+    [cell addGestureRecognizer:longPressGesture];
+    
     return cell;
 }
 
@@ -105,7 +110,7 @@
     return [NSString stringWithFormat:@"%.1f %@", size, [extension objectAtIndex:i]];
 }
 
-- (void) doCopyLinks {
+- (void)doCopyLinks {
     NSMutableString* linkX = [[NSMutableString alloc] init];
     unsigned long i;
     for(i = 0;i < [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count];i++) {
@@ -113,6 +118,38 @@
     }
     [UIPasteboard generalPasteboard].string = linkX;
     [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_copylink_done %ld", @"Upload Tab"), i]];
+}
+
+- (void)doCopyLinksForRow:(long) row AsType:(int) linkType {
+    [[NetworkManager sharedManager] saveSelectedOutputLinks:[NSNumber numberWithLong:linkType]];
+    [UIPasteboard generalPasteboard].string = [[NetworkManager sharedManager] generateLinkForImage:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:row] objectForKey:@"_filename"]];
+}
+
+- (void)onSelfLongpressDetected:(UILongPressGestureRecognizer*)pGesture {
+    if(pGesture.state == UIGestureRecognizerStateBegan) {
+        UITableView* tableView = (UITableView*)self.view;
+        CGPoint touchPoint = [pGesture locationInView:self.view];
+        NSIndexPath* row = [tableView indexPathForRowAtPoint:touchPoint];
+        if (row != nil) {
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"btn_slide_copylink", @"Upload Tab")
+                                                                           message:nil
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            for(int i = 0;i < [[[NetworkManager sharedManager] listOutputLinks] count];++i) {
+                UIAlertAction *linkX = [UIAlertAction actionWithTitle:[[[[NetworkManager sharedManager] listOutputLinks] objectAtIndex:i] objectForKey:@"name"]  style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction * action) {
+                                                                  [self doCopyLinksForRow:row.row AsType:i];
+                                                              }];
+                [alert addAction:linkX];
+            }
+            UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") style:UIAlertActionStyleCancel
+                                                           handler:^(UIAlertAction * action) {
+                                                               [alert dismissViewControllerAnimated:YES completion:nil];
+                                                           }];
+            [alert addAction:cancel];
+            
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+    }
 }
 
 
