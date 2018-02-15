@@ -126,9 +126,14 @@ static NetworkManager *sharedManager = nil;
 
 - (void)logoutWithCallback:(void(^)(void))successCallback {
     self.token = @"";
-    [self setToken:@""];
+    [self saveToken:@""];
+
     self.loggedin = [NSNumber numberWithInteger:0];;
     self.noad = [NSNumber numberWithInteger:0];;
+
+    [self saveGalleryList:[[NSArray alloc] init]];
+    self.imageLast = [[NSArray alloc] init];
+
     successCallback();
 }
 
@@ -718,5 +723,7 @@ static NetworkManager *sharedManager = nil;
 - (NSString*)generateLinkForGallery:(NSString*) name {
     return [NSString stringWithFormat:@"%@/gallery.php?key=%@", cURL_BASE, name];
 }
+
+
 
 @end

@@ -12,8 +12,11 @@
 #import "NetworkManager.h"
 #import "AT_ImageTableViewCell.h"
 #import "AT_DetailedViewController.h"
+#import "AT_SettingOutputLinksTableViewController.h"
 
 @interface AT_ImageTableViewController : UITableViewController
     @property (nonatomic) NSString* gid;
     @property (nonatomic, strong) AT_DetailedViewController* detailedViewController;
+@property (nonatomic, strong) AT_SettingOutputLinksTableViewController* pageSetting;
+@property (nonatomic, strong) UINavigationController* navSetting;
 @end

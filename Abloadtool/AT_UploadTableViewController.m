@@ -23,9 +23,12 @@
     [super viewDidLoad];
     // Init Navigation Controller + Buttons
     self.navigationItem.title = NSLocalizedString(@"nav_title_upload", @"Navigation");
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-2"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettings)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(copyLinksPasteboard)];
-    [self.navigationItem.rightBarButtonItem setEnabled:NO];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-cloud"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettings)];
+
+    UIBarButtonItem* btnCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(copyLinksPasteboard)];
+    UIBarButtonItem* btnSettingsLinkType = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
+    self.navigationItem.rightBarButtonItems = @[btnCopy,btnSettingsLinkType];
+    [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
 
     // Init TableView
     [self.tableView registerClass:[AT_UploadTableViewCell class] forCellReuseIdentifier:cUploadCell];
@@ -43,17 +46,16 @@
     // Init detailed View
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
     
-    if(([[NetworkManager sharedManager] token] == nil) || ([[[NetworkManager sharedManager] token] length] == 0)) {
+    if([[NetworkManager sharedManager] token] == nil) {
         [[NetworkManager sharedManager] showLoginWithViewController:self andCallback:^{
-            [[NetworkManager sharedManager] getGalleryList:nil failure:nil];
+            [[NetworkManager sharedManager] getGalleryList:^(NSDictionary *responseObject) {
+                [self.tableView reloadData];
+            } failure:nil];
         }];
     } else {
         [[NetworkManager sharedManager] tokenCheckWithSuccess:^(NSDictionary *responseObject) {
-            //NSLog(@"NET - initCheck Success: \r\n%@", responseObject);
             [self.tableView reloadData];
-        }  failure:^(NSString *failureReason, NSInteger statusCode) {
-            //NSLog(@"NET - initCheck Error: %@", failureReason);
-        }];
+        }  failure:nil];
     }
 }
 
@@ -207,7 +209,7 @@
                 if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] >= 1)
                     [self.uploadImages removeObjectAtIndex:(i -1)];
             }
-            [self.navigationItem.rightBarButtonItem setEnabled:NO];
+            [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
             [self.tableView reloadData];
         }
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -240,6 +242,19 @@
         [self.navigationController presentViewController:self.navSetting animated:YES completion:nil];
         UIPopoverPresentationController *presentationController =[self.navSetting popoverPresentationController];
         presentationController.barButtonItem = self.navigationItem.leftBarButtonItem;
+    }
+}
+
+- (void)showSettingsLinkType {
+    AT_SettingOutputLinksTableViewController* tmpOLT = [[AT_SettingOutputLinksTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    UINavigationController* tmpNC = [[UINavigationController alloc] initWithRootViewController:tmpOLT];
+    tmpNC.modalPresentationStyle = UIModalPresentationPopover;
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController pushViewController:tmpOLT animated:YES];
+    } else {
+        [self.navigationController presentViewController:tmpNC animated:YES completion:nil];
+        UIPopoverPresentationController *presentationController =[tmpNC popoverPresentationController];
+        presentationController.barButtonItem = self.navigationItem.rightBarButtonItems[1];
     }
 }
 
@@ -325,7 +340,7 @@
             tmpCell.accessoryType = UITableViewCellAccessoryCheckmark;
             
             //[self uploadNextImage];
-            [self.navigationItem.rightBarButtonItem setEnabled:YES];
+            [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
             [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
         }
     } failure:^(NSString *failureReason, NSInteger statusCode) {
@@ -348,6 +363,7 @@
     for(i = 0;i < [self.uploadImages count];i++) {
         if([[[self.uploadImages objectAtIndex:i] objectForKey:@"_uploaded"] intValue] == 1) {
             [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[self.uploadImages objectAtIndex:i] objectForKey:@"_name"]]];
+            [linkX appendString:@"\n"];
             k++;
         }
     }
@@ -357,5 +373,20 @@
     }
 }
 
+- (void)showSpenden {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:@"Gefällt dir unser Service? Bitte informiere dich auf unserer Homepage wie du uns unterstützen kannst."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+
+    
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Danke" style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction * action) {
+                                                       [alert dismissViewControllerAnimated:YES completion:nil];
+                                                   }];
+    [alert addAction:cancel];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+}
 
 @end

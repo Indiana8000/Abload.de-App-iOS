@@ -10,7 +10,6 @@
 		3E3A6511E0C2E1EABD867CBC /* libPods-Abloadtool.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A20A928C3CA6579C7E7B319A /* libPods-Abloadtool.a */; };
 		529FF7221FECEF0686558678 /* libPods-AbloadtoolTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1F4B2B0D37E50350CA4BDA /* libPods-AbloadtoolTests.a */; };
 		980CAF9CA9736392507CE62B /* libPods-AbloadtoolUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAB2C2A8A42CF26F810AB14 /* libPods-AbloadtoolUITests.a */; };
-		A1031EFB1FA3839F00C1A3F1 /* AT_AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1031EFA1FA3839F00C1A3F1 /* AT_AboutViewController.m */; };
 		A1049B23201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1049B22201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m */; };
 		A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */; };
 		A1067D811F866CCF007D1D89 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1067D801F866CCF007D1D89 /* NetworkManager.m */; };
@@ -64,8 +63,6 @@
 /* Begin PBXFileReference section */
 		0153291D76D079647D18A38C /* Pods-AbloadtoolTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbloadtoolTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AbloadtoolTests/Pods-AbloadtoolTests.debug.xcconfig"; sourceTree = "<group>"; };
 		07340EA2D57CB46617C65DED /* Pods-AbloadtoolUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbloadtoolUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AbloadtoolUITests/Pods-AbloadtoolUITests.release.xcconfig"; sourceTree = "<group>"; };
-		A1031EF91FA3839F00C1A3F1 /* AT_AboutViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_AboutViewController.h; sourceTree = "<group>"; };
-		A1031EFA1FA3839F00C1A3F1 /* AT_AboutViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_AboutViewController.m; sourceTree = "<group>"; };
 		A1049B21201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingOutputLinksTableViewController.h; sourceTree = "<group>"; };
 		A1049B22201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingOutputLinksTableViewController.m; sourceTree = "<group>"; };
 		A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAFNetworking.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -263,8 +260,6 @@
 				A1C5492A20065BA900121C46 /* AT_ImageTableViewController.m */,
 				A12E2274200759CF000623E5 /* AT_DetailedViewController.h */,
 				A12E2275200759CF000623E5 /* AT_DetailedViewController.m */,
-				A1031EF91FA3839F00C1A3F1 /* AT_AboutViewController.h */,
-				A1031EFA1FA3839F00C1A3F1 /* AT_AboutViewController.m */,
 				A181C69C202E104700DA6282 /* AT_AboutTableViewController.h */,
 				A181C69D202E104700DA6282 /* AT_AboutTableViewController.m */,
 				A181C69B202E0F9400DA6282 /* ExtraClasses */,
@@ -627,7 +622,6 @@
 				A181C69E202E104700DA6282 /* AT_AboutTableViewController.m in Sources */,
 				A11E2A581FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m in Sources */,
 				A12E2276200759CF000623E5 /* AT_DetailedViewController.m in Sources */,
-				A1031EFB1FA3839F00C1A3F1 /* AT_AboutViewController.m in Sources */,
 				A11E2A551FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m in Sources */,
 				A17DD45D2003CD0500642310 /* AT_UploadTableViewCell.m in Sources */,
 				A1EE6B6E1F864E0700F78F24 /* main.m in Sources */,

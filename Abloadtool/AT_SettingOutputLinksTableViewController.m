@@ -57,7 +57,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [[NetworkManager sharedManager] saveSelectedOutputLinks:[NSNumber numberWithLong:indexPath.row]];
-    [self.navigationController popViewControllerAnimated:YES];
+    [tableView reloadData];
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController popViewControllerAnimated:YES];
+    } else {
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 

@@ -20,8 +20,16 @@
     [super viewDidLoad];
     // Init Navigation Controller + Buttons
     //self.navigationItem.title =
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
+    
+    UIBarButtonItem* btnCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
+    UIBarButtonItem* btnSettingsLinkType = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
+    self.navigationItem.rightBarButtonItems = @[btnCopy,btnSettingsLinkType];
 
+    // Init RefreshController
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(doRefresh:) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+    
     // Init TableView
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
 
@@ -34,6 +42,9 @@
 }
 
 - (void) viewWillAppear:(BOOL)animated {
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:YES];
+    [self.tabBarController.tabBar setHidden:NO];
     [self.tableView reloadData];
 }
 
@@ -115,6 +126,7 @@
     unsigned long i;
     for(i = 0;i < [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count];i++) {
         [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:i] objectForKey:@"_filename"]]];
+        [linkX appendString:@"\n"];
     }
     [UIPasteboard generalPasteboard].string = linkX;
     [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_copylink_done %ld", @"Upload Tab"), i]];
@@ -152,6 +164,59 @@
     }
 }
 
+- (void)showSettingsLinkType {
+    if(self.pageSetting == nil) {
+        self.pageSetting = [[AT_SettingOutputLinksTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        self.navSetting = [[UINavigationController alloc] initWithRootViewController:self.pageSetting];
+        self.navSetting.modalPresentationStyle = UIModalPresentationPopover;
+    } else {
+        [self.pageSetting.tableView reloadData];
+    }
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController pushViewController:self.pageSetting animated:YES];
+    } else {
+        [self.navigationController presentViewController:self.navSetting animated:YES completion:nil];
+        UIPopoverPresentationController *presentationController =[self.navSetting popoverPresentationController];
+        presentationController.barButtonItem = self.navigationItem.rightBarButtonItems[1];
+    }
+}
+
+- (void)doRefresh:(id)sender {
+    if([[[NetworkManager sharedManager] loggedin] intValue] == 1) {
+        [[NetworkManager sharedManager] getImageListForGroup:self.gid success:^(NSDictionary *responseObject) {
+            [self setLastRefresh];
+            [[self refreshControl] endRefreshing];
+            [self.tableView reloadData];
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            [[self refreshControl] endRefreshing];
+            [NetworkManager showMessage:failureReason];
+        }];
+    } else if ([[[NetworkManager sharedManager] loggedin] intValue] == -1) {
+        [[NetworkManager sharedManager] tokenCheckWithSuccess:^(NSDictionary *responseObject) {
+            [self doRefresh:nil];
+        }  failure:^(NSString *failureReason, NSInteger statusCode) {
+            if([[[NetworkManager sharedManager] loggedin] intValue] == 0) {
+                [self doRefresh:sender];
+            } else {
+                [NetworkManager showMessage:failureReason];
+            }
+        }];
+    } else {
+        [[NetworkManager sharedManager] showLoginWithViewController:[self parentViewController] andCallback:^(void) {
+            [self doRefresh:sender];
+        }];
+        [[self refreshControl] endRefreshing];
+    }
+}
+
+- (void)setLastRefresh {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"de_DE"]];
+    [formatter setDateFormat:@"d. MMM, H:mm"];
+    NSString *lastUpdated = [NSString stringWithFormat:NSLocalizedString(@"label_lastrefresh %@", @"Gallery"),
+                             [formatter stringFromDate:[NSDate date]]];
+    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:lastUpdated];
+}
 
 
 @end

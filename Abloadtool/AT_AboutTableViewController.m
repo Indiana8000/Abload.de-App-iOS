@@ -20,8 +20,10 @@
     [super viewDidLoad];
     self.navigationItem.title = NSLocalizedString(@"nav_title_about", @"Navigation");
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"51-power"] style:UIBarButtonItemStylePlain target:self action:@selector(doLogout:)];
+    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_logout", @"About") style:UIBarButtonItemStylePlain target:self action:@selector(doLogout:)];
 
     [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:@"AboutCell"];
+    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
 
     self.abloadImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_abload"]];
     self.bluepawImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_bluepaw"]];
@@ -135,7 +137,6 @@
 
 - (void)doLogout:(id) sender {
     [[NetworkManager sharedManager] logoutWithCallback:^{
-        [[NetworkManager sharedManager] saveGalleryList:[[NSArray alloc] init]];
         [NetworkManager showMessage:NSLocalizedString(@"label_logout_successfull", @"About")];
     }];
 }

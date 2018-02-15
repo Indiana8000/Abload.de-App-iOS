@@ -28,7 +28,7 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -39,6 +39,7 @@
     }
 }
 
+/*
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if(section == 0) {
         return NSLocalizedString(@"title_settings_upload", @"Settings");
@@ -48,6 +49,7 @@
         return nil;
     }
 }
+ */
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cSettingsCell];
@@ -82,11 +84,13 @@
             }
             }
             break;
+            /*
         case 2: {
             cell.textLabel.text = NSLocalizedString(@"label_linktype",@"Settings");
             cell.detailTextLabel.text = [[[[NetworkManager sharedManager] listOutputLinks] objectAtIndex:[[[NetworkManager sharedManager] selectedOutputLinks] intValue]] objectForKey:@"name"];
             }
             break;
+             */
         default:
             cell.textLabel.text = @"Error Code: 2";
             break;
@@ -116,11 +120,13 @@
                 [self.navigationController pushViewController:tmpSSTC animated:YES];
             }
             break;
+            /*
         case 2: {
             AT_SettingOutputLinksTableViewController *tmpOLTC = [[AT_SettingOutputLinksTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
             [self.navigationController pushViewController:tmpOLTC animated:YES];
             }
             break;
+             */
     }
 }
 

@@ -23,7 +23,7 @@
     UINavigationController *navUL = [[UINavigationController alloc] initWithRootViewController:self.tabUpload];
     navUL.tabBarItem.title = NSLocalizedString(@"nav_tabbar_upload", @"Navigation");
     navUL.tabBarItem.image = [UIImage imageNamed:@"56-cloud"];
-
+    
     UINavigationController *navGL = [[UINavigationController alloc] initWithRootViewController:self.tabGallery];
     navGL.tabBarItem.title = NSLocalizedString(@"nav_tabbar_images", @"Navigation");
     navGL.tabBarItem.image = [UIImage imageNamed:@"42-photos"];
