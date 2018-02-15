@@ -52,7 +52,7 @@
     } else if ([[[NetworkManager sharedManager] loggedin] intValue] == -1) {
         [[NetworkManager sharedManager] tokenCheckWithSuccess:^(NSDictionary *responseObject) {
             [self doRefresh:nil];
-        }  failure:^(NSString *failureReason, NSInteger statusCode) {
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
             if([[[NetworkManager sharedManager] loggedin] intValue] == 0) {
                 [self doRefresh:nil];
             } else {

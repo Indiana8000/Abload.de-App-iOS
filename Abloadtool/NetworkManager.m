@@ -254,6 +254,7 @@ static NetworkManager *sharedManager = nil;
         [[self getNetworkingManager] POST:@"login" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
             [self hideProgressHUD];
             NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+            NSLog(@"authenticateWithEmail:\r\n%@", tmpDict);
             if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
                 self.token = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
                 [self saveToken:self.token];
@@ -561,6 +562,7 @@ static NetworkManager *sharedManager = nil;
     if([gid caseInsensitiveCompare:@"x"] != NSOrderedSame) [params setObject:gid forKey:@"gid"];
     [[self getNetworkingManager] POST:@"images" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        NSLog(@"getImageListForGroup:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"images"] objectForKey:@"image"] ) {
             self.imageList = [[NSMutableDictionary alloc] initWithCapacity:[self.gallery count]];
             if([[[tmpDict objectForKey:@"images"] objectForKey:@"image"] isKindOfClass:[NSArray class]]) {

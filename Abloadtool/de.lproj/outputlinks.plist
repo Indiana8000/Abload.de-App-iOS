@@ -32,5 +32,11 @@
 		<key>url</key>
 		<string>&lt;a href=&quot;$B$/image.php?img=$I$&quot;&gt;&lt;img src=&quot;$B$/thumb/$I$&quot; alt=&quot;$$I$&quot; /&gt;&lt;/a&gt;</string>
 	</dict>
+	<dict>
+		<key>name</key>
+		<string>Thumbnail für Markdown</string>
+		<key>url</key>
+		<string>[![Bild $I$ auf abload.de]($B$/thumb/$I$)]($B$/image.php?img=$I$)</string>
+	</dict>
 </array>
 </plist>
