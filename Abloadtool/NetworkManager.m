@@ -14,17 +14,27 @@
     @property (nonatomic, strong) AFHTTPSessionManager *networkingManager;
     @property (nonatomic, strong) MBProgressHUD *progressHUD;
     @property (nonatomic, strong) NSUserDefaults *defaults;
+
+    @property (nonatomic, strong) NSString* pathImagesUpload;
+    @property (nonatomic, strong) NSString* pathThumbnails;
+    @property (nonatomic, strong) NSString* pathImagesShared;
+    @property NSInteger uploadNumber;
+
+    @property NSInteger settingGallerySorted;
+
+    @property (nonatomic, strong) NSString* sessionKey;
+    @property NSInteger settingLastMOD;
+
 @end
 
 
 @implementation NetworkManager
-@synthesize gallery;
-@synthesize motd_time;
+@synthesize galleryList;
+
 
 #pragma mark - Constructors
 
 static NetworkManager *sharedManager = nil;
-
 
 + (NetworkManager*)sharedManager {
     static dispatch_once_t once;
@@ -39,66 +49,435 @@ static NetworkManager *sharedManager = nil;
     NSLog(@"Net - init");
     if ((self = [super init])) {
         self.defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.de.bluepaw.Abloadtool"];
-
-        NSFileManager* fileManager = [[NSFileManager alloc] init];
-        NSURL* securityPath = [fileManager containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool"];
-        NSLog(@"NET - securityPath :: %@", securityPath);
-        self.sharePath = [[securityPath path] stringByAppendingPathComponent:@"images"];
-        NSLog(@"NET - sharePath :: %@", self.sharePath);
-
-        self.loggedin = [NSNumber numberWithInteger:0]; // Not Logged In
-        self.noad = [NSNumber numberWithInteger:0]; // Show Ad
-        self.imageList = [[NSMutableDictionary alloc] initWithCapacity:10];
+        self.loggedin = 0;
+        self.noad = 0;
+        self.imageList = [[NSMutableDictionary alloc] init];
         self.imageLast = [[NSArray alloc] init];
-
-        // Init Scaling Enumeration
-        NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"scalemethods" ofType:@"plist"];
-        self.listScaling = [NSArray arrayWithContentsOfFile:plistPath];
-        
-        // Init OutpuLink Enumeration
-        plistPath = [[NSBundle mainBundle] pathForResource:@"outputlinks" ofType:@"plist"];
-        self.listOutputLinks = [NSArray arrayWithContentsOfFile:plistPath];
-
-        // Set Image Upload Path
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        self.uploadPath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"images"];
-        if(![[NSFileManager defaultManager] fileExistsAtPath:self.uploadPath]) {
-            [[NSFileManager defaultManager] createDirectoryAtPath:self.uploadPath withIntermediateDirectories:YES attributes:nil error:nil];
-        }
-        
-        // Load Cached Upload Images
-        self.uploadImages = [[NSMutableArray alloc] initWithCapacity:10];
-        NSFileManager *localFileManager=[[NSFileManager alloc] init];
-        NSDirectoryEnumerator *dirEnum = [localFileManager enumeratorAtPath:self.uploadPath];
-        NSString *file;
-        while ((file = [dirEnum nextObject])) {
-            if ([[file pathExtension] isEqualToString: @"jpeg"]) {
-                NSString* filePath = [self.uploadPath stringByAppendingPathComponent:file];
-                NSNumber* fileSize = [NSNumber numberWithLong:[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize]];
-                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", file, @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
-                [self.uploadImages addObject:photoDict];
-            }
-        }
-
-        // Load Defaults
+        [self initPathVariables];
+        [self loadImagesFromDisk];
         [self loadDefaults];
+
+        NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"scalemethods" ofType:@"plist"];
+        self.settingAvailableScalingList = [NSArray arrayWithContentsOfFile:plistPath];
         
-        // Check for valid token and internet connection
-        // moved to UploadTableViewController
-        //[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(initCheck) userInfo:nil repeats:NO];
+        plistPath = [[NSBundle mainBundle] pathForResource:@"outputlinks" ofType:@"plist"];
+        self.settingAvailableOutputLinkList = [NSArray arrayWithContentsOfFile:plistPath];
+
     }
     return self;
 }
 
-- (void)initCheck {
-    [self tokenCheckWithSuccess:^(NSDictionary *responseObject) {
-        //NSLog(@"NET - initCheck Success: \r\n%@", responseObject);
-    }  failure:^(NSString *failureReason, NSInteger statusCode) {
-        //NSLog(@"NET - initCheck Error: %@", failureReason);
+- (void)initPathVariables {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    self.pathImagesUpload = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"images"];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:self.pathImagesUpload]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:self.pathImagesUpload withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    self.pathThumbnails = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"thumbnails"];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:self.pathThumbnails]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:self.pathThumbnails withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+
+    NSURL* securityPath = [[[NSFileManager alloc] init] containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool"];
+    self.pathImagesShared = [[securityPath path] stringByAppendingPathComponent:@"images"];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:self.pathImagesShared]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:self.pathImagesShared withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+}
+
+- (void)loadImagesFromDisk {
+    self.uploadImages = [[NSMutableArray alloc] init];
+    NSFileManager* fileManager=[[NSFileManager alloc] init];
+    NSDirectoryEnumerator* dirEnum = [fileManager enumeratorAtPath:self.pathImagesUpload];
+    NSString *file;
+    while ((file = [dirEnum nextObject])) {
+        if ([[file pathExtension] isEqualToString: @"jpeg"]) {
+            NSString* filePath = [self.pathImagesUpload stringByAppendingPathComponent:file];
+            NSString* fileThumb = [self.pathThumbnails stringByAppendingPathComponent:file];
+            NSNumber* fileSize = [NSNumber numberWithLong:[[fileManager attributesOfItemAtPath:filePath error:nil] fileSize]];
+            NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", fileThumb, @"_thumb", file, @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
+            [self.uploadImages addObject:photoDict];
+        }
+    }
+}
+
+
+#pragma mark - Help-Functions
+
++ (void)showMessage:(NSString*) msg {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:msg
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_ok", @"Abloadtool") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
+    [alert addAction:ok];
+    [[[UIApplication sharedApplication] delegate].window.rootViewController presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)showProgressHUD {
+    [self hideProgressHUD];
+    self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+    [self.progressHUD removeFromSuperViewOnHide];
+    self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.0 alpha:1.0];
+    self.progressHUD.contentColor = [UIColor whiteColor];
+}
+
+- (void)hideProgressHUD {
+    if (self.progressHUD != nil) {
+        [self.progressHUD hideAnimated:YES];
+        [self.progressHUD removeFromSuperview];
+        self.progressHUD = nil;
+    }
+}
+
+
+#pragma mark - UserDefaults
+
+- (void)loadDefaults {
+    if([self.defaults objectForKey:@"settingSessionKey"]) {
+        self.sessionKey = [self.defaults objectForKey:@"settingSessionKey"];
+    } else {
+        self.sessionKey = nil;
+    }
+    
+    if([self.defaults objectForKey:@"settingGalleryList"]) {
+        self.galleryList = [self.defaults objectForKey:@"settingGalleryList"];
+    } else {
+        self.galleryList = [[NSArray alloc] init];
+    }
+
+    if ([self.defaults objectForKey:@"settingGallerySorted"]) {
+        self.settingGallerySorted = [self.defaults integerForKey:@"settingGallerySorted"];
+    } else {
+        self.settingGallerySorted = 0;
+    }
+
+    if([self.defaults objectForKey:@"settingGallerySelected"]) {
+        self.settingGallerySelected = [self.defaults integerForKey:@"settingGallerySelected"];
+    } else {
+        self.settingGallerySelected = 0;
+    }
+
+    if([self.defaults objectForKey:@"settingLastMOD"]) {
+        self.settingLastMOD = [self.defaults integerForKey:@"settingLastMOD"];
+    } else {
+        self.settingLastMOD = 0;
+    }
+    
+    if ([self.defaults objectForKey:@"settingUploadNumber"]) {
+        self.uploadNumber = [self.defaults integerForKey:@"settingUploadNumber"];
+    } else {
+        self.uploadNumber = 0;
+    }
+
+    if([self.defaults objectForKey:@"settingResolutionSelected"]) {
+        self.settingResolutionSelected = [self.defaults objectForKey:@"settingResolutionSelected"];
+    } else {
+        self.settingResolutionSelected = NSLocalizedString(@"label_keeporiginal", @"Settings");
+    }
+    
+    if([self.defaults objectForKey:@"settingScaleSelected"]) {
+        self.settingScaleSelected = [self.defaults integerForKey:@"settingScaleSelected"];
+    } else {
+        self.settingScaleSelected =  1;
+    }
+    
+    if ([self.defaults objectForKey:@"settingOutputLinkSelected"]) {
+        self.settingOutputLinkSelected = [self.defaults integerForKey:@"settingOutputLinkSelected"];
+    } else {
+        self.settingOutputLinkSelected =  0;
+    }
+}
+
+- (void)saveSessionKey:(NSString*) newSessionKey {
+    self.sessionKey = newSessionKey;
+    [self.defaults setObject:newSessionKey forKey:@"settingSessionKey"];
+    [self.defaults synchronize];
+}
+
+- (NSString*)getSessionKey {
+    return self.sessionKey;
+}
+
+- (void)saveGalleryList:(NSArray*) newGalleryList {
+    switch (self.settingGallerySorted) {
+        case 1:
+            self.galleryList = [newGalleryList sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+                NSString *first = [(NSDictionary*)a objectForKey:@"_lastchange"];
+                NSString *second = [(NSDictionary*)b objectForKey:@"_lastchange"];
+                return [second compare:first];
+            }];
+            break;
+        default:
+            self.galleryList = [newGalleryList sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+                NSString *first = [(NSDictionary*)a objectForKey:@"_name"];
+                NSString *second = [(NSDictionary*)b objectForKey:@"_name"];
+                return [first compare:second];
+            }];
+            break;
+    }
+    [self.defaults setObject:self.galleryList forKey:@"settingGalleryList"];
+    [self.defaults synchronize];
+}
+
+- (void)saveGallerySorted:(NSInteger) gallerySorted {
+    self.settingGallerySorted = gallerySorted;
+    [self.defaults setInteger:gallerySorted forKey:@"settingGallerySorted"];
+    [self.defaults synchronize];
+    [self saveGalleryList:self.galleryList];
+}
+
+- (void)saveGallerySelected:(NSInteger) galleryID {
+    self.settingGallerySelected = galleryID;
+    [self.defaults setInteger:galleryID forKey:@"settingGallerySelected"];
+    [self.defaults synchronize];
+}
+
+- (void)saveResolutionSelected:(NSString*) newResolution {
+    self.settingResolutionSelected = newResolution;
+    [self.defaults setObject:newResolution forKey:@"settingResolutionSelected"];
+    [self.defaults synchronize];
+}
+
+- (void)saveScaleSelected:(NSInteger) newScale {
+    self.settingScaleSelected = newScale;
+    [self.defaults setInteger:newScale forKey:@"settingScaleSelected"];
+    [self.defaults synchronize];
+}
+
+- (void)saveOutputLinkSelected:(NSInteger) newOutputLinks {
+    self.settingOutputLinkSelected = newOutputLinks;
+    [self.defaults setInteger:newOutputLinks forKey:@"settingOutputLinkSelected"];
+    [self.defaults synchronize];
+}
+
+- (void)saveMODTime:(NSInteger) newMODTime {
+    self.settingLastMOD = newMODTime;
+    [self.defaults setInteger:newMODTime forKey:@"settingLastMOD"];
+    [self.defaults synchronize];
+}
+
+- (NSInteger)incrementUploadNumber {
+    if(self.uploadNumber >= NSIntegerMax)
+        self.uploadNumber = 1;
+    else
+        self.uploadNumber++;
+    [self.defaults setInteger:self.uploadNumber forKey:@"settingUploadNumber"];
+    [self.defaults synchronize];
+    return self.uploadNumber;
+}
+
+
+#pragma mark - ImageFile
+
+- (void)saveImageToDisk:(NSData*) imageData {
+    NSString* fileImage = [self.pathImagesUpload stringByAppendingFormat:@"/mobile.%ld.jpeg", [self incrementUploadNumber]];
+    NSNumber* fileSize = [NSNumber numberWithLong:[imageData length]];
+    [imageData writeToFile:fileImage atomically:YES];
+    
+    UIImage* imageThumb = [[UIImage alloc] initWithData:imageData];
+    imageThumb = [imageThumb panToSize:CGSizeMake(225, 150)];
+    NSData* dataThumb = UIImageJPEGRepresentation(imageThumb, 0.85);
+    NSString* fileThumb = [self.pathThumbnails stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
+    [dataThumb writeToFile:fileThumb atomically:YES];
+
+    NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:fileImage, @"_path", fileThumb, @"_thumb", [fileImage lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
+    [self.uploadImages addObject:photoDict];
+}
+
+- (void)checkAndLoadSharedImages {
+    NSInteger shareCount = [self.defaults integerForKey:@"share_count"];
+    if(shareCount > 0) {
+        NSFileManager* fileManager=[[NSFileManager alloc] init];
+        NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtPath:self.pathImagesShared];
+        NSString *file;
+        while ((file = [dirEnum nextObject])) {
+            if ([[file pathExtension] isEqualToString: @"jpeg"]) {
+                NSString* fileImageSrc = [self.pathImagesShared stringByAppendingPathComponent:file];
+                NSString* fileImageDst = [self.pathImagesUpload stringByAppendingFormat:@"/mobile.%ld.shared.jpeg", [self incrementUploadNumber]];
+                [fileManager moveItemAtPath:fileImageSrc toPath:fileImageDst error:nil];
+                NSNumber* fileSize = [NSNumber numberWithLong:[[fileManager attributesOfItemAtPath:fileImageDst error:nil] fileSize]];
+                
+                UIImage* imageThumb = [[UIImage alloc] initWithContentsOfFile:fileImageDst];
+                imageThumb = [imageThumb panToSize:CGSizeMake(225, 150)];
+                NSData* dataThumb = UIImageJPEGRepresentation(imageThumb, 0.85);
+                NSString* fileThumb = [self.pathThumbnails stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
+                [dataThumb writeToFile:fileThumb atomically:YES];
+
+                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys: fileImageDst, @"_path", fileThumb, @"_thumb",[fileImageDst lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
+                [self.uploadImages addObject:photoDict];
+            }
+        }
+        shareCount = 0;
+        [self.defaults setInteger:shareCount forKey:@"share_count"];
+        [self.defaults synchronize];
+    }
+}
+
+- (void)removeImageFromDisk:(NSInteger) imageIndex andList:(BOOL) includeList  {
+    [[NSFileManager defaultManager] removeItemAtPath:[[self.uploadImages objectAtIndex:imageIndex] objectForKey:@"_path"]  error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[[self.uploadImages objectAtIndex:imageIndex] objectForKey:@"_thumb"]  error:nil];
+    if(includeList == YES) [self.uploadImages removeObjectAtIndex:imageIndex];
+}
+
+
+#pragma mark - HTTP-Basic
+
+- (NSMutableDictionary*)getBaseParams {
+    NSMutableDictionary *baseParams = [NSMutableDictionary dictionary];
+    [baseParams setObject:@"1.0.0" forKey:@"api_version"];
+    [baseParams setObject:@"iOS" forKey:@"device_vendor"];
+    [baseParams setObject:[NSString stringWithFormat:@"%ld", UIDevice.currentDevice.userInterfaceIdiom] forKey:@"device_type"];
+    return baseParams;
+}
+
+- (id)getSecurityPolicy {
+    return [AFSecurityPolicy defaultPolicy];
+    /*
+     AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
+     [policy setAllowInvalidCertificates:YES];
+     [policy setValidatesDomainName:NO];
+     return policy;
+     */
+}
+
+- (AFHTTPSessionManager*)getNetworkingManager {
+    if (self.networkingManager == nil) {
+        self.networkingManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:cURL_API]];
+        self.networkingManager.requestSerializer = [AFHTTPRequestSerializer serializer];
+        [self.networkingManager.requestSerializer setValue:cURL_AGENT forHTTPHeaderField:@"User-Agent"];
+        self.networkingManager.responseSerializer = [AFXMLParserResponseSerializer serializer];
+        self.networkingManager.responseSerializer.acceptableContentTypes = [self.networkingManager.responseSerializer.acceptableContentTypes setByAddingObjectsFromArray:@[@"text/html", @"application/xml", @"text/xml"]];
+        self.networkingManager.securityPolicy = [self getSecurityPolicy];
+    }
+    return self.networkingManager;
+}
+
+- (void)addImageToList:(NSDictionary*) image {
+    NSString* gid = [image objectForKey:@"_gid"];
+    if(!([gid intValue] > 0)) {
+        gid = @"x";
+    }
+    if(![self.imageList objectForKey:gid]) {
+        [self.imageList setObject:[[NSMutableArray alloc] initWithCapacity:1] forKey:gid];
+    }
+    [[self.imageList objectForKey:gid] addObject:image];
+}
+
+- (void)postRequestToAbload:(NSString*)action WithOptions:(NSMutableDictionary*)params success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    [[self getNetworkingManager] POST:action parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
+        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        if([[tmpDict objectForKey:@"login"] objectForKey:@"_session"]) {
+            [self saveSessionKey:[[tmpDict objectForKey:@"login"] objectForKey:@"_session"]];
+            NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
+            if ([tmpStr compare:@"true"] == NSOrderedSame) {
+                self.noad = 1;
+            } else {
+                self.noad = 0;
+            }
+        }
+        if([tmpDict objectForKey:@"motd"] && [[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] integerValue] > self.settingLastMOD) {
+            [self saveMODTime:[[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] integerValue]];
+            [NetworkManager showMessage:[[tmpDict objectForKey:@"motd"] objectForKey:@"_text"]];
+        }
+        if([[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]) {
+            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+        }
+        if([[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"]) {
+            self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
+        }
+        if([[tmpDict objectForKey:@"images"] objectForKey:@"image"]) {
+            self.imageList = [[NSMutableDictionary alloc] initWithCapacity:[self.galleryList count]];
+            if([[[tmpDict objectForKey:@"images"] objectForKey:@"image"] isKindOfClass:[NSArray class]]) { // Array = Multiple Images
+                for(long i = 0;i < [[[tmpDict objectForKey:@"images"] objectForKey:@"image"] count];i++) {
+                    [self addImageToList:[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i]];
+                }
+            } else { // Dict = Single Image
+                [self addImageToList:[[tmpDict objectForKey:@"images"] objectForKey:@"image"]];
+            }
+        }
+        if (success != nil) {
+            success(tmpDict);
+        }
+    } failure:^(NSURLSessionTask *operation, NSError *error) {
+        self.loggedin = -1;
+        if (failure != nil) {
+            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
+        }
     }];
 }
 
-- (void)showLoginWithViewController:(UIViewController*)viewController andCallback:(void(^)(void))successCallback  {
+- (BOOL)checkValidSession {
+    if (self.sessionKey == nil || [self.sessionKey length] < 9) {
+        self.loggedin = 0;
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
+
+#pragma mark - HTTP-Actions
+
+- (void)checkSessionKeyWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if([self checkValidSession]) {
+        NSMutableDictionary *params = [self getBaseParams];
+        [params setObject:self.sessionKey forKey:@"session"];
+        [self postRequestToAbload:@"user" WithOptions:params success:^(NSDictionary *responseObject) {
+            NSLog(@"tokenCheckWithSuccess:\r\n%@", responseObject);
+            if([responseObject objectForKey:@"status"] && [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801) {
+                self.loggedin = 1;
+                if (success != nil) {
+                    success(responseObject);
+                }
+            } else {
+                self.loggedin = 0;
+                if (failure != nil) {
+                    failure([[responseObject objectForKey:@"status"] objectForKey:@"__text"], [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+                }
+            }
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            if(failure!=nil)
+                failure(failureReason, statusCode);
+        }];
+    } else {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
+        }
+    }
+}
+
+- (void)authenticateWithEmail:(NSString*)email password:(NSString*)password success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if (email != nil && [email length] > 0 && password != nil && [password length] > 0) {
+        NSMutableDictionary *params = [self getBaseParams];
+        [params setObject:email forKey:@"name"];
+        [params setObject:password forKey:@"password"];
+        [self postRequestToAbload:@"login" WithOptions:params success:^(NSDictionary *responseObject) {
+            NSLog(@"authenticateWithEmail:\r\n%@", responseObject);
+            if([responseObject objectForKey:@"status"] && [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801) {
+                self.loggedin = 1;
+                if (success != nil) {
+                    success(responseObject);
+                }
+            } else {
+                self.loggedin = 0;
+                if (failure != nil) {
+                    failure([[responseObject objectForKey:@"status"] objectForKey:@"__text"], [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+                }
+            }
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            if(failure!=nil)
+                failure(failureReason, statusCode);
+        }];
+    } else {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"net_login_error_missingvalues", @"NetworkManager"), -1);
+        }
+    }
+}
+
+- (void)showLoginWithCallback:(void(^)(void))successCallback  {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"net_login_title", @"NetworkManager")
                                                                    message:nil
                                                             preferredStyle:UIAlertControllerStyleAlert];
@@ -131,15 +510,14 @@ static NetworkManager *sharedManager = nil;
         textField.secureTextEntry = YES;
     }];
 
-    [viewController presentViewController:alert animated:YES completion:nil];
+    [[[UIApplication sharedApplication] delegate].window.rootViewController presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)logoutWithCallback:(void(^)(void))successCallback {
-    self.token = @"";
-    [self saveToken:@""];
+    [self saveSessionKey:@""];
 
-    self.loggedin = [NSNumber numberWithInteger:0];;
-    self.noad = [NSNumber numberWithInteger:0];;
+    self.loggedin = 0;
+    self.noad = 0;
 
     [self saveGalleryList:[[NSArray alloc] init]];
     self.imageLast = [[NSArray alloc] init];
@@ -147,320 +525,28 @@ static NetworkManager *sharedManager = nil;
     successCallback();
 }
 
-#pragma mark - Helper
 
-- (NSMutableDictionary*)getBaseParams {
-    NSMutableDictionary *baseParams = [NSMutableDictionary dictionary];
-    [baseParams setObject:@"1.0.0" forKey:@"api_version"];
-    [baseParams setObject:@"iOS" forKey:@"device_vendor"];
-    [baseParams setObject:[NSString stringWithFormat:@"%ld", UIDevice.currentDevice.userInterfaceIdiom] forKey:@"device_type"];
-    return baseParams;
-}
 
-- (id)getSecurityPolicy {
-    return [AFSecurityPolicy defaultPolicy];
-    /*
-    AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone];
-    [policy setAllowInvalidCertificates:YES];
-    [policy setValidatesDomainName:NO];
-    return policy;
-    */
-}
 
-- (void)showProgressHUD {
-    [self hideProgressHUD];
-    self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-    [self.progressHUD removeFromSuperViewOnHide];
-    self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.0 alpha:1.0];
-    self.progressHUD.contentColor = [UIColor whiteColor];
-}
 
-- (void)hideProgressHUD {
-    if (self.progressHUD != nil) {
-        [self.progressHUD hideAnimated:YES];
-        [self.progressHUD removeFromSuperview];
-        self.progressHUD = nil;
-    }
-}
 
-+ (void)showMessage:(NSString*) msg {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:msg
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_ok", @"Abloadtool") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {}];
-    [alert addAction:ok];
-    [[[UIApplication sharedApplication] delegate].window.rootViewController presentViewController:alert animated:YES completion:nil];
-}
 
-#pragma mark - AbloadAPI
 
-- (AFHTTPSessionManager*)getNetworkingManager {
-    if (self.networkingManager == nil) {
-        self.networkingManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:cURL_API]];
-        self.networkingManager.requestSerializer = [AFHTTPRequestSerializer serializer];
-        [self.networkingManager.requestSerializer setValue:cURL_AGENT forHTTPHeaderField:@"User-Agent"];
-        self.networkingManager.responseSerializer = [AFXMLParserResponseSerializer serializer];
-        self.networkingManager.responseSerializer.acceptableContentTypes = [self.networkingManager.responseSerializer.acceptableContentTypes setByAddingObjectsFromArray:@[@"text/html", @"application/xml", @"text/xml"]];
-        self.networkingManager.securityPolicy = [self getSecurityPolicy];
-    }
-    return self.networkingManager;
-}
 
-- (void)tokenCheckWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.token == nil || [self.token length] == 0) {
-        self.loggedin = [NSNumber numberWithInteger:0];
-        if (failure != nil) {
-            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
-        }
-        return;
-    }
-    NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.token forKey:@"session"];
-    [[self getNetworkingManager] POST:@"user" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"tokenCheckWithSuccess:\r\n%@", tmpDict);
-        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
-            self.token = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
-            [self saveToken:self.token];
-            if ( [tmpDict objectForKey:@"motd"] && [[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue] > [self.motd_time intValue] ) {
-                self.motd_time = [NSNumber numberWithInt:[[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue]];
-                [self saveMotdTime:self.motd_time];
-                [NetworkManager showMessage:[[tmpDict objectForKey:@"motd"] objectForKey:@"_text"]];
-            }
-            self.loggedin = [NSNumber numberWithInteger:1];
-            NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
-            if ([tmpStr compare:@"true"] == NSOrderedSame) {
-                self.noad = [NSNumber numberWithInteger:1];
-            }
-            if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
-                [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
-            }
-            if ( [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] ) {
-                self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
-            }
-            if (success != nil) {
-                success(tmpDict);
-            }
-        } else {
-            self.loggedin = [NSNumber numberWithInteger:0];
-            if (failure != nil) {
-                failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
-            }
-        }
-    } failure:^(NSURLSessionTask *operation, NSError *error) {
-        self.loggedin = [NSNumber numberWithInteger:-1];
-        if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
-        }
-    }];
-}
 
-- (void)authenticateWithEmail:(NSString*)email password:(NSString*)password success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (email != nil && [email length] > 0 && password != nil && [password length] > 0) {
-        [self showProgressHUD];
-        NSMutableDictionary *params = [self getBaseParams];
-        [params setObject:email forKey:@"name"];
-        [params setObject:password forKey:@"password"];
-        [[self getNetworkingManager] POST:@"login" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-            [self hideProgressHUD];
-            NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-            NSLog(@"authenticateWithEmail:\r\n%@", tmpDict);
-            if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 ) {
-                self.token = [[tmpDict objectForKey:@"login"] objectForKey:@"_session"];
-                [self saveToken:self.token];
-                if ( [tmpDict objectForKey:@"motd"] && [[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue] > [self.motd_time intValue] ) {
-                    self.motd_time = [NSNumber numberWithInt:[[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] intValue]];
-                    [self saveMotdTime:self.motd_time];
-                    [NetworkManager showMessage:[[tmpDict objectForKey:@"motd"] objectForKey:@"_text"]];
-                }
-                self.loggedin = [NSNumber numberWithInteger:1];
-                NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
-                if ([tmpStr compare:@"true"] == NSOrderedSame) {
-                    self.noad = [NSNumber numberWithInteger:1];
-                }
-                if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
-                    [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
-                }
-                if ( [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] ) {
-                    self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
-                }
-                if (success != nil) {
-                    success(tmpDict);
-                }
-            } else {
-                self.loggedin = [NSNumber numberWithInteger:0];
-                if (failure != nil) {
-                    failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
-                }
-            }
-        } failure:^(NSURLSessionTask *operation, NSError *error) {
-            self.loggedin = [NSNumber numberWithInteger:-1];
-            [self hideProgressHUD];
-            if (failure != nil) {
-                failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
-            }
-        }];
-    } else {
-        if (failure != nil) {
-            failure(NSLocalizedString(@"net_login_error_missingvalues", @"NetworkManager"), -1);
-        }
-    }
-}
 
-#pragma mark - Settings
-
-- (void)loadDefaults {
-    if ([self.defaults objectForKey:@"token"]) {
-        self.token = [self.defaults objectForKey:@"token"];
-        NSLog(@"NET - token %@", self.token);
-    } else {
-        self.token = @"";
-        NSLog(@"NET - token NEW");
-    }
-    
-    if ([self.defaults objectForKey:@"gallery"]) {
-        self.gallery = [self.defaults objectForKey:@"gallery"];
-        NSLog(@"NET - loadGallery %ld", [self.gallery count]);
-    } else {
-        self.gallery = [[NSArray alloc] init];
-        NSLog(@"NET - loadGallery NEW");
-    }
-    
-    if ([self.defaults objectForKey:@"motd_time"]) {
-        self.motd_time = [self.defaults objectForKey:@"motd_time"];
-        NSLog(@"NET - mod_time %ld", [self.motd_time longValue]);
-    } else {
-        self.motd_time =  [NSNumber numberWithInt:0];
-        NSLog(@"NET - mod_time NEW");
-    }
-    
-    if ([self.defaults objectForKey:@"gallery_selected"]) {
-        self.selectedGallery = [self.defaults objectForKey:@"gallery_selected"];
-        NSLog(@"NET - selectedGallery %ld", [self.selectedGallery longValue]);
-    } else {
-        self.selectedGallery =  [NSNumber numberWithInt:0];
-        NSLog(@"NET - selectedGallery NEW");
-    }
-
-    if ([self.defaults objectForKey:@"resolution_selected"]) {
-        self.selectedResolution = [self.defaults objectForKey:@"resolution_selected"];
-        NSLog(@"NET - selectedResolution %@", self.selectedResolution);
-    } else {
-        self.selectedResolution = NSLocalizedString(@"label_keeporiginal", @"Settings");
-        NSLog(@"NET - selectedResolution NEW");
-    }
-
-    if ([self.defaults objectForKey:@"scale_selected"]) {
-        self.selectedScale = [self.defaults objectForKey:@"scale_selected"];
-        NSLog(@"NET - selectedScale %ld", [self.selectedScale longValue]);
-    } else {
-        self.selectedScale =  [NSNumber numberWithInt:1];
-        NSLog(@"NET - selectedScale NEW");
-    }
-
-    if ([self.defaults objectForKey:@"outputlinks_selected"]) {
-        self.selectedOutputLinks = [self.defaults objectForKey:@"outputlinks_selected"];
-        NSLog(@"NET - selectedOutputLinks %ld", [self.selectedOutputLinks longValue]);
-    } else {
-        self.selectedOutputLinks =  [NSNumber numberWithInt:0];
-        NSLog(@"NET - selectedOutputLinks NEW");
-    }
-
-    if ([self.defaults objectForKey:@"upload_number"]) {
-        self.uploadNumber = [self.defaults integerForKey:@"upload_number"];
-        NSLog(@"NET - uploadNumber %ld / %ld", (long)self.uploadNumber, NSIntegerMax);
-    } else {
-        self.uploadNumber = 0;
-        NSLog(@"NET - uploadNumber NEW");
-    }
-    
-    if ([self.defaults objectForKey:@"gallery_sorted"]) {
-        self.sortedGallery = [self.defaults objectForKey:@"gallery_sorted"];
-        NSLog(@"NET - selectedScale %ld", [self.sortedGallery longValue]);
-    } else {
-        self.sortedGallery =  [NSNumber numberWithInt:0];
-        NSLog(@"NET - selectedScale NEW");
-    }
-    
-}
-
-- (void)saveToken:(NSString*) token {
-    [self.defaults setObject:token forKey:@"token"];
-    [self.defaults synchronize];
-}
-
-- (void)saveGalleryList:(NSArray*) gallery {
-    switch ([self.sortedGallery intValue]) {
-        case 1:
-            self.gallery = [gallery sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-                NSString *first = [(NSDictionary*)a objectForKey:@"_lastchange"];
-                NSString *second = [(NSDictionary*)b objectForKey:@"_lastchange"];
-                return [second compare:first];
-            }];
-            break;
-        default:
-            self.gallery = [gallery sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-                NSString *first = [(NSDictionary*)a objectForKey:@"_name"];
-                NSString *second = [(NSDictionary*)b objectForKey:@"_name"];
-                return [first compare:second];
-            }];
-            break;
-    }
-    [self.defaults setObject:self.gallery forKey:@"gallery"];
-    [self.defaults synchronize];
-}
-
-- (void)saveSelectedGallery:(NSNumber*) gid {
-    [self.defaults setObject:gid forKey:@"gallery_selected"];
-    [self.defaults synchronize];
-    self.selectedGallery = gid;
-}
-
-- (void)saveSelectedResolution:(NSString*) name {
-    [self.defaults setObject:name forKey:@"resolution_selected"];
-    [self.defaults synchronize];
-    self.selectedResolution = name;
-}
-
-- (void)saveSelectedScale:(NSNumber*) scale {
-    [self.defaults setObject:scale forKey:@"scale_selected"];
-    [self.defaults synchronize];
-    self.selectedScale = scale;
-}
-
-- (void)saveSelectedOutputLinks:(NSNumber*) outputLinks {
-    [self.defaults setObject:outputLinks forKey:@"outputlinks_selected"];
-    [self.defaults synchronize];
-    self.selectedOutputLinks = outputLinks;
-}
-
-- (void)saveUploadNumber {
-    [self.defaults setInteger:self.uploadNumber forKey:@"upload_number"];
-    [self.defaults synchronize];
-}
-
-- (void)saveMotdTime:(NSNumber*) motdTime {
-    [self.defaults setObject:motdTime forKey:@"motd_time"];
-    [self.defaults synchronize];
-}
-
-- (void)saveSortedGallery:(NSNumber*) sortedGallery {
-    [self.defaults setObject:sortedGallery forKey:@"gallery_sorted"];
-    [self.defaults synchronize];
-    self.sortedGallery = sortedGallery;
-}
 
 #pragma mark - Gallery
 
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.token == nil || [self.token length] == 0) {
+    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.token forKey:@"session"];
+    [params setObject:self.sessionKey forKey:@"session"];
     [[self getNetworkingManager] POST:@"gallery/list" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
         if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
@@ -481,14 +567,14 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.token == nil || [self.token length] == 0) {
+    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.token forKey:@"session"];
+    [params setObject:self.sessionKey forKey:@"session"];
     [params setObject:name forKey:@"name"];
     [params setObject:desc forKey:@"desc"];
     [[self getNetworkingManager] POST:@"gallery/new" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
@@ -514,14 +600,14 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.token == nil || [self.token length] == 0) {
+    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.token forKey:@"session"];
+    [params setObject:self.sessionKey forKey:@"session"];
     [params setObject:[NSString stringWithFormat:@"%ld", gid] forKey:@"gid"];
     [params setObject:[NSString stringWithFormat:@"%ld", img] forKey:@"img"];
     [[self getNetworkingManager] POST:@"gallery/del" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
@@ -549,20 +635,20 @@ static NetworkManager *sharedManager = nil;
 #pragma mark - Images
 
 - (void)getImageListForGroup:(NSString*) gid success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.token == nil || [self.token length] == 0) {
+    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.token forKey:@"session"];
+    [params setObject:self.sessionKey forKey:@"session"];
     if([gid caseInsensitiveCompare:@"x"] != NSOrderedSame) [params setObject:gid forKey:@"gid"];
     [[self getNetworkingManager] POST:@"images" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
         NSLog(@"getImageListForGroup:\r\n%@", tmpDict);
         if ( [[tmpDict objectForKey:@"images"] objectForKey:@"image"] ) {
-            self.imageList = [[NSMutableDictionary alloc] initWithCapacity:[self.gallery count]];
+            self.imageList = [[NSMutableDictionary alloc] initWithCapacity:[self.galleryList count]];
             if([[[tmpDict objectForKey:@"images"] objectForKey:@"image"] isKindOfClass:[NSArray class]]) {
                 for(long i = 0;i < [[[tmpDict objectForKey:@"images"] objectForKey:@"image"] count];i++) {
                     NSString* gid = [[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i] objectForKey:@"_gid"];
@@ -604,33 +690,22 @@ static NetworkManager *sharedManager = nil;
     }];
 }
 
-- (void)saveImage:(NSData*) image {
-    if(self.uploadNumber >= NSIntegerMax)
-        self.uploadNumber = 1;
-    else
-        self.uploadNumber++;
-    [self saveUploadNumber];
-    NSString *photoFile = [self.uploadPath stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
-    [image writeToFile:photoFile atomically:YES];
-    
-    NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:photoFile, @"_path", [photoFile lastPathComponent], @"_filename", [NSNumber numberWithLong:[image length]], @"_filesize", @"0", @"_uploaded", nil];
-    [self.uploadImages addObject:photoDict];
-}
+
 
 - (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.token == nil || [self.token length] == 0) {
+    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
     // Resize if necessary
-    NSArray* resolutionString = [self.selectedResolution componentsSeparatedByString:@" "];
+    NSArray* resolutionString = [self.settingResolutionSelected componentsSeparatedByString:@" "];
     NSArray* resolutionSize = [[resolutionString objectAtIndex:0] componentsSeparatedByString:@"x"];
     if([resolutionSize count] > 1) {
         UIImage* imageOriginal = [[UIImage alloc] initWithContentsOfFile:[metaImage objectForKey:@"_path"]];
         UIImage* imageNew;
-        switch ([self.selectedScale intValue]) {
+        switch (self.settingScaleSelected) {
             case 1:
                 imageNew = [imageOriginal panToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
                 break;
@@ -652,9 +727,9 @@ static NetworkManager *sharedManager = nil;
     }
     // Upload Image
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.token forKey:@"session"];
-    if([self.selectedGallery intValue] > 0) {
-        [params setObject:[self.selectedGallery stringValue] forKey:@"gallery"];
+    [params setObject:self.sessionKey forKey:@"session"];
+    if(self.settingGallerySelected > 0) {
+        [params setObject:[NSString stringWithFormat:@"%ld", self.settingGallerySelected] forKey:@"gallery"];
     }
     self.uploadTask = [[self getNetworkingManager] POST:@"upload" parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         //[formData appendPartWithFormData:[self.token dataUsingEncoding:NSUTF8StringEncoding] name:@"session"];
@@ -681,14 +756,14 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)deleteImageWithName:(NSString*) filename success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.token == nil || [self.token length] == 0) {
+    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
         if (failure != nil) {
             failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
         }
         return;
     }
     NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.token forKey:@"session"];
+    [params setObject:self.sessionKey forKey:@"session"];
     [params setObject:filename forKey:@"filename"];
     [[self getNetworkingManager] POST:@"image/del" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
@@ -715,7 +790,7 @@ static NetworkManager *sharedManager = nil;
 #pragma mark - Others
 
 - (NSString*)generateLinkForImage:(NSString*) name {
-    NSString* link = [[[self.listOutputLinks objectAtIndex:[self.selectedOutputLinks unsignedLongLongValue]] objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"$B$" withString:cURL_BASE];
+    NSString* link = [[[self.settingAvailableOutputLinkList objectAtIndex:self.settingOutputLinkSelected] objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"$B$" withString:cURL_BASE];
     link = [link stringByReplacingOccurrencesOfString:@"$I$" withString:name];
     return link;
 }
@@ -724,40 +799,12 @@ static NetworkManager *sharedManager = nil;
     return [NSString stringWithFormat:@"%@/gallery.php?key=%@", cURL_BASE, name];
 }
 
-- (void)getSharedImages {
-    NSInteger shareCount = [self.defaults integerForKey:@"share_count"];
-    if(shareCount > 0) {
-        
-        
-        
-        NSFileManager *localFileManager=[[NSFileManager alloc] init];
-        NSDirectoryEnumerator *dirEnum = [localFileManager enumeratorAtPath:self.sharePath];
-        NSString *file;
-        while ((file = [dirEnum nextObject])) {
-            if ([[file pathExtension] isEqualToString: @"jpeg"]) {
-                NSString* filePath = [self.sharePath stringByAppendingPathComponent:file];
 
-                if(self.uploadNumber >= NSIntegerMax)
-                    self.uploadNumber = 1;
-                else
-                    self.uploadNumber++;
-                [self saveUploadNumber];
-                NSString *photoFile = [self.uploadPath stringByAppendingFormat:@"/mobile.%ld.shared.jpeg", self.uploadNumber];
 
-        
-                [localFileManager moveItemAtPath:filePath toPath:photoFile error:nil];
-                
-                NSNumber* fileSize = [NSNumber numberWithLong:[[[NSFileManager defaultManager] attributesOfItemAtPath:photoFile error:nil] fileSize]];
-                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:photoFile, @"_path", [photoFile lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
-                [self.uploadImages addObject:photoDict];
-            }
-        }
-        
-        shareCount = 0;
-        [self.defaults setInteger:shareCount forKey:@"share_count"];
-        [self.defaults synchronize];
-    }
-}
+
+
+
+
 
 
 

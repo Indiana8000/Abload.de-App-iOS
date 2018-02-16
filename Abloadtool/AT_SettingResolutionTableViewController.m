@@ -68,7 +68,7 @@
         }
     }
     
-    if([cell.textLabel.text compare:[[NetworkManager sharedManager] selectedResolution]] == NSOrderedSame)
+    if([cell.textLabel.text compare:[[NetworkManager sharedManager] settingResolutionSelected]] == NSOrderedSame)
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     else
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -80,10 +80,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if(indexPath.section == 0 && indexPath.row == 0) {
-        [[NetworkManager sharedManager] saveSelectedResolution:NSLocalizedString(@"label_keeporiginal", @"Settings")];
+        [[NetworkManager sharedManager] saveResolutionSelected:NSLocalizedString(@"label_keeporiginal", @"Settings")];
     } else {
         NSArray* resolutionString = [[[[self.listResolutions objectAtIndex:[indexPath section]] objectForKey:@"list"] objectAtIndex:indexPath.row] componentsSeparatedByString:@" "];
-        [[NetworkManager sharedManager] saveSelectedResolution:[resolutionString objectAtIndex:0]];
+        [[NetworkManager sharedManager] saveResolutionSelected:[resolutionString objectAtIndex:0]];
     }
     [self.navigationController popViewControllerAnimated:YES];
 }

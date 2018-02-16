@@ -133,7 +133,7 @@
 }
 
 - (void)doCopyLinksForRow:(long) row AsType:(int) linkType {
-    [[NetworkManager sharedManager] saveSelectedOutputLinks:[NSNumber numberWithLong:linkType]];
+    [[NetworkManager sharedManager] saveOutputLinkSelected:linkType];
     [UIPasteboard generalPasteboard].string = [[NetworkManager sharedManager] generateLinkForImage:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:row] objectForKey:@"_filename"]];
 }
 
@@ -146,8 +146,8 @@
             UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"btn_slide_copylink", @"Upload Tab")
                                                                            message:nil
                                                                     preferredStyle:UIAlertControllerStyleAlert];
-            for(int i = 0;i < [[[NetworkManager sharedManager] listOutputLinks] count];++i) {
-                UIAlertAction *linkX = [UIAlertAction actionWithTitle:[[[[NetworkManager sharedManager] listOutputLinks] objectAtIndex:i] objectForKey:@"name"]  style:UIAlertActionStyleDefault
+            for(int i = 0;i < [[[NetworkManager sharedManager] settingAvailableOutputLinkList] count];++i) {
+                UIAlertAction *linkX = [UIAlertAction actionWithTitle:[[[[NetworkManager sharedManager] settingAvailableOutputLinkList] objectAtIndex:i] objectForKey:@"name"]  style:UIAlertActionStyleDefault
                                                               handler:^(UIAlertAction * action) {
                                                                   [self doCopyLinksForRow:row.row AsType:i];
                                                               }];
@@ -182,7 +182,7 @@
 }
 
 - (void)doRefresh:(id)sender {
-    if([[[NetworkManager sharedManager] loggedin] intValue] == 1) {
+    if([[NetworkManager sharedManager] loggedin] == 1) {
         [[NetworkManager sharedManager] getImageListForGroup:self.gid success:^(NSDictionary *responseObject) {
             [self setLastRefresh];
             [[self refreshControl] endRefreshing];
@@ -191,18 +191,18 @@
             [[self refreshControl] endRefreshing];
             [NetworkManager showMessage:failureReason];
         }];
-    } else if ([[[NetworkManager sharedManager] loggedin] intValue] == -1) {
-        [[NetworkManager sharedManager] tokenCheckWithSuccess:^(NSDictionary *responseObject) {
+    } else if ([[NetworkManager sharedManager] loggedin] == -1) {
+        [[NetworkManager sharedManager] checkSessionKeyWithSuccess:^(NSDictionary *responseObject) {
             [self doRefresh:nil];
         }  failure:^(NSString *failureReason, NSInteger statusCode) {
-            if([[[NetworkManager sharedManager] loggedin] intValue] == 0) {
+            if([[NetworkManager sharedManager] loggedin] == 0) {
                 [self doRefresh:sender];
             } else {
                 [NetworkManager showMessage:failureReason];
             }
         }];
     } else {
-        [[NetworkManager sharedManager] showLoginWithViewController:[self parentViewController] andCallback:^(void) {
+        [[NetworkManager sharedManager] showLoginWithCallback:^(void) {
             [self doRefresh:sender];
         }];
         [[self refreshControl] endRefreshing];

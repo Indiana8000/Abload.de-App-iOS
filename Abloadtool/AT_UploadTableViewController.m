@@ -23,47 +23,40 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Init Navigation Controller + Buttons
     self.navigationItem.title = NSLocalizedString(@"nav_title_upload", @"Navigation");
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-cloud"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettings)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-cloud"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsUpload)];
 
     UIBarButtonItem* btnCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(copyLinksPasteboard)];
     UIBarButtonItem* btnSettingsLinkType = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
     self.navigationItem.rightBarButtonItems = @[btnCopy,btnSettingsLinkType];
     [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
 
-    // Init TableView
     [self.tableView registerClass:[AT_UploadTableViewCell class] forCellReuseIdentifier:cUploadCell];
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
     [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cButtonCell];
-    //[self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-    //self.tableView.rowHeight = 57.0;
     
     self.btnUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"btn_upload_upload", @"Upload Tab") style:UIBarButtonItemStylePlain target:self action:@selector(startUpload)];
     self.btnAdd = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"btn_image_add", @"Upload Tab") style:UIBarButtonItemStylePlain target:self action:@selector(showImagePicker)];
     UIBarButtonItem* btnSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     [self setToolbarItems:@[btnSpace, self.btnUpload, btnSpace, self.btnAdd, btnSpace]];
 
-    // Link uploadImages
     self.uploadImages = [[NetworkManager sharedManager] uploadImages];
-    
-    // Init uploadStatus
     self.uploadStatus = @"ADD";
-    
-    // Init detailed View
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
     
-    if([[NetworkManager sharedManager] token] == nil) {
-        [[NetworkManager sharedManager] showLoginWithViewController:self andCallback:^{
+    if([[NetworkManager sharedManager] getSessionKey]) {
+        [[NetworkManager sharedManager] checkSessionKeyWithSuccess:^(NSDictionary *responseObject) {
+            [self.tableView reloadData];
+        } failure:nil];
+    } else {
+        [[NetworkManager sharedManager] showLoginWithCallback:^{
             [[NetworkManager sharedManager] getGalleryList:^(NSDictionary *responseObject) {
                 [self.tableView reloadData];
             } failure:nil];
         }];
-    } else {
-        [[NetworkManager sharedManager] tokenCheckWithSuccess:^(NSDictionary *responseObject) {
-            [self.tableView reloadData];
-        }  failure:nil];
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -71,16 +64,39 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:NO animated:NO];
-    [[NetworkManager sharedManager] getSharedImages];
     [self.tableView reloadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
     [self.navigationController setToolbarHidden:YES animated:NO];
 }
 
-#pragma mark - Table view data source
+- (void)reloadTable {
+    [[NetworkManager sharedManager] checkAndLoadSharedImages];
+    [self.tableView reloadData];
+}
+
+
+#pragma mark - Helper
+
+- (NSString *)bytesToUIString:(NSNumber *) number {
+    double size = [number doubleValue];
+    unsigned long i = 0;
+    while (size >= 1000) {
+        size /= 1024;
+        i++;
+    }
+    NSArray *extension = [[NSArray alloc] initWithObjects:@"Byte", @"KB", @"MB", @"GB", @"TB", @"PB", @"EB", @"ZB", @"YB" ,@"???" , nil];
+    
+    if(i>([extension count]-2)) i = [extension count]-1;
+    return [NSString stringWithFormat:@"%.1f %@", size, [extension objectAtIndex:i]];
+}
+
+
+#pragma mark - TableView DataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if([self.uploadStatus caseInsensitiveCompare:@"ADD"] == NSOrderedSame) {
@@ -93,10 +109,10 @@
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     switch (section) {
         case 0:
-            return nil;
+            return NSLocalizedString(@"title_images_waiting_for_upload", @"Upload Tab");
             break;
         case 1:
-            return NSLocalizedString(@"title_last5", @"Upload Tab");;
+            return NSLocalizedString(@"title_last5", @"Upload Tab");
             break;
         default:
             return nil;
@@ -135,7 +151,7 @@
         cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"];
 
         if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] < 1) {
-            [cell.imageView setImageWithURL:[NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
+            [cell.imageView setImageWithURL:[NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_thumb"]] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
             cell.accessoryType = UITableViewCellAccessoryNone;
             [tmpCell.progressView setProgress:0.0];
             [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
@@ -160,7 +176,8 @@
     return cell;
 }
 
-#pragma mark - Table view delegate
+
+#pragma mark - TableView Delegate
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
@@ -179,10 +196,8 @@
         return @[modifyAction];
     } else {
         UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"btn_slide_delete", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
-            [[NSFileManager defaultManager] removeItemAtPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]  error:nil];
-            [self.uploadImages removeObjectAtIndex:indexPath.row];
-            //[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
-            [tableView reloadData];
+            [[NetworkManager sharedManager] removeImageFromDisk:indexPath.row andList:YES];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
         }];
         return @[deleteAction];
     }
@@ -206,9 +221,10 @@
     }
 }
 
-#pragma mark - More
 
-- (void)showSettings {
+#pragma mark - Actions
+
+- (void)showSettingsUpload {
     if(self.pageSetting == nil) {
         self.pageSetting = [[AT_SettingTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
         self.navSetting = [[UINavigationController alloc] initWithRootViewController:self.pageSetting];
@@ -236,6 +252,26 @@
     }
 }
 
+- (void)copyLinksPasteboard {
+    NSMutableString* linkX = [[NSMutableString alloc] init];
+    unsigned long i;
+    unsigned long k = 0;
+    for(i = 0;i < [self.uploadImages count];i++) {
+        if([[[self.uploadImages objectAtIndex:i] objectForKey:@"_uploaded"] intValue] == 1) {
+            [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[self.uploadImages objectAtIndex:i] objectForKey:@"_filename"]]];
+            [linkX appendString:@"\n"];
+            k++;
+        }
+    }
+    if(k > 0) {
+        [UIPasteboard generalPasteboard].string = linkX;
+        [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_copylink_done %ld", @"Upload Tab"), k]];
+    }
+}
+
+
+#pragma mark - Add Image
+
 - (void)showImagePicker {
     self.uzysPicker = [[UzysAssetsPickerController alloc] init];
     self.uzysPicker.delegate = (id)self;
@@ -251,28 +287,40 @@
         Byte *buffer = (Byte*)malloc(rep.size);
         NSUInteger buffered = [rep getBytes:buffer fromOffset:0.0 length:rep.size error:nil];
         NSData *data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-        [[NetworkManager sharedManager] saveImage:data];
+        [[NetworkManager sharedManager] saveImageToDisk:data];
     }];
     [self.tableView reloadData];
 }
 
-- (NSString *)bytesToUIString:(NSNumber *) number {
-    double size = [number doubleValue];
-    unsigned long i = 0;
-    while (size >= 1000) {
-        size /= 1024;
-        i++;
+
+#pragma mark - Upload
+
+- (void)startUpload {
+    if([self.uploadStatus caseInsensitiveCompare:@"ADD"] == NSOrderedSame) {
+        [self startUploadingImages];
+    } else if([self.uploadStatus caseInsensitiveCompare:@"UPLOAD"] == NSOrderedSame) {
+        [[[NetworkManager sharedManager] uploadTask] cancel];
+        self.uploadStatus = @"ADD";
+        self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
+        self.btnAdd.enabled = YES;
+        [self.tableView reloadData];
+    } else if([self.uploadStatus caseInsensitiveCompare:@"DONE"] == NSOrderedSame) {
+        self.uploadStatus = @"ADD";
+        self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
+        for(int i = (int)[self.uploadImages count];i > 0;i--) {
+            if([[[self.uploadImages objectAtIndex:(i -1)] objectForKey:@"_uploaded"] intValue] >= 1)
+                [self.uploadImages removeObjectAtIndex:(i -1)];
+        }
+        self.btnAdd.enabled = YES;
+        [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
+        [self.tableView reloadData];
     }
-    NSArray *extension = [[NSArray alloc] initWithObjects:@"Byte", @"KB", @"MB", @"GB", @"TB", @"PB", @"EB", @"ZB", @"YB" ,@"???" , nil];
-    
-    if(i>([extension count]-2)) i = [extension count]-1;
-    return [NSString stringWithFormat:@"%.1f %@", size, [extension objectAtIndex:i]];
 }
 
 - (void)startUploadingImages {
     if([self.uploadImages count] > 0) {
-        if(([[NetworkManager sharedManager] token] == nil) || ([[[NetworkManager sharedManager] token] length] == 0)) {
-            [[NetworkManager sharedManager] showLoginWithViewController:self andCallback:^{
+        if(([[NetworkManager sharedManager] getSessionKey] == nil) || ([[[NetworkManager sharedManager] getSessionKey] length] == 0)) {
+            [[NetworkManager sharedManager] showLoginWithCallback:^{
                 [self startUploadingImages];
             }];
         } else {
@@ -312,8 +360,8 @@
         if ( [[responseObject objectForKey:@"images"] objectForKey:@"image"] ) {
             [[self.uploadImages objectAtIndex:idx] setObject:@"1" forKey:@"_uploaded"];
             [[self.uploadImages objectAtIndex:idx] setObject:[[[responseObject objectForKey:@"images"] objectForKey:@"image"] objectForKey:@"_newname"] forKey:@"_filename"];
-            [[NSFileManager defaultManager] removeItemAtPath:[[self.uploadImages objectAtIndex:idx] objectForKey:@"_path"]  error:nil];
-
+            [[NetworkManager sharedManager] removeImageFromDisk:idx andList:NO];
+            
             UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];
             [tmpPV setProgress:0.0];
             [tmpPV setBackgroundColor:[UIColor clearColor]];
@@ -326,7 +374,7 @@
         }
     } failure:^(NSString *failureReason, NSInteger statusCode) {
         [[self.uploadImages objectAtIndex:idx] setObject:@"0" forKey:@"_uploaded"];
-
+        
         UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];
         [tmpPV setProgress:0.0];
         UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
@@ -337,59 +385,6 @@
     }];
 }
 
-- (void) copyLinksPasteboard {
-    NSMutableString* linkX = [[NSMutableString alloc] init];
-    unsigned long i;
-    unsigned long k = 0;
-    for(i = 0;i < [self.uploadImages count];i++) {
-        if([[[self.uploadImages objectAtIndex:i] objectForKey:@"_uploaded"] intValue] == 1) {
-            [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[self.uploadImages objectAtIndex:i] objectForKey:@"_name"]]];
-            [linkX appendString:@"\n"];
-            k++;
-        }
-    }
-    if(k > 0) {
-        [UIPasteboard generalPasteboard].string = linkX;
-        [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_copylink_done %ld", @"Upload Tab"), k]];
-    }
-}
 
-- (void) startUpload {
-    if([self.uploadStatus caseInsensitiveCompare:@"ADD"] == NSOrderedSame) {
-        [self startUploadingImages];
-    } else if([self.uploadStatus caseInsensitiveCompare:@"UPLOAD"] == NSOrderedSame) {
-        [[[NetworkManager sharedManager] uploadTask] cancel];
-        self.uploadStatus = @"ADD";
-        self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
-        self.btnAdd.enabled = YES;
-        [self.tableView reloadData];
-    } else if([self.uploadStatus caseInsensitiveCompare:@"DONE"] == NSOrderedSame) {
-        self.uploadStatus = @"ADD";
-        self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
-        for(int i = (int)[self.uploadImages count];i > 0;i--) {
-            if([[[self.uploadImages objectAtIndex:(i -1)] objectForKey:@"_uploaded"] intValue] >= 1)
-                [self.uploadImages removeObjectAtIndex:(i -1)];
-        }
-        self.btnAdd.enabled = YES;
-        [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
-        [self.tableView reloadData];
-    }
-}
-
-- (void)showSpenden {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                   message:@"Gefällt dir unser Service? Bitte informiere dich auf unserer Homepage wie du uns unterstützen kannst."
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    
-
-    
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Danke" style:UIAlertActionStyleCancel
-                                                   handler:^(UIAlertAction * action) {
-                                                       [alert dismissViewControllerAnimated:YES completion:nil];
-                                                   }];
-    [alert addAction:cancel];
-    
-    [self presentViewController:alert animated:YES completion:nil];
-}
 
 @end

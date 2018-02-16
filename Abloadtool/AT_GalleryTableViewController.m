@@ -44,16 +44,16 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    if([[[NetworkManager sharedManager] loggedin] intValue] == 0) {
+    if([[NetworkManager sharedManager] loggedin] == 0) {
         [self.tableView reloadData];
-        [[NetworkManager sharedManager] showLoginWithViewController:[self parentViewController] andCallback:^(void) {
+        [[NetworkManager sharedManager] showLoginWithCallback:^(void) {
             [self doRefresh:nil];
         }];
-    } else if ([[[NetworkManager sharedManager] loggedin] intValue] == -1) {
-        [[NetworkManager sharedManager] tokenCheckWithSuccess:^(NSDictionary *responseObject) {
+    } else if ([[NetworkManager sharedManager] loggedin] == -1) {
+        [[NetworkManager sharedManager] checkSessionKeyWithSuccess:^(NSDictionary *responseObject) {
             [self doRefresh:nil];
         } failure:^(NSString *failureReason, NSInteger statusCode) {
-            if([[[NetworkManager sharedManager] loggedin] intValue] == 0) {
+            if([[NetworkManager sharedManager] loggedin] == 0) {
                 [self doRefresh:nil];
             } else {
                 [NetworkManager showMessage:failureReason];
@@ -72,7 +72,7 @@
     if(section == 0) {
         return 1;
     } else {
-        return [[[NetworkManager sharedManager] gallery] count];
+        return [[[NetworkManager sharedManager] galleryList] count];
     }
 }
 
@@ -86,15 +86,15 @@
         cell.dateTextLabel.text = @" ";
         [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
     } else {
-        cell.textLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
-        if([[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"] length] > 0) {
-            cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
+        cell.textLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+        if([[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_desc"] length] > 0) {
+            cell.detailTextLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
         } else {
             cell.detailTextLabel.text = @" ";
         }
-        cell.dateTextLabel.text = [[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_lastchange"] substringToIndex:16];
+        cell.dateTextLabel.text = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_lastchange"] substringToIndex:16];
 
-        NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_thumb"]];
+        NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_thumb"]];
         [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     }
     return cell;
@@ -108,7 +108,7 @@
 
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
         UITableViewRowAction *modifyAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:NSLocalizedString(@"btn_slide_copylink", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath *indexPath) {
-            [UIPasteboard generalPasteboard].string = [[NetworkManager sharedManager] generateLinkForGallery:[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_code"]];
+            [UIPasteboard generalPasteboard].string = [[NetworkManager sharedManager] generateLinkForGallery:[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_code"]];
         }];
         modifyAction.backgroundColor = [UIColor orangeColor];
 
@@ -136,8 +136,8 @@
         self.imageTableViewController.gid = @"x";
         self.imageTableViewController.navigationItem.title = NSLocalizedString(@"label_nogallery", @"Settings");
     } else {
-        self.imageTableViewController.gid = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_id"];
-        self.imageTableViewController.navigationItem.title = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+        self.imageTableViewController.gid = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_id"];
+        self.imageTableViewController.navigationItem.title = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"];
     }
 
     [[NetworkManager sharedManager] getImageListForGroup:self.imageTableViewController.gid success:^(NSDictionary *responseObject) {
@@ -152,7 +152,7 @@
 #pragma mark - RefreshController
 
 - (void)doRefresh:(id)sender {
-    if([[[NetworkManager sharedManager] loggedin] intValue] == 1) {
+    if([[NetworkManager sharedManager] loggedin] == 1) {
         [[NetworkManager sharedManager] getGalleryList:^(NSDictionary *responseObject) {
             [self setLastRefresh];
             [[self refreshControl] endRefreshing];
@@ -161,18 +161,18 @@
             [[self refreshControl] endRefreshing];
             [NetworkManager showMessage:failureReason];
         }];
-    } else if ([[[NetworkManager sharedManager] loggedin] intValue] == -1) {
-        [[NetworkManager sharedManager] tokenCheckWithSuccess:^(NSDictionary *responseObject) {
+    } else if ([[NetworkManager sharedManager] loggedin] == -1) {
+        [[NetworkManager sharedManager] checkSessionKeyWithSuccess:^(NSDictionary *responseObject) {
             [self doRefresh:nil];
         }  failure:^(NSString *failureReason, NSInteger statusCode) {
-            if([[[NetworkManager sharedManager] loggedin] intValue] == 0) {
+            if([[NetworkManager sharedManager] loggedin] == 0) {
                 [self doRefresh:sender];
             } else {
                 [NetworkManager showMessage:failureReason];
             }
         }];
     } else {
-        [[NetworkManager sharedManager] showLoginWithViewController:[self parentViewController] andCallback:^(void) {
+        [[NetworkManager sharedManager] showLoginWithCallback:^(void) {
             [self doRefresh:sender];
         }];
         [[self refreshControl] endRefreshing];
@@ -198,16 +198,14 @@
     
     UIAlertAction *sort1 = [UIAlertAction actionWithTitle:NSLocalizedString(@"sort_by_name", @"Gallery")  style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction * action) {
-                                                    [[NetworkManager sharedManager] saveSortedGallery:[NSNumber numberWithInt:0]];
-                                                    [[NetworkManager sharedManager] saveGalleryList:[[NetworkManager sharedManager] gallery]];
+                                                    [[NetworkManager sharedManager] saveGallerySorted:0];
                                                     [self.tableView reloadData];
                                                 }];
     [alert addAction:sort1];
     
     UIAlertAction *sort2 = [UIAlertAction actionWithTitle:NSLocalizedString(@"sort_by_date", @"Gallery")  style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
-                                                       [[NetworkManager sharedManager] saveSortedGallery:[NSNumber numberWithInt:1]];
-                                                       [[NetworkManager sharedManager] saveGalleryList:[[NetworkManager sharedManager] gallery]];
+                                                       [[NetworkManager sharedManager] saveGallerySorted:1];
                                                        [self.tableView reloadData];
                                                    }];
     [alert addAction:sort2];
@@ -259,10 +257,10 @@
 }
 
 - (void)doDeleteGallery:(NSInteger) row {
-    long gid = [[[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_id"] intValue];
-    long bc = [[[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_images"] intValue];
+    long gid = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:row] objectForKey:@"_id"] intValue];
+    long bc = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:row] objectForKey:@"_images"] intValue];
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_question %@", @"Gallery"), [[[[NetworkManager sharedManager] gallery] objectAtIndex:row] objectForKey:@"_name"]]
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_question %@", @"Gallery"), [[[[NetworkManager sharedManager] galleryList] objectAtIndex:row] objectForKey:@"_name"]]
                                                                    message:nil
                                                             preferredStyle:UIAlertControllerStyleAlert];
     

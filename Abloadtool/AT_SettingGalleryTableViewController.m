@@ -39,7 +39,7 @@
     if(section == 0) {
         return 1;
     } else {
-        return [[[NetworkManager sharedManager] gallery] count];
+        return [[[NetworkManager sharedManager] galleryList] count];
     }
 }
 
@@ -53,19 +53,19 @@
         cell.dateTextLabel.text = @" ";
         [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
     } else {
-        cell.textLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_name"];
-        if([[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"] length] > 0) {
-            cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
+        cell.textLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+        if([[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_desc"] length] > 0) {
+            cell.detailTextLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
         } else {
             cell.detailTextLabel.text = @" ";
         }
-        cell.dateTextLabel.text = [[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_lastchange"] substringToIndex:16];
+        cell.dateTextLabel.text = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_lastchange"] substringToIndex:16];
         
-        NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_thumb"]];
+        NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_thumb"]];
         [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     }
 
-    if(((indexPath.section == 1) && ([[[NetworkManager sharedManager] selectedGallery] intValue] == [[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_id"] intValue])) || ((indexPath.section == 0) && ([[[NetworkManager sharedManager] selectedGallery] intValue] == 0)))
+    if(((indexPath.section == 1) && ([[NetworkManager sharedManager] settingGallerySelected] == [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_id"] intValue])) || ((indexPath.section == 0) && ([[NetworkManager sharedManager] settingGallerySelected] == 0)))
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     else
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -76,13 +76,11 @@
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSNumber *gid;
     if(indexPath.section == 0) {
-        gid = [NSNumber numberWithInt: 0];
+        [[NetworkManager sharedManager] saveGallerySelected:0];
     } else {
-        gid = [NSNumber numberWithInt: [[[[[NetworkManager sharedManager] gallery] objectAtIndex:indexPath.row] objectForKey:@"_id"] intValue]];
+        [[NetworkManager sharedManager] saveGallerySelected:[[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_id"] integerValue]];
     }
-    [[NetworkManager sharedManager] saveSelectedGallery:gid];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

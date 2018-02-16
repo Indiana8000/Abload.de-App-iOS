@@ -36,15 +36,15 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [[[NetworkManager sharedManager] listOutputLinks] count];;
+    return [[[NetworkManager sharedManager] settingAvailableOutputLinkList] count];;
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cOLinksCell forIndexPath:indexPath];
     cell.separatorInset = UIEdgeInsetsZero;
     
-    cell.textLabel.text = [[[[NetworkManager sharedManager] listOutputLinks] objectAtIndex:indexPath.row] objectForKey:@"name"];
+    cell.textLabel.text = [[[[NetworkManager sharedManager] settingAvailableOutputLinkList] objectAtIndex:indexPath.row] objectForKey:@"name"];
     
-    if([[[NetworkManager sharedManager] selectedOutputLinks] longLongValue] == indexPath.row)
+    if([[NetworkManager sharedManager] settingOutputLinkSelected] == indexPath.row)
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     else
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -56,7 +56,7 @@
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [[NetworkManager sharedManager] saveSelectedOutputLinks:[NSNumber numberWithLong:indexPath.row]];
+    [[NetworkManager sharedManager] saveOutputLinkSelected:indexPath.row];
     [tableView reloadData];
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popViewControllerAnimated:YES];

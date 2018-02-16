@@ -32,7 +32,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if((section == 1) && ([[[NetworkManager sharedManager] selectedResolution] compare:NSLocalizedString(@"label_keeporiginal", @"Settings")] != NSOrderedSame)) {
+    if((section == 1) && ([[[NetworkManager sharedManager] settingResolutionSelected] compare:NSLocalizedString(@"label_keeporiginal", @"Settings")] != NSOrderedSame)) {
         return 2;
     } else {
         return 1;
@@ -61,12 +61,12 @@
     switch (indexPath.section) {
         case 0: {
             cell.textLabel.text = NSLocalizedString(@"label_gallery",@"Settings");
-            if([[[NetworkManager sharedManager] selectedGallery] intValue] > 0) {
-                long i = [[[NetworkManager sharedManager] gallery] indexOfObjectPassingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    return ([[obj objectForKey:@"_id"] intValue] == [[[NetworkManager sharedManager] selectedGallery] intValue]);
+            if([[NetworkManager sharedManager] settingGallerySelected] > 0) {
+                long i = [[[NetworkManager sharedManager] galleryList] indexOfObjectPassingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    return ([[obj objectForKey:@"_id"] intValue] == [[NetworkManager sharedManager] settingGallerySelected]);
                 }];
-                if(i < [[[NetworkManager sharedManager] gallery] count])
-                    cell.detailTextLabel.text = [[[[NetworkManager sharedManager] gallery] objectAtIndex:i] objectForKey:@"_name"];
+                if(i < [[[NetworkManager sharedManager] galleryList] count])
+                    cell.detailTextLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:i] objectForKey:@"_name"];
                 else
                     cell.detailTextLabel.text = NSLocalizedString(@"label_nogallery", @"Settings");
             } else {
@@ -77,10 +77,10 @@
         case 1: {
             if(indexPath.row == 0) {
                 cell.textLabel.text = NSLocalizedString(@"label_resize",@"Settings");
-                cell.detailTextLabel.text = [[NetworkManager sharedManager] selectedResolution];
+                cell.detailTextLabel.text = [[NetworkManager sharedManager] settingResolutionSelected];
             } else {
                 cell.textLabel.text = NSLocalizedString(@"label_scale",@"Settings");
-                cell.detailTextLabel.text = [[[[NetworkManager sharedManager] listScaling] objectAtIndex:[[[NetworkManager sharedManager] selectedScale] intValue]] objectAtIndex:0];
+                cell.detailTextLabel.text = [[[[NetworkManager sharedManager] settingAvailableScalingList] objectAtIndex:[[NetworkManager sharedManager] settingScaleSelected]] objectAtIndex:0];
             }
             }
             break;

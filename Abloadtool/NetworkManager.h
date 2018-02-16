@@ -17,69 +17,85 @@
 
 #import "UIImage+Scale.h"
 
+
 typedef void (^NetworkManagerSuccess)(NSDictionary *responseObject);
 typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusCode);
 
-@interface NetworkManager : NSObject {
-}
 
+@interface NetworkManager : NSObject
+
+#pragma mark - Constructor
 + (id)sharedManager;
-+ (void)showMessage:(NSString*) msg;
 
+#pragma mark - Help-Functions
++ (void)showMessage:(NSString*) msg;
 - (void)showProgressHUD;
 - (void)hideProgressHUD;
 
-- (void)showLoginWithViewController:(UIViewController*)viewController andCallback:(void(^)(void))successCallback;
-- (void)logoutWithCallback:(void(^)(void))successCallback;
-- (void)tokenCheckWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-- (void)authenticateWithEmail:(NSString*)email password:(NSString*)password success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+#pragma mark - Session
+@property NSInteger loggedin;
+@property NSInteger noad;
+- (NSString*)getSessionKey;
 
-- (void)saveSelectedGallery:(NSNumber*) gid;
-- (void)saveSelectedResolution:(NSString*) name;
-- (void)saveSelectedScale:(NSNumber*) scale;
-- (void)saveSelectedOutputLinks:(NSNumber*) outputLinks;
-- (void)saveSortedGallery:(NSNumber*) sortedGallery;
+#pragma mark - ImageFiles
+@property (nonatomic, strong) NSMutableArray* uploadImages;
+- (void)saveImageToDisk:(NSData*) imageData;
+- (void)checkAndLoadSharedImages;
+- (void)removeImageFromDisk:(NSInteger) imageIndex andList:(BOOL) includeList;
+
+#pragma mark - Gallery
+@property (nonatomic, strong) NSArray* galleryList;
+@property NSInteger settingGallerySelected;
+- (void)saveGalleryList:(NSArray*) gallery;
+- (void)saveGallerySorted:(NSInteger) gallerySorted;
+- (void)saveGallerySelected:(NSInteger) galleryID;
+
+#pragma mark - Settings
+@property (nonatomic, strong) NSArray* settingAvailableScalingList;
+@property (nonatomic, strong) NSArray* settingAvailableOutputLinkList;
+@property (nonatomic, strong) NSString* settingResolutionSelected;
+@property NSInteger settingScaleSelected;
+@property NSInteger settingOutputLinkSelected;
+- (void)saveResolutionSelected:(NSString*) name;
+- (void)saveScaleSelected:(NSInteger) newScale;
+- (void)saveOutputLinkSelected:(NSInteger) newOutputLinks;
+
+#pragma mark - ImageRemote
+@property (nonatomic, strong) NSMutableDictionary* imageList;
+@property (nonatomic, strong) NSArray* imageLast;
+- (NSString*)generateLinkForImage:(NSString*) name;
+- (NSString*)generateLinkForGallery:(NSString*) name;
+
+#pragma mark - HTTP
+@property (nonatomic, strong) NSURLSessionDataTask* uploadTask;
+- (void)checkSessionKeyWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)showLoginWithCallback:(void(^)(void))successCallback;
+- (void)logoutWithCallback:(void(^)(void))successCallback;
+
+
+
+
+
+
 
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-- (void)saveGalleryList:(NSArray*) gallery;
 
 - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
+
 - (void)getImageListForGroup:(NSString*) gid success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-- (void)saveImage:(NSData*) image;
+
 - (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)deleteImageWithName:(NSString*) filename success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
-- (void)getSharedImages;
 
-- (NSString*)generateLinkForImage:(NSString*) name;
-- (NSString*)generateLinkForGallery:(NSString*) name;
 
-@property (nonatomic, strong) NSString* token;
-@property (nonatomic, strong) NSNumber* loggedin;
-@property (nonatomic, strong) NSNumber* noad;
-@property (nonatomic, strong) NSNumber* motd_time;
 
-@property (nonatomic, strong) NSArray* gallery;
-@property (nonatomic, strong) NSNumber* selectedGallery;
-@property (nonatomic, strong) NSString* selectedResolution;
-@property (nonatomic, strong) NSNumber* sortedGallery;
 
-@property (nonatomic, strong) NSNumber* selectedScale;
-@property (nonatomic, strong) NSArray* listScaling;
 
-@property (nonatomic, strong) NSNumber* selectedOutputLinks;
-@property (nonatomic, strong) NSArray* listOutputLinks;
 
-@property (nonatomic, strong) NSMutableDictionary* imageList;
-@property (nonatomic, strong) NSArray* imageLast;
 
-@property (nonatomic, strong) NSString* uploadPath;
-@property NSInteger uploadNumber;
-@property (nonatomic, strong) NSMutableArray* uploadImages;
-@property (nonatomic, strong) NSString* sharePath;
 
-@property (nonatomic, strong) NSURLSessionDataTask* uploadTask;
 
 @end
