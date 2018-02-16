@@ -33,10 +33,6 @@
 }
 
 + (void)initialize {
-    // User Defaults
-    NSDictionary *defaults = [NSDictionary dictionaryWithObjectsAndKeys:@"", @"token", nil];
-    [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
-
     // Disable URLCache by aktivating Cache with 0 bytes
     //NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
     //[NSURLCache setSharedURLCache:sharedCache];

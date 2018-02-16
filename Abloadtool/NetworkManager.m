@@ -13,6 +13,7 @@
 @interface NetworkManager()
     @property (nonatomic, strong) AFHTTPSessionManager *networkingManager;
     @property (nonatomic, strong) MBProgressHUD *progressHUD;
+    @property (nonatomic, strong) NSUserDefaults *defaults;
 @end
 
 
@@ -23,6 +24,7 @@
 #pragma mark - Constructors
 
 static NetworkManager *sharedManager = nil;
+
 
 + (NetworkManager*)sharedManager {
     static dispatch_once_t once;
@@ -36,6 +38,14 @@ static NetworkManager *sharedManager = nil;
 - (id)init {
     NSLog(@"Net - init");
     if ((self = [super init])) {
+        self.defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.de.bluepaw.Abloadtool"];
+
+        NSFileManager* fileManager = [[NSFileManager alloc] init];
+        NSURL* securityPath = [fileManager containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool"];
+        NSLog(@"NET - securityPath :: %@", securityPath);
+        self.sharePath = [[securityPath path] stringByAppendingPathComponent:@"images"];
+        NSLog(@"NET - sharePath :: %@", self.sharePath);
+
         self.loggedin = [NSNumber numberWithInteger:0]; // Not Logged In
         self.noad = [NSNumber numberWithInteger:0]; // Show Ad
         self.imageList = [[NSMutableDictionary alloc] initWithCapacity:10];
@@ -65,7 +75,7 @@ static NetworkManager *sharedManager = nil;
             if ([[file pathExtension] isEqualToString: @"jpeg"]) {
                 NSString* filePath = [self.uploadPath stringByAppendingPathComponent:file];
                 NSNumber* fileSize = [NSNumber numberWithLong:[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize]];
-                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", file, @"_name", fileSize, @"_size", @"0", @"_uploaded", nil];
+                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", file, @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
                 [self.uploadImages addObject:photoDict];
             }
         }
@@ -300,74 +310,72 @@ static NetworkManager *sharedManager = nil;
 #pragma mark - Settings
 
 - (void)loadDefaults {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    if ([defaults objectForKey:@"token"]) {
-        self.token = [defaults objectForKey:@"token"];
+    if ([self.defaults objectForKey:@"token"]) {
+        self.token = [self.defaults objectForKey:@"token"];
         NSLog(@"NET - token %@", self.token);
     } else {
         self.token = @"";
         NSLog(@"NET - token NEW");
     }
     
-    if ([defaults objectForKey:@"gallery"]) {
-        self.gallery = [defaults objectForKey:@"gallery"];
+    if ([self.defaults objectForKey:@"gallery"]) {
+        self.gallery = [self.defaults objectForKey:@"gallery"];
         NSLog(@"NET - loadGallery %ld", [self.gallery count]);
     } else {
         self.gallery = [[NSArray alloc] init];
         NSLog(@"NET - loadGallery NEW");
     }
     
-    if ([defaults objectForKey:@"motd_time"]) {
-        self.motd_time = [defaults objectForKey:@"motd_time"];
+    if ([self.defaults objectForKey:@"motd_time"]) {
+        self.motd_time = [self.defaults objectForKey:@"motd_time"];
         NSLog(@"NET - mod_time %ld", [self.motd_time longValue]);
     } else {
         self.motd_time =  [NSNumber numberWithInt:0];
         NSLog(@"NET - mod_time NEW");
     }
     
-    if ([defaults objectForKey:@"gallery_selected"]) {
-        self.selectedGallery = [defaults objectForKey:@"gallery_selected"];
+    if ([self.defaults objectForKey:@"gallery_selected"]) {
+        self.selectedGallery = [self.defaults objectForKey:@"gallery_selected"];
         NSLog(@"NET - selectedGallery %ld", [self.selectedGallery longValue]);
     } else {
         self.selectedGallery =  [NSNumber numberWithInt:0];
         NSLog(@"NET - selectedGallery NEW");
     }
 
-    if ([defaults objectForKey:@"resolution_selected"]) {
-        self.selectedResolution = [defaults objectForKey:@"resolution_selected"];
+    if ([self.defaults objectForKey:@"resolution_selected"]) {
+        self.selectedResolution = [self.defaults objectForKey:@"resolution_selected"];
         NSLog(@"NET - selectedResolution %@", self.selectedResolution);
     } else {
         self.selectedResolution = NSLocalizedString(@"label_keeporiginal", @"Settings");
         NSLog(@"NET - selectedResolution NEW");
     }
 
-    if ([defaults objectForKey:@"scale_selected"]) {
-        self.selectedScale = [defaults objectForKey:@"scale_selected"];
+    if ([self.defaults objectForKey:@"scale_selected"]) {
+        self.selectedScale = [self.defaults objectForKey:@"scale_selected"];
         NSLog(@"NET - selectedScale %ld", [self.selectedScale longValue]);
     } else {
         self.selectedScale =  [NSNumber numberWithInt:1];
         NSLog(@"NET - selectedScale NEW");
     }
 
-    if ([defaults objectForKey:@"outputlinks_selected"]) {
-        self.selectedOutputLinks = [defaults objectForKey:@"outputlinks_selected"];
+    if ([self.defaults objectForKey:@"outputlinks_selected"]) {
+        self.selectedOutputLinks = [self.defaults objectForKey:@"outputlinks_selected"];
         NSLog(@"NET - selectedOutputLinks %ld", [self.selectedOutputLinks longValue]);
     } else {
         self.selectedOutputLinks =  [NSNumber numberWithInt:0];
         NSLog(@"NET - selectedOutputLinks NEW");
     }
 
-    if ([defaults objectForKey:@"upload_number"]) {
-        self.uploadNumber = [defaults integerForKey:@"upload_number"];
+    if ([self.defaults objectForKey:@"upload_number"]) {
+        self.uploadNumber = [self.defaults integerForKey:@"upload_number"];
         NSLog(@"NET - uploadNumber %ld / %ld", (long)self.uploadNumber, NSIntegerMax);
     } else {
         self.uploadNumber = 0;
         NSLog(@"NET - uploadNumber NEW");
     }
     
-    if ([defaults objectForKey:@"gallery_sorted"]) {
-        self.sortedGallery = [defaults objectForKey:@"gallery_sorted"];
+    if ([self.defaults objectForKey:@"gallery_sorted"]) {
+        self.sortedGallery = [self.defaults objectForKey:@"gallery_sorted"];
         NSLog(@"NET - selectedScale %ld", [self.sortedGallery longValue]);
     } else {
         self.sortedGallery =  [NSNumber numberWithInt:0];
@@ -377,9 +385,8 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)saveToken:(NSString*) token {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:token forKey:@"token"];
-    [defaults synchronize];
+    [self.defaults setObject:token forKey:@"token"];
+    [self.defaults synchronize];
 }
 
 - (void)saveGalleryList:(NSArray*) gallery {
@@ -399,56 +406,47 @@ static NetworkManager *sharedManager = nil;
             }];
             break;
     }
-
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:self.gallery forKey:@"gallery"];
-    [defaults synchronize];
+    [self.defaults setObject:self.gallery forKey:@"gallery"];
+    [self.defaults synchronize];
 }
 
 - (void)saveSelectedGallery:(NSNumber*) gid {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:gid forKey:@"gallery_selected"];
-    [defaults synchronize];
+    [self.defaults setObject:gid forKey:@"gallery_selected"];
+    [self.defaults synchronize];
     self.selectedGallery = gid;
 }
 
 - (void)saveSelectedResolution:(NSString*) name {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:name forKey:@"resolution_selected"];
-    [defaults synchronize];
+    [self.defaults setObject:name forKey:@"resolution_selected"];
+    [self.defaults synchronize];
     self.selectedResolution = name;
 }
 
 - (void)saveSelectedScale:(NSNumber*) scale {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:scale forKey:@"scale_selected"];
-    [defaults synchronize];
+    [self.defaults setObject:scale forKey:@"scale_selected"];
+    [self.defaults synchronize];
     self.selectedScale = scale;
 }
 
 - (void)saveSelectedOutputLinks:(NSNumber*) outputLinks {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:outputLinks forKey:@"outputlinks_selected"];
-    [defaults synchronize];
+    [self.defaults setObject:outputLinks forKey:@"outputlinks_selected"];
+    [self.defaults synchronize];
     self.selectedOutputLinks = outputLinks;
 }
 
 - (void)saveUploadNumber {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setInteger:self.uploadNumber forKey:@"upload_number"];
-    [defaults synchronize];
+    [self.defaults setInteger:self.uploadNumber forKey:@"upload_number"];
+    [self.defaults synchronize];
 }
 
 - (void)saveMotdTime:(NSNumber*) motdTime {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:motdTime forKey:@"motd_time"];
-    [defaults synchronize];
+    [self.defaults setObject:motdTime forKey:@"motd_time"];
+    [self.defaults synchronize];
 }
 
 - (void)saveSortedGallery:(NSNumber*) sortedGallery {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:sortedGallery forKey:@"gallery_sorted"];
-    [defaults synchronize];
+    [self.defaults setObject:sortedGallery forKey:@"gallery_sorted"];
+    [self.defaults synchronize];
     self.sortedGallery = sortedGallery;
 }
 
@@ -615,7 +613,7 @@ static NetworkManager *sharedManager = nil;
     NSString *photoFile = [self.uploadPath stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
     [image writeToFile:photoFile atomically:YES];
     
-    NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:photoFile, @"_path", [photoFile lastPathComponent], @"_name", [NSNumber numberWithLong:[image length]], @"_size", @"0", @"_uploaded", nil];
+    NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:photoFile, @"_path", [photoFile lastPathComponent], @"_filename", [NSNumber numberWithLong:[image length]], @"_filesize", @"0", @"_uploaded", nil];
     [self.uploadImages addObject:photoDict];
 }
 
@@ -650,7 +648,7 @@ static NetworkManager *sharedManager = nil;
         }
         NSData* imageData = UIImageJPEGRepresentation(imageNew, jpegQuality);
         [imageData writeToFile:[metaImage objectForKey:@"_path"] atomically:YES];
-        [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_size"];
+        [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
     }
     // Upload Image
     NSMutableDictionary *params = [self getBaseParams];
@@ -660,7 +658,7 @@ static NetworkManager *sharedManager = nil;
     }
     self.uploadTask = [[self getNetworkingManager] POST:@"upload" parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
         //[formData appendPartWithFormData:[self.token dataUsingEncoding:NSUTF8StringEncoding] name:@"session"];
-        [formData appendPartWithFileURL:[NSURL fileURLWithPath:[metaImage objectForKey:@"_path"]] name:@"img0" fileName:[metaImage objectForKey:@"_name"] mimeType:@"image/jpeg" error:nil];
+        [formData appendPartWithFileURL:[NSURL fileURLWithPath:[metaImage objectForKey:@"_path"]] name:@"img0" fileName:[metaImage objectForKey:@"_filename"] mimeType:@"image/jpeg" error:nil];
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         dispatch_async(dispatch_get_main_queue(), ^{
             float p = uploadProgress.fractionCompleted;
@@ -724,6 +722,41 @@ static NetworkManager *sharedManager = nil;
 
 - (NSString*)generateLinkForGallery:(NSString*) name {
     return [NSString stringWithFormat:@"%@/gallery.php?key=%@", cURL_BASE, name];
+}
+
+- (void)getSharedImages {
+    NSInteger shareCount = [self.defaults integerForKey:@"share_count"];
+    if(shareCount > 0) {
+        
+        
+        
+        NSFileManager *localFileManager=[[NSFileManager alloc] init];
+        NSDirectoryEnumerator *dirEnum = [localFileManager enumeratorAtPath:self.sharePath];
+        NSString *file;
+        while ((file = [dirEnum nextObject])) {
+            if ([[file pathExtension] isEqualToString: @"jpeg"]) {
+                NSString* filePath = [self.sharePath stringByAppendingPathComponent:file];
+
+                if(self.uploadNumber >= NSIntegerMax)
+                    self.uploadNumber = 1;
+                else
+                    self.uploadNumber++;
+                [self saveUploadNumber];
+                NSString *photoFile = [self.uploadPath stringByAppendingFormat:@"/mobile.%ld.shared.jpeg", self.uploadNumber];
+
+        
+                [localFileManager moveItemAtPath:filePath toPath:photoFile error:nil];
+                
+                NSNumber* fileSize = [NSNumber numberWithLong:[[[NSFileManager defaultManager] attributesOfItemAtPath:photoFile error:nil] fileSize]];
+                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:photoFile, @"_path", [photoFile lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
+                [self.uploadImages addObject:photoDict];
+            }
+        }
+        
+        shareCount = 0;
+        [self.defaults setInteger:shareCount forKey:@"share_count"];
+        [self.defaults synchronize];
+    }
 }
 
 

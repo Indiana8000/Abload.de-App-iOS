@@ -9,6 +9,34 @@
 			<key>orderHint</key>
 			<integer>9</integer>
 		</dict>
+		<key>AbloadtoolShare.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>10</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>A1AD2D672035D20700777D07</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A1EE6B571F864E0700F78F24</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A1EE6B721F864E0700F78F24</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A1EE6B7D1F864E0700F78F24</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 	</dict>
 </dict>
 </plist>

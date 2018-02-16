@@ -8,12 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		3E3A6511E0C2E1EABD867CBC /* libPods-Abloadtool.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A20A928C3CA6579C7E7B319A /* libPods-Abloadtool.a */; };
-		529FF7221FECEF0686558678 /* libPods-AbloadtoolTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD1F4B2B0D37E50350CA4BDA /* libPods-AbloadtoolTests.a */; };
-		980CAF9CA9736392507CE62B /* libPods-AbloadtoolUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAB2C2A8A42CF26F810AB14 /* libPods-AbloadtoolUITests.a */; };
 		A1049B23201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1049B22201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m */; };
 		A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1067D7E1F8652D0007D1D89 /* libAFNetworking.a */; };
 		A1067D811F866CCF007D1D89 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1067D801F866CCF007D1D89 /* NetworkManager.m */; };
-		A1067D821F866CCF007D1D89 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1067D801F866CCF007D1D89 /* NetworkManager.m */; };
 		A11E2A551FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */; };
 		A11E2A581FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */; };
 		A12E2276200759CF000623E5 /* AT_DetailedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E2275200759CF000623E5 /* AT_DetailedViewController.m */; };
@@ -28,6 +25,10 @@
 		A18B58F7201266F500379284 /* scalemethods.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F9201266F500379284 /* scalemethods.plist */; };
 		A18B58FE2012686100379284 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A18B58FC2012686100379284 /* Localizable.strings */; };
 		A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */; };
+		A1AD2D812035DF4C00777D07 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1AD2D802035DF4C00777D07 /* ShareViewController.m */; };
+		A1AD2D842035DF4C00777D07 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1AD2D822035DF4C00777D07 /* MainInterface.storyboard */; };
+		A1AD2D882035DF4C00777D07 /* AbloadtoolShare.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A1AD2D7D2035DF4C00777D07 /* AbloadtoolShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A1AD2D8D203618E800777D07 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A18B58FC2012686100379284 /* Localizable.strings */; };
 		A1B00A662013734600059ADE /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B00A652013734600059ADE /* UIImage+Scale.m */; };
 		A1B00A6F20139A9000059ADE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A1B00A7120139A9000059ADE /* InfoPlist.strings */; };
 		A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */; };
@@ -39,26 +40,31 @@
 		A1EE6B681F864E0700F78F24 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1EE6B671F864E0700F78F24 /* Assets.xcassets */; };
 		A1EE6B6B1F864E0700F78F24 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */; };
 		A1EE6B6E1F864E0700F78F24 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EE6B6D1F864E0700F78F24 /* main.m */; };
-		A1EE6B781F864E0700F78F24 /* AbloadtoolTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EE6B771F864E0700F78F24 /* AbloadtoolTests.m */; };
-		A1EE6B831F864E0700F78F24 /* AbloadtoolUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EE6B821F864E0700F78F24 /* AbloadtoolUITests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		A1EE6B741F864E0700F78F24 /* PBXContainerItemProxy */ = {
+		A1AD2D862035DF4C00777D07 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A1EE6B501F864E0700F78F24 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = A1EE6B571F864E0700F78F24;
-			remoteInfo = Abloadtool;
-		};
-		A1EE6B7F1F864E0700F78F24 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1EE6B501F864E0700F78F24 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A1EE6B571F864E0700F78F24;
-			remoteInfo = Abloadtool;
+			remoteGlobalIDString = A1AD2D7C2035DF4C00777D07;
+			remoteInfo = AbloadtoolShare;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A1AD2D772035D20700777D07 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A1AD2D882035DF4C00777D07 /* AbloadtoolShare.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0153291D76D079647D18A38C /* Pods-AbloadtoolTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbloadtoolTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AbloadtoolTests/Pods-AbloadtoolTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -99,6 +105,12 @@
 		A18B58FF2012686A00379284 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		A18EDF421FA34E6300F8E80E /* AT_UploadTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_UploadTableViewController.h; sourceTree = "<group>"; };
 		A18EDF431FA34E6300F8E80E /* AT_UploadTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_UploadTableViewController.m; sourceTree = "<group>"; };
+		A1AD2D7D2035DF4C00777D07 /* AbloadtoolShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AbloadtoolShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1AD2D7F2035DF4C00777D07 /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
+		A1AD2D802035DF4C00777D07 /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
+		A1AD2D832035DF4C00777D07 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		A1AD2D852035DF4C00777D07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1AD2D8C2035E0B000777D07 /* AbloadtoolShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AbloadtoolShare.entitlements; sourceTree = "<group>"; };
 		A1B00A642013734600059ADE /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Scale.h"; sourceTree = "<group>"; };
 		A1B00A652013734600059ADE /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Scale.m"; sourceTree = "<group>"; };
 		A1B00A7020139A9000059ADE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -118,12 +130,6 @@
 		A1EE6B5C1F864E0700F78F24 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		A1EE6B671F864E0700F78F24 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1EE6B6D1F864E0700F78F24 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		A1EE6B731F864E0700F78F24 /* AbloadtoolTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbloadtoolTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1EE6B771F864E0700F78F24 /* AbloadtoolTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AbloadtoolTests.m; sourceTree = "<group>"; };
-		A1EE6B791F864E0700F78F24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A1EE6B7E1F864E0700F78F24 /* AbloadtoolUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbloadtoolUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1EE6B821F864E0700F78F24 /* AbloadtoolUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AbloadtoolUITests.m; sourceTree = "<group>"; };
-		A1EE6B841F864E0700F78F24 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A20A928C3CA6579C7E7B319A /* libPods-Abloadtool.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Abloadtool.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B57E11279FF8618D7CEC1E87 /* Pods-AbloadtoolUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AbloadtoolUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AbloadtoolUITests/Pods-AbloadtoolUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		BB3EFA445ED4F087135CB5F9 /* Pods-Abloadtool.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Abloadtool.release.xcconfig"; path = "Pods/Target Support Files/Pods-Abloadtool/Pods-Abloadtool.release.xcconfig"; sourceTree = "<group>"; };
@@ -134,6 +140,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A1AD2D7A2035DF4C00777D07 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1EE6B551F864E0700F78F24 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -142,22 +155,6 @@
 				A1E504DE1F8BECEB0029146D /* libXMLDictionary.a in Frameworks */,
 				A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */,
 				3E3A6511E0C2E1EABD867CBC /* libPods-Abloadtool.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A1EE6B701F864E0700F78F24 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				529FF7221FECEF0686558678 /* libPods-AbloadtoolTests.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A1EE6B7B1F864E0700F78F24 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				980CAF9CA9736392507CE62B /* libPods-AbloadtoolUITests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,12 +219,23 @@
 			name = "Support Files";
 			sourceTree = "<group>";
 		};
+		A1AD2D7E2035DF4C00777D07 /* AbloadtoolShare */ = {
+			isa = PBXGroup;
+			children = (
+				A1AD2D8C2035E0B000777D07 /* AbloadtoolShare.entitlements */,
+				A1AD2D7F2035DF4C00777D07 /* ShareViewController.h */,
+				A1AD2D802035DF4C00777D07 /* ShareViewController.m */,
+				A1AD2D822035DF4C00777D07 /* MainInterface.storyboard */,
+				A1AD2D852035DF4C00777D07 /* Info.plist */,
+			);
+			path = AbloadtoolShare;
+			sourceTree = "<group>";
+		};
 		A1EE6B4F1F864E0700F78F24 = {
 			isa = PBXGroup;
 			children = (
 				A1EE6B5A1F864E0700F78F24 /* Abloadtool */,
-				A1EE6B761F864E0700F78F24 /* AbloadtoolTests */,
-				A1EE6B811F864E0700F78F24 /* AbloadtoolUITests */,
+				A1AD2D7E2035DF4C00777D07 /* AbloadtoolShare */,
 				A1EE6B591F864E0700F78F24 /* Products */,
 				D0D11EB49D3E8A30403D0E30 /* Pods */,
 				15B5AA95DD45F0A80546805E /* Frameworks */,
@@ -238,8 +246,7 @@
 			isa = PBXGroup;
 			children = (
 				A1EE6B581F864E0700F78F24 /* Abloadtool.app */,
-				A1EE6B731F864E0700F78F24 /* AbloadtoolTests.xctest */,
-				A1EE6B7E1F864E0700F78F24 /* AbloadtoolUITests.xctest */,
+				A1AD2D7D2035DF4C00777D07 /* AbloadtoolShare.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -276,24 +283,6 @@
 			path = Abloadtool;
 			sourceTree = "<group>";
 		};
-		A1EE6B761F864E0700F78F24 /* AbloadtoolTests */ = {
-			isa = PBXGroup;
-			children = (
-				A1EE6B771F864E0700F78F24 /* AbloadtoolTests.m */,
-				A1EE6B791F864E0700F78F24 /* Info.plist */,
-			);
-			path = AbloadtoolTests;
-			sourceTree = "<group>";
-		};
-		A1EE6B811F864E0700F78F24 /* AbloadtoolUITests */ = {
-			isa = PBXGroup;
-			children = (
-				A1EE6B821F864E0700F78F24 /* AbloadtoolUITests.m */,
-				A1EE6B841F864E0700F78F24 /* Info.plist */,
-			);
-			path = AbloadtoolUITests;
-			sourceTree = "<group>";
-		};
 		D0D11EB49D3E8A30403D0E30 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -310,6 +299,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A1AD2D7C2035DF4C00777D07 /* AbloadtoolShare */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1AD2D892035DF4C00777D07 /* Build configuration list for PBXNativeTarget "AbloadtoolShare" */;
+			buildPhases = (
+				A1AD2D792035DF4C00777D07 /* Sources */,
+				A1AD2D7A2035DF4C00777D07 /* Frameworks */,
+				A1AD2D7B2035DF4C00777D07 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AbloadtoolShare;
+			productName = AbloadtoolShare;
+			productReference = A1AD2D7D2035DF4C00777D07 /* AbloadtoolShare.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		A1EE6B571F864E0700F78F24 /* Abloadtool */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1EE6B871F864E0700F78F24 /* Build configuration list for PBXNativeTarget "Abloadtool" */;
@@ -320,57 +326,17 @@
 				A1EE6B561F864E0700F78F24 /* Resources */,
 				9A1661F0ECE508C90A524B57 /* [CP] Embed Pods Frameworks */,
 				7329A63997B4B17DD631BDFB /* [CP] Copy Pods Resources */,
+				A1AD2D772035D20700777D07 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A1AD2D872035DF4C00777D07 /* PBXTargetDependency */,
 			);
 			name = Abloadtool;
 			productName = Abloadtool;
 			productReference = A1EE6B581F864E0700F78F24 /* Abloadtool.app */;
 			productType = "com.apple.product-type.application";
-		};
-		A1EE6B721F864E0700F78F24 /* AbloadtoolTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A1EE6B8A1F864E0700F78F24 /* Build configuration list for PBXNativeTarget "AbloadtoolTests" */;
-			buildPhases = (
-				9A6DDAAFBDC427C26A6BC465 /* [CP] Check Pods Manifest.lock */,
-				A1EE6B6F1F864E0700F78F24 /* Sources */,
-				A1EE6B701F864E0700F78F24 /* Frameworks */,
-				A1EE6B711F864E0700F78F24 /* Resources */,
-				D40F0A599ABC71645F5E4E30 /* [CP] Embed Pods Frameworks */,
-				4A2F28C5BE312962B33755E5 /* [CP] Copy Pods Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A1EE6B751F864E0700F78F24 /* PBXTargetDependency */,
-			);
-			name = AbloadtoolTests;
-			productName = AbloadtoolTests;
-			productReference = A1EE6B731F864E0700F78F24 /* AbloadtoolTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		A1EE6B7D1F864E0700F78F24 /* AbloadtoolUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A1EE6B8D1F864E0700F78F24 /* Build configuration list for PBXNativeTarget "AbloadtoolUITests" */;
-			buildPhases = (
-				E33F3469077B346197D7FD4B /* [CP] Check Pods Manifest.lock */,
-				A1EE6B7A1F864E0700F78F24 /* Sources */,
-				A1EE6B7B1F864E0700F78F24 /* Frameworks */,
-				A1EE6B7C1F864E0700F78F24 /* Resources */,
-				563B42D93CDC9CEF7A67E418 /* [CP] Embed Pods Frameworks */,
-				3493ACC567174846F49201B4 /* [CP] Copy Pods Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A1EE6B801F864E0700F78F24 /* PBXTargetDependency */,
-			);
-			name = AbloadtoolUITests;
-			productName = AbloadtoolUITests;
-			productReference = A1EE6B7E1F864E0700F78F24 /* AbloadtoolUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -381,24 +347,26 @@
 				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Andreas Kreisl";
 				TargetAttributes = {
+					A1AD2D7C2035DF4C00777D07 = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
 					A1EE6B571F864E0700F78F24 = {
 						CreatedOnToolsVersion = 9.0;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
 							com.apple.iCloud = {
 								enabled = 0;
 							};
 						};
-					};
-					A1EE6B721F864E0700F78F24 = {
-						CreatedOnToolsVersion = 9.0;
-						ProvisioningStyle = Automatic;
-						TestTargetID = A1EE6B571F864E0700F78F24;
-					};
-					A1EE6B7D1F864E0700F78F24 = {
-						CreatedOnToolsVersion = 9.0;
-						ProvisioningStyle = Automatic;
-						TestTargetID = A1EE6B571F864E0700F78F24;
 					};
 				};
 			};
@@ -409,6 +377,7 @@
 			knownRegions = (
 				en,
 				de,
+				Base,
 			);
 			mainGroup = A1EE6B4F1F864E0700F78F24;
 			productRefGroup = A1EE6B591F864E0700F78F24 /* Products */;
@@ -416,13 +385,21 @@
 			projectRoot = "";
 			targets = (
 				A1EE6B571F864E0700F78F24 /* Abloadtool */,
-				A1EE6B721F864E0700F78F24 /* AbloadtoolTests */,
-				A1EE6B7D1F864E0700F78F24 /* AbloadtoolUITests */,
+				A1AD2D7C2035DF4C00777D07 /* AbloadtoolShare */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A1AD2D7B2035DF4C00777D07 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1AD2D842035DF4C00777D07 /* MainInterface.storyboard in Resources */,
+				A1AD2D8D203618E800777D07 /* Localizable.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1EE6B561F864E0700F78F24 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -438,68 +415,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A1EE6B711F864E0700F78F24 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A1EE6B7C1F864E0700F78F24 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3493ACC567174846F49201B4 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AbloadtoolUITests/Pods-AbloadtoolUITests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4A2F28C5BE312962B33755E5 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AbloadtoolTests/Pods-AbloadtoolTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		563B42D93CDC9CEF7A67E418 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AbloadtoolUITests/Pods-AbloadtoolUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		7329A63997B4B17DD631BDFB /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -553,60 +471,17 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Abloadtool/Pods-Abloadtool-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9A6DDAAFBDC427C26A6BC465 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-AbloadtoolTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D40F0A599ABC71645F5E4E30 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AbloadtoolTests/Pods-AbloadtoolTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E33F3469077B346197D7FD4B /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-AbloadtoolUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A1AD2D792035DF4C00777D07 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1AD2D812035DF4C00777D07 /* ShareViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A1EE6B541F864E0700F78F24 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -631,35 +506,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A1EE6B6F1F864E0700F78F24 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A1067D821F866CCF007D1D89 /* NetworkManager.m in Sources */,
-				A1EE6B781F864E0700F78F24 /* AbloadtoolTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A1EE6B7A1F864E0700F78F24 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A1EE6B831F864E0700F78F24 /* AbloadtoolUITests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A1EE6B751F864E0700F78F24 /* PBXTargetDependency */ = {
+		A1AD2D872035DF4C00777D07 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A1EE6B571F864E0700F78F24 /* Abloadtool */;
-			targetProxy = A1EE6B741F864E0700F78F24 /* PBXContainerItemProxy */;
-		};
-		A1EE6B801F864E0700F78F24 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A1EE6B571F864E0700F78F24 /* Abloadtool */;
-			targetProxy = A1EE6B7F1F864E0700F78F24 /* PBXContainerItemProxy */;
+			target = A1AD2D7C2035DF4C00777D07 /* AbloadtoolShare */;
+			targetProxy = A1AD2D862035DF4C00777D07 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -700,6 +553,14 @@
 			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
+		A1AD2D822035DF4C00777D07 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A1AD2D832035DF4C00777D07 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
 		A1B00A7120139A9000059ADE /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -720,6 +581,38 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		A1AD2D8A2035DF4C00777D07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AbloadtoolShare/AbloadtoolShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = RYEH6L2AC3;
+				INFOPLIST_FILE = AbloadtoolShare/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = de.bluepaw.Abloadtool.AbloadtoolShare;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A1AD2D8B2035DF4C00777D07 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AbloadtoolShare/AbloadtoolShare.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = RYEH6L2AC3;
+				INFOPLIST_FILE = AbloadtoolShare/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = de.bluepaw.Abloadtool.AbloadtoolShare;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		A1EE6B851F864E0700F78F24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -831,6 +724,7 @@
 			baseConfigurationReference = FE09CBE5EA925E488DE39672 /* Pods-Abloadtool.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Abloadtool/Abloadtool.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
 				INFOPLIST_FILE = Abloadtool/Info.plist;
@@ -847,6 +741,7 @@
 			baseConfigurationReference = BB3EFA445ED4F087135CB5F9 /* Pods-Abloadtool.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Abloadtool/Abloadtool.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
 				INFOPLIST_FILE = Abloadtool/Info.plist;
@@ -858,71 +753,18 @@
 			};
 			name = Release;
 		};
-		A1EE6B8B1F864E0700F78F24 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0153291D76D079647D18A38C /* Pods-AbloadtoolTests.debug.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = RYEH6L2AC3;
-				INFOPLIST_FILE = AbloadtoolTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = de.bluepaw.AbloadtoolTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Abloadtool.app/Abloadtool";
-			};
-			name = Debug;
-		};
-		A1EE6B8C1F864E0700F78F24 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E7360DFC41E5F6F224B4DDA2 /* Pods-AbloadtoolTests.release.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = RYEH6L2AC3;
-				INFOPLIST_FILE = AbloadtoolTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = de.bluepaw.AbloadtoolTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Abloadtool.app/Abloadtool";
-			};
-			name = Release;
-		};
-		A1EE6B8E1F864E0700F78F24 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = B57E11279FF8618D7CEC1E87 /* Pods-AbloadtoolUITests.debug.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = RYEH6L2AC3;
-				INFOPLIST_FILE = AbloadtoolUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = de.bluepaw.AbloadtoolUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Abloadtool;
-			};
-			name = Debug;
-		};
-		A1EE6B8F1F864E0700F78F24 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 07340EA2D57CB46617C65DED /* Pods-AbloadtoolUITests.release.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = RYEH6L2AC3;
-				INFOPLIST_FILE = AbloadtoolUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = de.bluepaw.AbloadtoolUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Abloadtool;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A1AD2D892035DF4C00777D07 /* Build configuration list for PBXNativeTarget "AbloadtoolShare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1AD2D8A2035DF4C00777D07 /* Debug */,
+				A1AD2D8B2035DF4C00777D07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A1EE6B531F864E0700F78F24 /* Build configuration list for PBXProject "Abloadtool" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -937,24 +779,6 @@
 			buildConfigurations = (
 				A1EE6B881F864E0700F78F24 /* Debug */,
 				A1EE6B891F864E0700F78F24 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A1EE6B8A1F864E0700F78F24 /* Build configuration list for PBXNativeTarget "AbloadtoolTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A1EE6B8B1F864E0700F78F24 /* Debug */,
-				A1EE6B8C1F864E0700F78F24 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A1EE6B8D1F864E0700F78F24 /* Build configuration list for PBXNativeTarget "AbloadtoolUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A1EE6B8E1F864E0700F78F24 /* Debug */,
-				A1EE6B8F1F864E0700F78F24 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

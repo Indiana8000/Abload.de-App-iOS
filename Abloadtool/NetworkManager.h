@@ -51,6 +51,8 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 - (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)deleteImageWithName:(NSString*) filename success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
+- (void)getSharedImages;
+
 - (NSString*)generateLinkForImage:(NSString*) name;
 - (NSString*)generateLinkForGallery:(NSString*) name;
 
@@ -76,6 +78,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 @property (nonatomic, strong) NSString* uploadPath;
 @property NSInteger uploadNumber;
 @property (nonatomic, strong) NSMutableArray* uploadImages;
+@property (nonatomic, strong) NSString* sharePath;
 
 @property (nonatomic, strong) NSURLSessionDataTask* uploadTask;
 

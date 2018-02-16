@@ -100,7 +100,7 @@ Types:
 <- status (code 703 = OK)
 ~~<- login~~
 ~~<- motd~~
-<- lastimages (if one of the last 5 got deleted!)
+<- lastimages
 
 
 ## Status-Code
