@@ -14,11 +14,15 @@
 
 @implementation ShareViewController
 
+
 - (void)viewDidLoad {
+    [super viewDidLoad];
     self.title = NSLocalizedString(@"Abloadtool", @"Abloadtool");
-    self.textView.editable = NO;
+    //self.textView.editable = NO;
     
-    NSLog(@"extensionContext: %@", self.extensionContext);
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        // TODO: unknown
+    }];
 }
 
 - (BOOL)isContentValid {
@@ -28,28 +32,34 @@
 - (void)didSelectPost {
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.de.bluepaw.Abloadtool"];
     
-    NSFileManager* fileManager = [[NSFileManager alloc] init];
-    NSURL* securityPath = [fileManager containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool"];
-    NSLog(@"DEBUG - securityPath :: %@", securityPath);
-
+    NSURL* securityPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool"];
     NSString* filePath = [[securityPath path] stringByAppendingPathComponent:@"images"];
     if(![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:nil];
     }
-    NSLog(@"DEBUG - filePath :: %@", filePath);
-
+    
     if(securityPath) {
+        PHFetchOptions *options = [[PHFetchOptions alloc] init];
+        options.includeHiddenAssets = YES;
+        _assetsFetchResults = [PHAsset fetchAssetsWithOptions:options];
+        _imageManager = [[PHCachingImageManager alloc] init];
+        _imageList = [[NSMutableDictionary alloc] init];
+        for(PHAsset* asset in _assetsFetchResults) {
+            [_imageList setObject:asset forKey:[asset valueForKey:@"filename"]];
+        }
+
         NSExtensionItem* extensionItem = self.extensionContext.inputItems[0];
         for(NSItemProvider* itemProvider in extensionItem.attachments) {
-            if([itemProvider hasItemConformingToTypeIdentifier:@"public.jpeg"]) {
-                NSLog(@"itemProvider:\r\n%@", itemProvider);
-                [itemProvider loadItemForTypeIdentifier:@"public.jpeg" options:nil completionHandler:^(id<NSSecureCoding>  _Nullable item, NSError * _Null_unspecified error) {
+            if ([itemProvider hasItemConformingToTypeIdentifier:itemProvider.registeredTypeIdentifiers.firstObject]) {
+                [itemProvider loadItemForTypeIdentifier:itemProvider.registeredTypeIdentifiers.firstObject options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                     NSData* imgData = nil;
                     if( [(NSObject*)item isKindOfClass:[NSURL class]]) {
-                        imgData = [NSData dataWithContentsOfURL:(NSURL*)item];
-                    }
-                    if( [(NSObject*)item isKindOfClass:[UIImage class]]) {
+                        //imgData = [NSData dataWithContentsOfURL:(NSURL*)item];
+                        imgData = [self fetchImage:[[(NSURL*)item pathComponents] lastObject]];
+                    } else if( [(NSObject*)item isKindOfClass:[UIImage class]]) {
                         imgData = UIImageJPEGRepresentation((UIImage*)item, 0.85);
+                    } else if( [(NSObject*)item isKindOfClass:[NSData class]]) {
+                        imgData = (NSData*)item;
                     }
                     if(imgData != nil) {
                         NSInteger shareCount;
@@ -61,10 +71,7 @@
                         
                         NSString* fileName = [filePath stringByAppendingPathComponent:[NSString stringWithFormat:@"shared.%ld.jpeg", shareCount]];
                         [imgData writeToFile:fileName atomically:YES];
-                        //NSURL* fileName = [securityPath URLByAppendingPathComponent:[NSString stringWithFormat:@"shared.%ld.jpeg", shareCount]];
-                        //[imgData writeToURL:fileName atomically:YES];
 
-                        NSLog(@"DEBUG - shareCount :: %ld", shareCount);
                         [defaults setInteger:shareCount forKey:@"share_count"];
                         [defaults synchronize];
                     }
@@ -80,6 +87,22 @@
 
 - (NSArray *)configurationItems {
     return @[];
+}
+
+- (NSData*)fetchImage:(NSString*) filename {
+    if([_imageList objectForKey:filename]) {
+        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+        options.synchronous = YES;
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        
+        __block NSData* tmp = nil;
+        [_imageManager requestImageDataForAsset:[_imageList objectForKey:filename] options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+            tmp = imageData;
+        }];
+        return tmp;
+    } else {
+        return nil;
+    }
 }
 
 @end

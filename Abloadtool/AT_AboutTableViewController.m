@@ -124,7 +124,7 @@
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://abload.de/"] options:tmpDict completionHandler:nil];
             break;
         case 2:
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://abload.de/hilfe.php"] options:tmpDict completionHandler:nil];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://abload.de/contact.php"] options:tmpDict completionHandler:nil];
             break;
         case 3:
         case 4:

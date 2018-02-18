@@ -46,7 +46,7 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (id)init {
-    NSLog(@"Net - init");
+    NSLog(@"NetworkManager - init");
     if ((self = [super init])) {
         self.defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.de.bluepaw.Abloadtool"];
         self.loggedin = 0;
@@ -288,6 +288,7 @@ static NetworkManager *sharedManager = nil;
 
 - (void)checkAndLoadSharedImages {
     NSInteger shareCount = [self.defaults integerForKey:@"share_count"];
+    NSLog(@"shareCount %ld", shareCount);
     if(shareCount > 0) {
         NSFileManager* fileManager=[[NSFileManager alloc] init];
         NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtPath:self.pathImagesShared];
@@ -418,14 +419,14 @@ static NetworkManager *sharedManager = nil;
 }
 
 
-#pragma mark - HTTP-Actions
+#pragma mark - HTTP-Session
 
 - (void)checkSessionKeyWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if([self checkValidSession]) {
         NSMutableDictionary *params = [self getBaseParams];
         [params setObject:self.sessionKey forKey:@"session"];
         [self postRequestToAbload:@"user" WithOptions:params success:^(NSDictionary *responseObject) {
-            NSLog(@"tokenCheckWithSuccess:\r\n%@", responseObject);
+            //NSLog(@"tokenCheckWithSuccess:\r\n%@", responseObject);
             if([responseObject objectForKey:@"status"] && [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801) {
                 self.loggedin = 1;
                 if (success != nil) {
@@ -477,6 +478,215 @@ static NetworkManager *sharedManager = nil;
     }
 }
 
+
+#pragma mark - HTTP-Gallery
+
+- (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if([self checkValidSession]) {
+        NSMutableDictionary *params = [self getBaseParams];
+        [params setObject:self.sessionKey forKey:@"session"];
+        [self postRequestToAbload:@"gallery/list" WithOptions:params success:^(NSDictionary *responseObject) {
+            //NSLog(@"getGalleryList:\r\n%@", responseObject);
+            if(![responseObject objectForKey:@"status"]) {
+                if (success != nil) {
+                    success(responseObject);
+                }
+            } else {
+                if (failure != nil) {
+                    failure([[responseObject objectForKey:@"status"] objectForKey:@"__text"], [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+                }
+            }
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            if(failure!=nil)
+                failure(failureReason, statusCode);
+        }];
+    } else {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
+        }
+    }
+}
+
+- (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if([self checkValidSession]) {
+        NSMutableDictionary *params = [self getBaseParams];
+        [params setObject:self.sessionKey forKey:@"session"];
+        [params setObject:name forKey:@"name"];
+        [params setObject:desc forKey:@"desc"];
+        [self postRequestToAbload:@"gallery/new" WithOptions:params success:^(NSDictionary *responseObject) {
+            //NSLog(@"createGalleryWithName:\r\n%@", responseObject);
+            if ([[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 605) {
+                if (success != nil) {
+                    success(responseObject);
+                }
+            } else {
+                if (failure != nil) {
+                    failure([[responseObject objectForKey:@"status"] objectForKey:@"__text"], [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+                }
+            }
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            if(failure!=nil)
+                failure(failureReason, statusCode);
+        }];
+    } else {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
+        }
+    }
+}
+
+- (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if([self checkValidSession]) {
+        NSMutableDictionary *params = [self getBaseParams];
+        [params setObject:self.sessionKey forKey:@"session"];
+        [params setObject:[NSString stringWithFormat:@"%ld", gid] forKey:@"gid"];
+        [params setObject:[NSString stringWithFormat:@"%ld", img] forKey:@"img"];
+        [self postRequestToAbload:@"gallery/del" WithOptions:params success:^(NSDictionary *responseObject) {
+            //NSLog(@"deleteGalleryWithID:\r\n%@", responseObject);
+            if (([[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 608 || [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 609)) {
+                if (success != nil) {
+                    success(responseObject);
+                }
+            } else {
+                if (failure != nil) {
+                    failure([[responseObject objectForKey:@"status"] objectForKey:@"__text"], [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+                }
+            }
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            if(failure!=nil)
+                failure(failureReason, statusCode);
+        }];
+    } else {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
+        }
+    }
+}
+
+
+#pragma mark - HTTP-Images
+
+- (void)getImageListForGroup:(NSString*) gid success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if([self checkValidSession]) {
+        NSMutableDictionary *params = [self getBaseParams];
+        [params setObject:self.sessionKey forKey:@"session"];
+        if([gid caseInsensitiveCompare:@"x"] != NSOrderedSame) [params setObject:gid forKey:@"gid"];
+        [self postRequestToAbload:@"images" WithOptions:params success:^(NSDictionary *responseObject) {
+            //NSLog(@"getImageListForGroup:\r\n%@", responseObject);
+            if(![responseObject objectForKey:@"status"]) {
+                if (success != nil) {
+                    success(responseObject);
+                }
+            } else {
+                if (failure != nil) {
+                    failure([[responseObject objectForKey:@"status"] objectForKey:@"__text"], [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+                }
+            }
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            if(failure!=nil)
+                failure(failureReason, statusCode);
+        }];
+    } else {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
+        }
+    }
+}
+
+- (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if([self checkValidSession]) {
+        // Resize if necessary
+        NSArray* resolutionString = [self.settingResolutionSelected componentsSeparatedByString:@" "];
+        NSArray* resolutionSize = [[resolutionString objectAtIndex:0] componentsSeparatedByString:@"x"];
+        if([resolutionSize count] > 1) {
+            UIImage* imageOriginal = [[UIImage alloc] initWithContentsOfFile:[metaImage objectForKey:@"_path"]];
+            UIImage* imageNew = nil;
+            switch (self.settingScaleSelected) {
+                case 0:
+                    imageNew = [imageOriginal scaleToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
+                    break;
+                case 1:
+                    imageNew = [imageOriginal panToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
+                    break;
+                case 2:
+                    imageNew = [imageOriginal cutToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
+                    break;
+                default:
+                    break;
+            }
+            if(imageNew != nil) {
+                float jpegQuality = 0.95;
+                if((imageNew.size.width > 500 && imageNew.size.height > 500) || imageNew.size.width > 2500 || imageNew.size.height > 2500) {
+                    jpegQuality = 0.85;
+                }
+                NSData* imageData = UIImageJPEGRepresentation(imageNew, jpegQuality);
+                [imageData writeToFile:[metaImage objectForKey:@"_path"] atomically:YES];
+                [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
+            }
+        }
+        // Upload Image
+        NSMutableDictionary *params = [self getBaseParams];
+        [params setObject:self.sessionKey forKey:@"session"];
+        if(self.settingGallerySelected > 0)
+            [params setObject:[NSString stringWithFormat:@"%ld", self.settingGallerySelected] forKey:@"gallery"];
+        self.uploadTask = [[self getNetworkingManager] POST:@"upload" parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+            [formData appendPartWithFileURL:[NSURL fileURLWithPath:[metaImage objectForKey:@"_path"]] name:@"img0" fileName:[metaImage objectForKey:@"_filename"] mimeType:@"image/jpeg" error:nil];
+        } progress:^(NSProgress * _Nonnull uploadProgress) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                float p = uploadProgress.fractionCompleted;
+                if(p > 0.995) p = 0.995;
+                UIProgressView* tmpPV = [metaImage objectForKey:@"progressView"];
+                [tmpPV setProgress:p];
+                [tmpPV setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
+            });
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+            //NSLog(@"uploadImagesNow:\r\n%@", tmpDict);
+            if (success != nil) {
+                success(tmpDict);
+            }
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            if (failure != nil) {
+                failure([NSString stringWithFormat:@"%@", [error localizedDescription]], 1);
+            }
+        }];
+    } else {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
+        }
+    }
+}
+
+- (void)deleteImageWithName:(NSString*) filename success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+    if([self checkValidSession]) {
+        NSMutableDictionary *params = [self getBaseParams];
+        [params setObject:self.sessionKey forKey:@"session"];
+        [params setObject:filename forKey:@"filename"];
+        [self postRequestToAbload:@"image/del" WithOptions:params success:^(NSDictionary *responseObject) {
+            //NSLog(@"deleteImageWithName:\r\n%@", responseObject);
+            if([[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue] == 703) {
+                if (success != nil) {
+                    success(responseObject);
+                }
+            } else {
+                if (failure != nil) {
+                    failure([[responseObject objectForKey:@"status"] objectForKey:@"__text"], [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]);
+                }
+            }
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            if(failure!=nil)
+                failure(failureReason, statusCode);
+        }];
+    } else {
+        if (failure != nil) {
+            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
+        }
+    }
+}
+
+
+#pragma mark - User-Actions
+
 - (void)showLoginWithCallback:(void(^)(void))successCallback  {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"net_login_title", @"NetworkManager")
                                                                    message:nil
@@ -525,270 +735,6 @@ static NetworkManager *sharedManager = nil;
     successCallback();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-#pragma mark - Gallery
-
-- (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
-        if (failure != nil) {
-            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
-        }
-        return;
-    }
-    NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.sessionKey forKey:@"session"];
-    [[self getNetworkingManager] POST:@"gallery/list" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
-            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
-            NSLog(@"%@", tmpDict);
-        }
-        if ( [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] ) {
-            self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
-        }
-        if (success != nil) {
-            success(tmpDict);
-        }
-    } failure:^(NSURLSessionTask *operation, NSError *error) {
-        if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
-        }
-    }];
-}
-
-- (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
-        if (failure != nil) {
-            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
-        }
-        return;
-    }
-    NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.sessionKey forKey:@"session"];
-    [params setObject:name forKey:@"name"];
-    [params setObject:desc forKey:@"desc"];
-    [[self getNetworkingManager] POST:@"gallery/new" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"createGalleryWithName:\r\n%@", tmpDict);
-        if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
-            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
-        }
-        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 605 ) {
-            if (success != nil) {
-                success(tmpDict);
-            }
-        } else {
-            if (failure != nil) {
-                failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
-            }
-        }
-    } failure:^(NSURLSessionTask *operation, NSError *error) {
-        if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
-        }
-    }];
-}
-
-- (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
-        if (failure != nil) {
-            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
-        }
-        return;
-    }
-    NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.sessionKey forKey:@"session"];
-    [params setObject:[NSString stringWithFormat:@"%ld", gid] forKey:@"gid"];
-    [params setObject:[NSString stringWithFormat:@"%ld", img] forKey:@"img"];
-    [[self getNetworkingManager] POST:@"gallery/del" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"deleteGalleryWithID:\r\n%@", tmpDict);
-        if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
-            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
-        }
-        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 608 || [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 609 ) {
-            if (success != nil) {
-                success(tmpDict);
-            }
-        } else {
-            if (failure != nil) {
-                failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
-            }
-        }
-    } failure:^(NSURLSessionTask *operation, NSError *error) {
-        if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
-        }
-    }];
-}
-
-#pragma mark - Images
-
-- (void)getImageListForGroup:(NSString*) gid success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
-        if (failure != nil) {
-            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
-        }
-        return;
-    }
-    NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.sessionKey forKey:@"session"];
-    if([gid caseInsensitiveCompare:@"x"] != NSOrderedSame) [params setObject:gid forKey:@"gid"];
-    [[self getNetworkingManager] POST:@"images" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"getImageListForGroup:\r\n%@", tmpDict);
-        if ( [[tmpDict objectForKey:@"images"] objectForKey:@"image"] ) {
-            self.imageList = [[NSMutableDictionary alloc] initWithCapacity:[self.galleryList count]];
-            if([[[tmpDict objectForKey:@"images"] objectForKey:@"image"] isKindOfClass:[NSArray class]]) {
-                for(long i = 0;i < [[[tmpDict objectForKey:@"images"] objectForKey:@"image"] count];i++) {
-                    NSString* gid = [[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i] objectForKey:@"_gid"];
-                    if(!([gid intValue] > 0)) {
-                        gid = @"x";
-                    }
-                    if(![self.imageList objectForKey:gid]) {
-                        [self.imageList setObject:[[NSMutableArray alloc] initWithCapacity:1] forKey:gid];
-                    }
-                    [[self.imageList objectForKey:gid] addObject:[[[tmpDict objectForKey:@"images"] objectForKey:@"image"] objectAtIndex:i]];
-                }
-            } else { // Single Object
-                NSString* gid = [[[tmpDict objectForKey:@"images"] objectForKey:@"image"]  objectForKey:@"_gid"];
-                if(!([gid intValue] > 0)) {
-                    gid = @"x";
-                }
-                if(![self.imageList objectForKey:gid]) {
-                    [self.imageList setObject:[[NSMutableArray alloc] initWithCapacity:1] forKey:gid];
-                }
-                [[self.imageList objectForKey:gid] addObject:[[tmpDict objectForKey:@"images"] objectForKey:@"image"]];
-            }
-        }
-        if ( [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] ) {
-            self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
-        }
-        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801 || [[tmpDict objectForKey:@"images"] objectForKey:@"image"]) {
-            if (success != nil) {
-                success(tmpDict);
-            }
-        } else {
-            if (failure != nil) {
-                failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
-            }
-        }
-    } failure:^(NSURLSessionTask *operation, NSError *error) {
-        if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
-        }
-    }];
-}
-
-
-
-- (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
-        if (failure != nil) {
-            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
-        }
-        return;
-    }
-    // Resize if necessary
-    NSArray* resolutionString = [self.settingResolutionSelected componentsSeparatedByString:@" "];
-    NSArray* resolutionSize = [[resolutionString objectAtIndex:0] componentsSeparatedByString:@"x"];
-    if([resolutionSize count] > 1) {
-        UIImage* imageOriginal = [[UIImage alloc] initWithContentsOfFile:[metaImage objectForKey:@"_path"]];
-        UIImage* imageNew;
-        switch (self.settingScaleSelected) {
-            case 1:
-                imageNew = [imageOriginal panToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
-                break;
-            case 2:
-                imageNew = [imageOriginal cutToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
-                break;
-            case 0:
-            default:
-                imageNew = [imageOriginal scaleToSize:CGSizeMake([[resolutionSize objectAtIndex:0] floatValue],[[resolutionSize objectAtIndex:1] floatValue])];
-                break;
-        }
-        float jpegQuality = 0.95;
-        if((imageNew.size.width > 500 && imageNew.size.height > 500) || imageNew.size.width > 2500 || imageNew.size.height > 2500) {
-            jpegQuality = 0.85;
-        }
-        NSData* imageData = UIImageJPEGRepresentation(imageNew, jpegQuality);
-        [imageData writeToFile:[metaImage objectForKey:@"_path"] atomically:YES];
-        [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
-    }
-    // Upload Image
-    NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.sessionKey forKey:@"session"];
-    if(self.settingGallerySelected > 0) {
-        [params setObject:[NSString stringWithFormat:@"%ld", self.settingGallerySelected] forKey:@"gallery"];
-    }
-    self.uploadTask = [[self getNetworkingManager] POST:@"upload" parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-        //[formData appendPartWithFormData:[self.token dataUsingEncoding:NSUTF8StringEncoding] name:@"session"];
-        [formData appendPartWithFileURL:[NSURL fileURLWithPath:[metaImage objectForKey:@"_path"]] name:@"img0" fileName:[metaImage objectForKey:@"_filename"] mimeType:@"image/jpeg" error:nil];
-    } progress:^(NSProgress * _Nonnull uploadProgress) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            float p = uploadProgress.fractionCompleted;
-            if(p > 0.995) p = 0.995;
-            UIProgressView* tmpPV = [metaImage objectForKey:@"progressView"];
-            [tmpPV setProgress:p];
-            [tmpPV setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
-        });
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"uploadImagesNow:\r\n%@", tmpDict);
-        if (success != nil) {
-            success(tmpDict);
-        }
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], 1);
-        }
-    }];
-}
-
-- (void)deleteImageWithName:(NSString*) filename success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
-    if (self.sessionKey == nil || [self.sessionKey length] == 0) {
-        if (failure != nil) {
-            failure(NSLocalizedString(@"error_session_invalid", @"NetworkManager"), -1);
-        }
-        return;
-    }
-    NSMutableDictionary *params = [self getBaseParams];
-    [params setObject:self.sessionKey forKey:@"session"];
-    [params setObject:filename forKey:@"filename"];
-    [[self getNetworkingManager] POST:@"image/del" parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
-        NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
-        NSLog(@"deleteImageWithName:\r\n%@", tmpDict);
-        if ( [[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] ) {
-            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
-        }
-        if ( [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 703 ) {
-            if (success != nil) {
-                success(tmpDict);
-            }
-        } else {
-            if (failure != nil) {
-                failure([[tmpDict objectForKey:@"status"] objectForKey:@"__text"], [[[tmpDict objectForKey:@"status"] objectForKey:@"_code"] intValue]);
-            }
-        }
-    } failure:^(NSURLSessionTask *operation, NSError *error) {
-        if (failure != nil) {
-            failure([NSString stringWithFormat:@"%@", [error localizedDescription]], ((NSHTTPURLResponse*)operation.response).statusCode);
-        }
-    }];
-}
-
-#pragma mark - Others
-
 - (NSString*)generateLinkForImage:(NSString*) name {
     NSString* link = [[[self.settingAvailableOutputLinkList objectAtIndex:self.settingOutputLinkSelected] objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"$B$" withString:cURL_BASE];
     link = [link stringByReplacingOccurrencesOfString:@"$I$" withString:name];
@@ -798,14 +744,6 @@ static NetworkManager *sharedManager = nil;
 - (NSString*)generateLinkForGallery:(NSString*) name {
     return [NSString stringWithFormat:@"%@/gallery.php?key=%@", cURL_BASE, name];
 }
-
-
-
-
-
-
-
-
 
 
 @end

@@ -60,42 +60,25 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 - (void)saveScaleSelected:(NSInteger) newScale;
 - (void)saveOutputLinkSelected:(NSInteger) newOutputLinks;
 
-#pragma mark - ImageRemote
-@property (nonatomic, strong) NSMutableDictionary* imageList;
-@property (nonatomic, strong) NSArray* imageLast;
-- (NSString*)generateLinkForImage:(NSString*) name;
-- (NSString*)generateLinkForGallery:(NSString*) name;
-
 #pragma mark - HTTP
 @property (nonatomic, strong) NSURLSessionDataTask* uploadTask;
+@property (nonatomic, strong) NSMutableDictionary* imageList;
+@property (nonatomic, strong) NSArray* imageLast;
 - (void)checkSessionKeyWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)showLoginWithCallback:(void(^)(void))successCallback;
 - (void)logoutWithCallback:(void(^)(void))successCallback;
+- (NSString*)generateLinkForImage:(NSString*) name;
+- (NSString*)generateLinkForGallery:(NSString*) name;
 
-
-
-
-
-
-
+#pragma mark - HTTP-Gallery
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-
 - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)deleteGalleryWithID:(NSInteger)gid andImages:(NSInteger)img success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
-
+#pragma mark - HTTP-Image
 - (void)getImageListForGroup:(NSString*) gid success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-
 - (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)deleteImageWithName:(NSString*) filename success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-
-
-
-
-
-
-
-
 
 
 @end

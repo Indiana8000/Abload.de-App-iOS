@@ -18,7 +18,7 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [NetworkManager sharedManager];
+    [[NetworkManager sharedManager] checkAndLoadSharedImages];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.tabBar = [[AT_TabBarController alloc] init];
@@ -31,8 +31,8 @@
 + (void)initialize {
     NSLog(@"AppDelegate - initialize");
     // Disable URLCache by aktivating Cache with 0 bytes
-    //NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
-    //[NSURLCache setSharedURLCache:sharedCache];
+    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
+    [NSURLCache setSharedURLCache:sharedCache];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

@@ -319,7 +319,7 @@
 
 - (void)startUploadingImages {
     if([self.uploadImages count] > 0) {
-        if(([[NetworkManager sharedManager] getSessionKey] == nil) || ([[[NetworkManager sharedManager] getSessionKey] length] == 0)) {
+        if([[NetworkManager sharedManager] loggedin] != 1) {
             [[NetworkManager sharedManager] showLoginWithCallback:^{
                 [self startUploadingImages];
             }];
