@@ -17,6 +17,6 @@
 @interface AT_ImageTableViewController : UITableViewController
     @property (nonatomic) NSString* gid;
     @property (nonatomic, strong) AT_DetailedViewController* detailedViewController;
-@property (nonatomic, strong) AT_SettingOutputLinksTableViewController* pageSetting;
-@property (nonatomic, strong) UINavigationController* navSetting;
+    @property (nonatomic, strong) AT_SettingOutputLinksTableViewController* pageSetting;
+    @property (nonatomic, strong) UINavigationController* navSetting;
 @end

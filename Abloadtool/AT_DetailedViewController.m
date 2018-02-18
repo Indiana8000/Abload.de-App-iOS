@@ -17,11 +17,9 @@
 - (id)init {
     self = [super init];
     if (self) {
-        // Init Navigation Controller + Buttons
         self.navigationItem.title = NSLocalizedString(@"label_loading", @"Image");
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_zoom", @"Image") style:UIBarButtonItemStylePlain target:self action:@selector(changeZoom)];
-
-        // Init Scroll View
+        
         self.detailedScrollView = [[UIScrollView alloc] init];
         self.detailedScrollView.delegate = self;
         self.detailedScrollView.backgroundColor = [UIColor lightGrayColor];
@@ -34,25 +32,21 @@
         self.detailedScrollView.contentMode = UIViewContentModeCenter;
         self.view = self.detailedScrollView;
         
-        // Init Image View
         self.imageView = [[UIImageView alloc] init];
         self.imageView.backgroundColor = [UIColor yellowColor];
         [self.view addSubview:self.imageView];
         
-        // Tab
         UITapGestureRecognizer *tapTwice = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeZoom)];
         tapTwice.numberOfTapsRequired = 2;
         [self.view addGestureRecognizer:tapTwice];
         
         UISwipeGestureRecognizer *swipeLeft = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(loadNext)];
         swipeLeft.direction = UISwipeGestureRecognizerDirectionLeft;
-        
         [self.view addGestureRecognizer:swipeLeft];
 
         UISwipeGestureRecognizer *swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(loadPrev)];
         swipeRight.direction = UISwipeGestureRecognizerDirectionRight;
         [self.view addGestureRecognizer:swipeRight];
-
     }
     return self;
 }
@@ -65,23 +59,12 @@
     return YES;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-}
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-#pragma mark - View lifecycle
+#pragma mark - View
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self loadImage];
-}
-
-- (void) viewDidDisappear:(BOOL)animated {
-    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -108,6 +91,7 @@
         [self.detailedScrollView setZoomScale:s1 animated:YES];
     self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),s1];
 }
+
 
 #pragma mark - ScrollView
 
@@ -139,6 +123,7 @@
         self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),s1];
     }
 }
+
 
 #pragma mark - Image
 

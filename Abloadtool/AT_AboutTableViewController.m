@@ -9,9 +9,8 @@
 #import "AT_AboutTableViewController.h"
 
 @interface AT_AboutTableViewController ()
-@property (nonatomic) UIImageView* abloadImage;
-@property (nonatomic) UIImageView* bluepawImage;
-
+    @property (nonatomic) UIImageView* abloadImage;
+    @property (nonatomic) UIImageView* bluepawImage;
 @end
 
 @implementation AT_AboutTableViewController
@@ -20,7 +19,6 @@
     [super viewDidLoad];
     self.navigationItem.title = NSLocalizedString(@"nav_title_about", @"Navigation");
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"51-power"] style:UIBarButtonItemStylePlain target:self action:@selector(doLogout:)];
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_logout", @"About") style:UIBarButtonItemStylePlain target:self action:@selector(doLogout:)];
 
     [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:@"AboutCell"];
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
@@ -29,10 +27,6 @@
     self.bluepawImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo_bluepaw"]];
     [self initImage:self.abloadImage];
     [self initImage:self.bluepawImage];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 - (void)initImage:(UIImageView*)img {
@@ -140,7 +134,6 @@
         [NetworkManager showMessage:NSLocalizedString(@"label_logout_successfull", @"About")];
     }];
 }
-
 
 
 @end

@@ -18,29 +18,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Init Navigation Controller + Buttons
     self.navigationItem.title = NSLocalizedString(@"nav_title_gallery", @"Navigation");
-    //self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"155-sort"] style:UIBarButtonItemStylePlain target:self action:@selector(sortGalleery)];
-    //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)];
     self.navigationItem.rightBarButtonItems =  @[
                                                 [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doAddGallery:)],
                                                 [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"155-sort"] style:UIBarButtonItemStylePlain target:self action:@selector(sortGalleery)]
                                                 ];
 
-    // Init RefreshController
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(doRefresh:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
     
-    // Init TableView
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
-    
-    // Init ImageTable
     self.imageTableViewController = [[AT_ImageTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -62,7 +51,8 @@
     }
 }
 
-#pragma mark - Table view data source
+
+#pragma mark - TableView DataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 2;
@@ -100,7 +90,8 @@
     return cell;
 }
 
-#pragma mark - Table view delegate
+
+#pragma mark - TableView Delegate
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     return (indexPath.section == 1);
@@ -113,8 +104,6 @@
         modifyAction.backgroundColor = [UIColor orangeColor];
 
         UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"btn_slide_delete", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
-            //[[NSFileManager defaultManager] removeItemAtPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_path"]  error:nil];
-            //[self.uploadImages removeObjectAtIndex:indexPath.row];
             [self doDeleteGallery:indexPath.row];
         }];
         return @[modifyAction, deleteAction];
@@ -148,6 +137,7 @@
         [NetworkManager showMessage:failureReason];
     }];
 }
+
 
 #pragma mark - RefreshController
 
@@ -188,7 +178,8 @@
     self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:lastUpdated];
 }
 
-#pragma mark - Manage Gallerys
+
+#pragma mark - Gallerys
 
 - (void)sortGalleery {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"sort_title", @"Gallery")
@@ -267,7 +258,7 @@
     UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"delgallery_btn_withoutimage", @"Gallery") style:UIAlertActionStyleDestructive
                                                handler:^(UIAlertAction * action) {
                                                    [[NetworkManager sharedManager] deleteGalleryWithID:gid andImages:0 success:^(NSDictionary *responseObject) {
-                                                       [self.tableView reloadData];
+                                                       [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:1]] withRowAnimation:YES];
                                                    } failure:^(NSString *failureReason, NSInteger statusCode) {
                                                        [NetworkManager showMessage:failureReason];
                                                    }];
@@ -277,7 +268,7 @@
     UIAlertAction *ok2 = [UIAlertAction actionWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_btn_withimage %ld", @"Gallery"), bc] style:UIAlertActionStyleDestructive
                                                handler:^(UIAlertAction * action) {
                                                    [[NetworkManager sharedManager] deleteGalleryWithID:gid andImages:1 success:^(NSDictionary *responseObject) {
-                                                       [self.tableView reloadData];
+                                                       [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:1]] withRowAnimation:YES];
                                                    } failure:^(NSString *failureReason, NSInteger statusCode) {
                                                        [NetworkManager showMessage:failureReason];
                                                    }];
@@ -292,7 +283,6 @@
     
     [self presentViewController:alert animated:YES completion:nil];
 }
-
 
 
 @end

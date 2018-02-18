@@ -35,8 +35,4 @@
     [self setViewControllers:@[navUL, navGL, navAB]];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 @end

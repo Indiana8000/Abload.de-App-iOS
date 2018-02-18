@@ -8,7 +8,7 @@
 
 #define cButtonCell @"ButtonTableViewCell"
 #define cUploadCell @"UploadTableViewCell"
-#define cImageCell @"ImageTableViewCell"
+#define cImageCell  @"ImageTableViewCell"
 
 #import "AT_UploadTableViewController.h"
 
@@ -59,10 +59,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:NO animated:NO];
@@ -85,7 +81,7 @@
 - (NSString *)bytesToUIString:(NSNumber *) number {
     double size = [number doubleValue];
     unsigned long i = 0;
-    while (size >= 1000) {
+    while (size >= 1024) {
         size /= 1024;
         i++;
     }
@@ -384,7 +380,6 @@
         [NetworkManager showMessage:failureReason];
     }];
 }
-
 
 
 @end

@@ -18,27 +18,17 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Init Navigation Controller + Buttons
-    //self.navigationItem.title =
-    
-    UIBarButtonItem* btnCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
-    UIBarButtonItem* btnSettingsLinkType = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
-    self.navigationItem.rightBarButtonItems = @[btnCopy,btnSettingsLinkType];
+    self.navigationItem.rightBarButtonItems = @[
+                                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)],
+                                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)]
+                                                ];
 
-    // Init RefreshController
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(doRefresh:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
     
-    // Init TableView
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
-
-    // Init detailedViewController
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -47,6 +37,22 @@
     [self.tabBarController.tabBar setHidden:NO];
     [self.tableView reloadData];
 }
+
+#pragma mark - Helper
+
+- (NSString *)bytesToUIString:(NSNumber *) number {
+    double size = [number doubleValue];
+    unsigned long i = 0;
+    while (size >= 1024) {
+        size /= 1024;
+        i++;
+    }
+    NSArray *extension = [[NSArray alloc] initWithObjects:@"Byte", @"KB", @"MB", @"GB", @"TB", @"PB", @"EB", @"ZB", @"YB" ,@"???" , nil];
+    
+    if(i>([extension count]-2)) i = [extension count]-1;
+    return [NSString stringWithFormat:@"%.1f %@", size, [extension objectAtIndex:i]];
+}
+
 
 #pragma mark - TableView DataSource
 
@@ -76,7 +82,12 @@
     return cell;
 }
 
+
 #pragma mark - TableView Delegate
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
 
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewRowAction *modifyAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:NSLocalizedString(@"btn_slide_copylink", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath *indexPath) {
@@ -107,20 +118,48 @@
     [self.navigationController pushViewController:self.detailedViewController animated:YES];
 }
 
-#pragma mark - More
 
-- (NSString *)bytesToUIString:(NSNumber *) number {
-    double size = [number doubleValue];
-    unsigned long i = 0;
-    while (size >= 1000) {
-        size /= 1024;
-        i++;
+#pragma mark - RefreshController
+
+- (void)doRefresh:(id)sender {
+    if([[NetworkManager sharedManager] loggedin] == 1) {
+        [[NetworkManager sharedManager] getImageListForGroup:self.gid success:^(NSDictionary *responseObject) {
+            [self setLastRefresh];
+            [[self refreshControl] endRefreshing];
+            [self.tableView reloadData];
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            [[self refreshControl] endRefreshing];
+            [NetworkManager showMessage:failureReason];
+        }];
+    } else if ([[NetworkManager sharedManager] loggedin] == -1) {
+        [[NetworkManager sharedManager] checkSessionKeyWithSuccess:^(NSDictionary *responseObject) {
+            [self doRefresh:nil];
+        }  failure:^(NSString *failureReason, NSInteger statusCode) {
+            if([[NetworkManager sharedManager] loggedin] == 0) {
+                [self doRefresh:sender];
+            } else {
+                [NetworkManager showMessage:failureReason];
+            }
+        }];
+    } else {
+        [[NetworkManager sharedManager] showLoginWithCallback:^(void) {
+            [self doRefresh:sender];
+        }];
+        [[self refreshControl] endRefreshing];
     }
-    NSArray *extension = [[NSArray alloc] initWithObjects:@"Byte", @"KB", @"MB", @"GB", @"TB", @"PB", @"EB", @"ZB", @"YB" ,@"???" , nil];
-
-    if(i>([extension count]-2)) i = [extension count]-1;
-    return [NSString stringWithFormat:@"%.1f %@", size, [extension objectAtIndex:i]];
 }
+
+- (void)setLastRefresh {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"de_DE"]];
+    [formatter setDateFormat:@"d. MMM, H:mm"];
+    NSString *lastUpdated = [NSString stringWithFormat:NSLocalizedString(@"label_lastrefresh %@", @"Gallery"),
+                             [formatter stringFromDate:[NSDate date]]];
+    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:lastUpdated];
+}
+
+
+#pragma mark - Actions
 
 - (void)doCopyLinks {
     NSMutableString* linkX = [[NSMutableString alloc] init];
@@ -180,43 +219,6 @@
         UIPopoverPresentationController *presentationController =[self.navSetting popoverPresentationController];
         presentationController.barButtonItem = self.navigationItem.rightBarButtonItems[1];
     }
-}
-
-- (void)doRefresh:(id)sender {
-    if([[NetworkManager sharedManager] loggedin] == 1) {
-        [[NetworkManager sharedManager] getImageListForGroup:self.gid success:^(NSDictionary *responseObject) {
-            [self setLastRefresh];
-            [[self refreshControl] endRefreshing];
-            [self.tableView reloadData];
-        } failure:^(NSString *failureReason, NSInteger statusCode) {
-            [[self refreshControl] endRefreshing];
-            [NetworkManager showMessage:failureReason];
-        }];
-    } else if ([[NetworkManager sharedManager] loggedin] == -1) {
-        [[NetworkManager sharedManager] checkSessionKeyWithSuccess:^(NSDictionary *responseObject) {
-            [self doRefresh:nil];
-        }  failure:^(NSString *failureReason, NSInteger statusCode) {
-            if([[NetworkManager sharedManager] loggedin] == 0) {
-                [self doRefresh:sender];
-            } else {
-                [NetworkManager showMessage:failureReason];
-            }
-        }];
-    } else {
-        [[NetworkManager sharedManager] showLoginWithCallback:^(void) {
-            [self doRefresh:sender];
-        }];
-        [[self refreshControl] endRefreshing];
-    }
-}
-
-- (void)setLastRefresh {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"de_DE"]];
-    [formatter setDateFormat:@"d. MMM, H:mm"];
-    NSString *lastUpdated = [NSString stringWithFormat:NSLocalizedString(@"label_lastrefresh %@", @"Gallery"),
-                             [formatter stringFromDate:[NSDate date]]];
-    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:lastUpdated];
 }
 
 
