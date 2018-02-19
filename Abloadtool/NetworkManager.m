@@ -410,7 +410,7 @@ static NetworkManager *sharedManager = nil;
             } else { // Dict = Single Image
                 self.imageLast = @[[[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"]];
             }
-        } else self.imageLast = @[];
+        }
         if (success != nil) {
             success(tmpDict);
         }
@@ -444,6 +444,9 @@ static NetworkManager *sharedManager = nil;
                 self.loggedin = 1;
                 if(![responseObject objectForKey:@"galleries"]) {
                     [self saveGalleryList:@[]];
+                }
+                if(![responseObject objectForKey:@"lastimages"]) {
+                    self.imageLast = @[];
                 }
                 if (success != nil) {
                     success(responseObject);
@@ -510,6 +513,9 @@ static NetworkManager *sharedManager = nil;
                 if(![responseObject objectForKey:@"galleries"]) {
                     [self saveGalleryList:@[]];
                 }
+                if(![responseObject objectForKey:@"lastimages"]) {
+                    self.imageLast = @[];
+                }
                 if (success != nil) {
                     success(responseObject);
                 }
@@ -571,6 +577,9 @@ static NetworkManager *sharedManager = nil;
             if (([[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 608 || [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 609)) {
                 if(![responseObject objectForKey:@"galleries"]) {
                     [self saveGalleryList:@[]];
+                }
+                if(![responseObject objectForKey:@"lastimages"]) {
+                    self.imageLast = @[];
                 }
                 if (success != nil) {
                     success(responseObject);
@@ -693,6 +702,9 @@ static NetworkManager *sharedManager = nil;
         [self postRequestToAbload:@"image/del" WithOptions:params success:^(NSDictionary *responseObject) {
             //NSLog(@"deleteImageWithName:\r\n%@", responseObject);
             if([[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue] == 703) {
+                if(![responseObject objectForKey:@"lastimages"]) {
+                    self.imageLast = @[];
+                }
                 if (success != nil) {
                     success(responseObject);
                 }
