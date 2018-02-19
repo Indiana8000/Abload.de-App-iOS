@@ -82,7 +82,9 @@
         cell.dateTextLabel.text = @" ";
         [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
     } else {
-        cell.textLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+        //cell.textLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+        NSData *data = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"] dataUsingEncoding:NSUTF8StringEncoding];
+        cell.textLabel.text = [[NSString alloc] initWithData:data encoding:NSNonLossyASCIIStringEncoding];
         if([[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_desc"] length] > 0) {
             cell.detailTextLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
         } else {
@@ -131,8 +133,11 @@
         self.imageTableViewController.gid = @"x";
         self.imageTableViewController.navigationItem.title = NSLocalizedString(@"label_nogallery", @"Settings");
     } else {
+        NSData *data = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"] dataUsingEncoding:NSUTF8StringEncoding];
+        NSString *name = [[NSString alloc] initWithData:data encoding:NSNonLossyASCIIStringEncoding];
+        
         self.imageTableViewController.gid = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_id"];
-        self.imageTableViewController.navigationItem.title = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+        self.imageTableViewController.navigationItem.title = name;
     }
 
     [[NetworkManager sharedManager] getImageListForGroup:self.imageTableViewController.gid success:^(NSDictionary *responseObject) {
@@ -257,7 +262,10 @@
     long gid = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:row] objectForKey:@"_id"] intValue];
     long bc = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:row] objectForKey:@"_images"] intValue];
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_question %@", @"Gallery"), [[[[NetworkManager sharedManager] galleryList] objectAtIndex:row] objectForKey:@"_name"]]
+    NSData *data = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:row] objectForKey:@"_name"] dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *name = [[NSString alloc] initWithData:data encoding:NSNonLossyASCIIStringEncoding];
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_question %@", @"Gallery"), name ]
                                                                    message:nil
                                                             preferredStyle:UIAlertControllerStyleAlert];
     

@@ -53,7 +53,9 @@
         cell.dateTextLabel.text = @" ";
         [cell.imageView setImage:[UIImage imageNamed:@"AppIcon"]];
     } else {
-        cell.textLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+        //cell.textLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"];
+        NSData *data = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"] dataUsingEncoding:NSUTF8StringEncoding];
+        cell.textLabel.text = [[NSString alloc] initWithData:data encoding:NSNonLossyASCIIStringEncoding];
         if([[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_desc"] length] > 0) {
             cell.detailTextLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_desc"];
         } else {
