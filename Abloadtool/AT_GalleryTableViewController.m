@@ -32,7 +32,13 @@
     self.imageTableViewController = [[AT_ImageTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
+}
+
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     if([[NetworkManager sharedManager] loggedin] == 0) {
         [self.tableView reloadData];
         [[NetworkManager sharedManager] showLoginWithCallback:^(void) {
@@ -257,9 +263,12 @@
     
     UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"delgallery_btn_withoutimage", @"Gallery") style:UIAlertActionStyleDestructive
                                                handler:^(UIAlertAction * action) {
+                                                   [[NetworkManager sharedManager] showProgressHUD];
                                                    [[NetworkManager sharedManager] deleteGalleryWithID:gid andImages:0 success:^(NSDictionary *responseObject) {
+                                                       [[NetworkManager sharedManager] hideProgressHUD];
                                                        [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:1]] withRowAnimation:YES];
                                                    } failure:^(NSString *failureReason, NSInteger statusCode) {
+                                                       [[NetworkManager sharedManager] hideProgressHUD];
                                                        [NetworkManager showMessage:failureReason];
                                                    }];
                                                }];
@@ -267,9 +276,12 @@
     
     UIAlertAction *ok2 = [UIAlertAction actionWithTitle:[NSString stringWithFormat:NSLocalizedString(@"delgallery_btn_withimage %ld", @"Gallery"), bc] style:UIAlertActionStyleDestructive
                                                handler:^(UIAlertAction * action) {
+                                                   [[NetworkManager sharedManager] showProgressHUD];
                                                    [[NetworkManager sharedManager] deleteGalleryWithID:gid andImages:1 success:^(NSDictionary *responseObject) {
+                                                       [[NetworkManager sharedManager] hideProgressHUD];
                                                        [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:1]] withRowAnimation:YES];
                                                    } failure:^(NSString *failureReason, NSInteger statusCode) {
+                                                       [[NetworkManager sharedManager] hideProgressHUD];
                                                        [NetworkManager showMessage:failureReason];
                                                    }];
                                                }];

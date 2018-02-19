@@ -85,6 +85,7 @@ static NetworkManager *sharedManager = nil;
     if(![[NSFileManager defaultManager] fileExistsAtPath:self.pathImagesShared]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:self.pathImagesShared withIntermediateDirectories:YES attributes:nil error:nil];
     }
+    NSLog(@"PATH:\r\n%@\r\n%@\r\n%@",self.pathImagesUpload,self.pathThumbnails,self.pathImagesShared);
 }
 
 - (void)loadImagesFromDisk {
@@ -201,21 +202,25 @@ static NetworkManager *sharedManager = nil;
 }
 
 - (void)saveGalleryList:(NSArray*) newGalleryList {
-    switch (self.settingGallerySorted) {
-        case 1:
-            self.galleryList = [newGalleryList sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-                NSString *first = [(NSDictionary*)a objectForKey:@"_lastchange"];
-                NSString *second = [(NSDictionary*)b objectForKey:@"_lastchange"];
-                return [second compare:first];
-            }];
-            break;
-        default:
-            self.galleryList = [newGalleryList sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-                NSString *first = [(NSDictionary*)a objectForKey:@"_name"];
-                NSString *second = [(NSDictionary*)b objectForKey:@"_name"];
-                return [first compare:second];
-            }];
-            break;
+    if([newGalleryList count] > 1) {
+        switch (self.settingGallerySorted) {
+            case 1:
+                self.galleryList = [newGalleryList sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+                    NSString *first = [(NSDictionary*)a objectForKey:@"_lastchange"];
+                    NSString *second = [(NSDictionary*)b objectForKey:@"_lastchange"];
+                    return [second compare:first];
+                }];
+                break;
+            default:
+                self.galleryList = [newGalleryList sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+                    NSString *first = [(NSDictionary*)a objectForKey:@"_name"];
+                    NSString *second = [(NSDictionary*)b objectForKey:@"_name"];
+                    return [first compare:second];
+                }];
+                break;
+        }
+    } else {
+        self.galleryList = newGalleryList;
     }
     [self.defaults setObject:self.galleryList forKey:@"settingGalleryList"];
     [self.defaults synchronize];
@@ -303,7 +308,7 @@ static NetworkManager *sharedManager = nil;
                 UIImage* imageThumb = [[UIImage alloc] initWithContentsOfFile:fileImageDst];
                 imageThumb = [imageThumb panToSize:CGSizeMake(225, 150)];
                 NSData* dataThumb = UIImageJPEGRepresentation(imageThumb, 0.85);
-                NSString* fileThumb = [self.pathThumbnails stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
+                NSString* fileThumb = [self.pathThumbnails stringByAppendingFormat:@"/mobile.%ld.shared.jpeg", self.uploadNumber];
                 [dataThumb writeToFile:fileThumb atomically:YES];
 
                 NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys: fileImageDst, @"_path", fileThumb, @"_thumb",[fileImageDst lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
@@ -383,10 +388,11 @@ static NetworkManager *sharedManager = nil;
             [NetworkManager showMessage:[[tmpDict objectForKey:@"motd"] objectForKey:@"_text"]];
         }
         if([[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]) {
-            [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
-        }
-        if([[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"]) {
-            self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
+            if([[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] isKindOfClass:[NSArray class]]) { // Array = Multiple Galleries
+                [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
+            } else { // Dict = Single Gallery
+                [self saveGalleryList:@[[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]]];
+            }
         }
         if([[tmpDict objectForKey:@"images"] objectForKey:@"image"]) {
             self.imageList = [[NSMutableDictionary alloc] initWithCapacity:[self.galleryList count]];
@@ -398,6 +404,13 @@ static NetworkManager *sharedManager = nil;
                 [self addImageToList:[[tmpDict objectForKey:@"images"] objectForKey:@"image"]];
             }
         }
+        if([[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"]) {
+            if([[[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] isKindOfClass:[NSArray class]]) { // Array = Multiple Images
+                self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
+            } else { // Dict = Single Image
+                self.imageLast = @[[[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"]];
+            }
+        } else self.imageLast = @[];
         if (success != nil) {
             success(tmpDict);
         }
@@ -429,6 +442,9 @@ static NetworkManager *sharedManager = nil;
             //NSLog(@"tokenCheckWithSuccess:\r\n%@", responseObject);
             if([responseObject objectForKey:@"status"] && [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801) {
                 self.loggedin = 1;
+                if(![responseObject objectForKey:@"galleries"]) {
+                    [self saveGalleryList:@[]];
+                }
                 if (success != nil) {
                     success(responseObject);
                 }
@@ -458,6 +474,9 @@ static NetworkManager *sharedManager = nil;
             NSLog(@"authenticateWithEmail:\r\n%@", responseObject);
             if([responseObject objectForKey:@"status"] && [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801) {
                 self.loggedin = 1;
+                if(![responseObject objectForKey:@"galleries"]) {
+                    [self saveGalleryList:@[]];
+                }
                 if (success != nil) {
                     success(responseObject);
                 }
@@ -488,6 +507,9 @@ static NetworkManager *sharedManager = nil;
         [self postRequestToAbload:@"gallery/list" WithOptions:params success:^(NSDictionary *responseObject) {
             //NSLog(@"getGalleryList:\r\n%@", responseObject);
             if(![responseObject objectForKey:@"status"]) {
+                if(![responseObject objectForKey:@"galleries"]) {
+                    [self saveGalleryList:@[]];
+                }
                 if (success != nil) {
                     success(responseObject);
                 }
@@ -516,6 +538,9 @@ static NetworkManager *sharedManager = nil;
         [self postRequestToAbload:@"gallery/new" WithOptions:params success:^(NSDictionary *responseObject) {
             //NSLog(@"createGalleryWithName:\r\n%@", responseObject);
             if ([[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 605) {
+                if(![responseObject objectForKey:@"galleries"]) {
+                    [self saveGalleryList:@[]];
+                }
                 if (success != nil) {
                     success(responseObject);
                 }
@@ -544,6 +569,9 @@ static NetworkManager *sharedManager = nil;
         [self postRequestToAbload:@"gallery/del" WithOptions:params success:^(NSDictionary *responseObject) {
             //NSLog(@"deleteGalleryWithID:\r\n%@", responseObject);
             if (([[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 608 || [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 609)) {
+                if(![responseObject objectForKey:@"galleries"]) {
+                    [self saveGalleryList:@[]];
+                }
                 if (success != nil) {
                     success(responseObject);
                 }

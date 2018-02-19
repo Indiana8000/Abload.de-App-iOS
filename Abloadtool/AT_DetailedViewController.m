@@ -47,6 +47,10 @@
         UISwipeGestureRecognizer *swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(loadPrev)];
         swipeRight.direction = UISwipeGestureRecognizerDirectionRight;
         [self.view addGestureRecognizer:swipeRight];
+
+        UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onSelfLongpressDetected:)];
+        [self.view addGestureRecognizer:longPressGesture];
+
     }
     return self;
 }
@@ -159,7 +163,6 @@
 }
 
 - (void)loadNext {
-    NSLog(@"loadNext");
     if([self.imageList count] > (++self.imageID)) {
         [self loadImage];
     } else {
@@ -168,12 +171,66 @@
 }
 
 - (void)loadPrev {
-    NSLog(@"loadPrev");
     if(0 <= (--self.imageID)) {
         [self loadImage];
     } else {
         [self.navigationController popViewControllerAnimated:YES];
     }
+}
+
+- (void)onSelfLongpressDetected:(UILongPressGestureRecognizer*)pGesture {
+    if(pGesture.state == UIGestureRecognizerStateBegan) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                       message:nil
+                                                                preferredStyle:UIAlertControllerStyleActionSheet];
+        
+        UIAlertAction *btnSave = [UIAlertAction actionWithTitle:NSLocalizedString(@"label_download_image", @"Image") style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       UIImageWriteToSavedPhotosAlbum(self.imageView.image, nil, nil, nil);
+                                                   }];
+        [alert addAction:btnSave];
+        
+        if([[self.imageList objectAtIndex:self.imageID] objectForKey:@"_uploaded"] && ([[[self.imageList objectAtIndex:self.imageID] objectForKey:@"_uploaded"] intValue] < 1)) {
+            // Local Image have no Link
+        } else {
+            UIAlertAction *btnCopy = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_slide_copylink", @"Upload Tab") style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction * action) {
+                                                                [self showCopyLinkTypes];
+                                                            }];
+            [alert addAction:btnCopy];
+        }
+        
+        UIAlertAction *btnCancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") style:UIAlertActionStyleCancel
+                                                       handler:^(UIAlertAction * action) {
+                                                           [alert dismissViewControllerAnimated:YES completion:nil];
+                                                       }];
+        [alert addAction:btnCancel];
+        
+        alert.popoverPresentationController.sourceView = self.view;
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
+- (void)showCopyLinkTypes {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    for(int i = 0;i < [[[NetworkManager sharedManager] settingAvailableOutputLinkList] count];++i) {
+        UIAlertAction *linkX = [UIAlertAction actionWithTitle:[[[[NetworkManager sharedManager] settingAvailableOutputLinkList] objectAtIndex:i] objectForKey:@"name"]  style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction * action) {
+                                                          [[NetworkManager sharedManager] saveOutputLinkSelected:i];
+                                                          [UIPasteboard generalPasteboard].string = [[NetworkManager sharedManager] generateLinkForImage:[[self.imageList objectAtIndex:self.imageID] objectForKey:@"_filename"]];
+                                                      }];
+        [alert addAction:linkX];
+    }
+    UIAlertAction *btnCancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") style:UIAlertActionStyleCancel
+                                                      handler:^(UIAlertAction * action) {
+                                                          [alert dismissViewControllerAnimated:YES completion:nil];
+                                                      }];
+    [alert addAction:btnCancel];
+
+    alert.popoverPresentationController.sourceView = self.view;
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 

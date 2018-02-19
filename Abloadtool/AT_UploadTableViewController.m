@@ -361,10 +361,9 @@
             UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];
             [tmpPV setProgress:0.0];
             [tmpPV setBackgroundColor:[UIColor clearColor]];
-            UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
+            UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
             tmpCell.accessoryType = UITableViewCellAccessoryCheckmark;
             
-            //[self uploadNextImage];
             [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
             [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
         }
@@ -373,7 +372,7 @@
         
         UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];
         [tmpPV setProgress:0.0];
-        UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
+        UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
         tmpCell.accessoryType = UITableViewCellAccessoryNone;
         
         [self.navigationItem.leftBarButtonItem setEnabled:YES];
