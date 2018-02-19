@@ -537,10 +537,9 @@ static NetworkManager *sharedManager = nil;
 
 - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if([self checkValidSession]) {
-        NSData *data = [name dataUsingEncoding:NSNonLossyASCIIStringEncoding];
-        name = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"DEBUG: %@", name);
-        
+        name = [[NSString alloc] initWithData:[name dataUsingEncoding:NSNonLossyASCIIStringEncoding] encoding:NSUTF8StringEncoding];
+        desc = [[NSString alloc] initWithData:[desc dataUsingEncoding:NSNonLossyASCIIStringEncoding] encoding:NSUTF8StringEncoding];
+
         NSMutableDictionary *params = [self getBaseParams];
         [params setObject:self.sessionKey forKey:@"session"];
         [params setObject:name forKey:@"name"];
