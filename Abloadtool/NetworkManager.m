@@ -51,6 +51,7 @@ static NetworkManager *sharedManager = nil;
         self.defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.de.bluepaw.Abloadtool"];
         self.loggedin = 0;
         self.noad = 0;
+        self.lastRefresh = [NSDate date];
         self.imageList = [[NSMutableDictionary alloc] init];
         self.imageLast = [[NSArray alloc] init];
         [self initPathVariables];
@@ -332,9 +333,10 @@ static NetworkManager *sharedManager = nil;
 
 - (NSMutableDictionary*)getBaseParams {
     NSMutableDictionary *baseParams = [NSMutableDictionary dictionary];
-    [baseParams setObject:@"1.0.0" forKey:@"api_version"];
+    [baseParams setObject:@"1.0" forKey:@"api_version"];
     [baseParams setObject:@"iOS" forKey:@"device_vendor"];
     [baseParams setObject:[NSString stringWithFormat:@"%ld", UIDevice.currentDevice.userInterfaceIdiom] forKey:@"device_type"];
+    [baseParams setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"] forKey:@"app_build"];
     return baseParams;
 }
 
@@ -405,6 +407,7 @@ static NetworkManager *sharedManager = nil;
             }
         }
         if([[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"]) {
+            self.lastRefresh = [NSDate date];
             if([[[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"] isKindOfClass:[NSArray class]]) { // Array = Multiple Images
                 self.imageLast = [[tmpDict objectForKey:@"lastimages"] objectForKey:@"image"];
             } else { // Dict = Single Image
