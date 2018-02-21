@@ -99,7 +99,7 @@ static NetworkManager *sharedManager = nil;
             NSString* filePath = [self.pathImagesUpload stringByAppendingPathComponent:file];
             NSString* fileThumb = [self.pathThumbnails stringByAppendingPathComponent:file];
             NSNumber* fileSize = [NSNumber numberWithLong:[[fileManager attributesOfItemAtPath:filePath error:nil] fileSize]];
-            NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", fileThumb, @"_thumb", file, @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
+            NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", fileThumb, @"_thumb", file, @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", [NSNumber numberWithDouble:0], @"_progress", nil];
             [self.uploadImages addObject:photoDict];
         }
     }
@@ -288,7 +288,7 @@ static NetworkManager *sharedManager = nil;
     NSString* fileThumb = [self.pathThumbnails stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
     [dataThumb writeToFile:fileThumb atomically:YES];
 
-    NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:fileImage, @"_path", fileThumb, @"_thumb", [fileImage lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
+    NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:fileImage, @"_path", fileThumb, @"_thumb", [fileImage lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", [NSNumber numberWithDouble:0], @"_progress", nil];
     [self.uploadImages addObject:photoDict];
 }
 
@@ -312,7 +312,7 @@ static NetworkManager *sharedManager = nil;
                 NSString* fileThumb = [self.pathThumbnails stringByAppendingFormat:@"/mobile.%ld.shared.jpeg", self.uploadNumber];
                 [dataThumb writeToFile:fileThumb atomically:YES];
 
-                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys: fileImageDst, @"_path", fileThumb, @"_thumb",[fileImageDst lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", nil];
+                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys: fileImageDst, @"_path", fileThumb, @"_thumb",[fileImageDst lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded",  [NSNumber numberWithDouble:0], @"_progress", nil];
                 [self.uploadImages addObject:photoDict];
             }
         }
@@ -615,7 +615,7 @@ static NetworkManager *sharedManager = nil;
         [params setObject:self.sessionKey forKey:@"session"];
         if([gid caseInsensitiveCompare:@"x"] != NSOrderedSame) [params setObject:gid forKey:@"gid"];
         [self postRequestToAbload:@"images" WithOptions:params success:^(NSDictionary *responseObject) {
-            //NSLog(@"getImageListForGroup:\r\n%@", responseObject);
+            NSLog(@"getImageListForGroup:\r\n%@", responseObject);
             if(![responseObject objectForKey:@"status"]) {
                 if (success != nil) {
                     success(responseObject);
@@ -675,6 +675,7 @@ static NetworkManager *sharedManager = nil;
         self.uploadTask = [[self getNetworkingManager] POST:@"upload" parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
             [formData appendPartWithFileURL:[NSURL fileURLWithPath:[metaImage objectForKey:@"_path"]] name:@"img0" fileName:[metaImage objectForKey:@"_filename"] mimeType:@"image/jpeg" error:nil];
         } progress:^(NSProgress * _Nonnull uploadProgress) {
+            [metaImage setObject:[NSNumber numberWithDouble:uploadProgress.fractionCompleted] forKey:@"_progress"];
             dispatch_async(dispatch_get_main_queue(), ^{
                 float p = uploadProgress.fractionCompleted;
                 if(p > 0.995) p = 0.995;

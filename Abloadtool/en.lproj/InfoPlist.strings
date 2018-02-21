@@ -6,5 +6,5 @@
   Copyright © 2018 Andreas Kreisl. All rights reserved.
 */
 
-NSPhotoLibraryUsageDescription = "This App require access to you photos in order to be able to upload them.";
-NSCameraUsageDescription = "This App require access to you camera in order to be able to make and add photos.";
+NSPhotoLibraryUsageDescription = "Without access to your images, this app cannot work.";
+NSCameraUsageDescription = "With access to your camera you can take and upload photos directly.";

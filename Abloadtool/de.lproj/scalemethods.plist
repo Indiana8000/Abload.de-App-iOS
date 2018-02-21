@@ -4,15 +4,15 @@
 <array>
 	<array>
 		<string>Strecken</string>
-		<string>Das Bild wird bis zu gewünschten Größe gestreckt, dabei kann das Seitenverhältnis verlohren gehen.</string>
+		<string>Das Bild wird bis zur gewünschten Größe gestreckt. Dabei kann das originale Seitenverhältnis verloren gehen.</string>
 	</array>
 	<array>
 		<string>Anpassen &amp; Kleiner</string>
-		<string>Das Bild wird unter Beibehaltung des Seitenverhältnis vergrößert/verkleinert bis es in die gewünschte Größe hineinpast.</string>
+		<string>Das Bild wird unter Beibehaltung des originalen Seitenverhältnis vergrößert/verkleinert bis es in die gewünschte Größe hineinpasst.</string>
 	</array>
 	<array>
 		<string>Füllen &amp; Abschneiden</string>
-		<string>Das Bild wird unter Beibehaltung des Seitenverhältnis vergrößert/verkleinert bis es die gewünschte Größe füllt. Teile des Bildes können dabei abgeschnitten werden.</string>
+		<string>Das Bild wird unter Beibehaltung des originalen Seitenverhältnis vergrößert/verkleinert bis es die gewünschte Größe füllt. Dabei können Teile des Bildes abgeschnitten werden.</string>
 	</array>
 </array>
 </plist>

@@ -4,25 +4,25 @@
 <array>
 	<dict>
 		<key>name</key>
-		<string>Link to the Picture</string>
+		<string>Link to the image</string>
 		<key>url</key>
 		<string>$B$/image.php?img=$I$</string>
 	</dict>
 	<dict>
 		<key>name</key>
-		<string>Directlink</string>
+		<string>Direct link</string>
 		<key>url</key>
 		<string>$B$/img/$I$</string>
 	</dict>
 	<dict>
 		<key>name</key>
-		<string>Thumbnail for Foren 1</string>
+		<string>Thumbnail for forums 1</string>
 		<key>url</key>
 		<string>[url=$B$/image.php?img=$I$][img]$B$/thumb/$I$[/img][/url]</string>
 	</dict>
 	<dict>
 		<key>name</key>
-		<string>Thumbnail for Foren 2</string>
+		<string>Thumbnail for forums 2</string>
 		<key>url</key>
 		<string>[url=$B$/image.php?img=$I$][img=$B$/thumb/$I$][/url]</string>
 	</dict>
