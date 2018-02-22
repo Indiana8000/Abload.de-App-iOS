@@ -12,14 +12,4 @@ target 'Abloadtool' do
   pod 'QBImagePickerController'
   pod 'UzysAssetsPickerController'
 
-  target 'AbloadtoolTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-  target 'AbloadtoolUITests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
 end

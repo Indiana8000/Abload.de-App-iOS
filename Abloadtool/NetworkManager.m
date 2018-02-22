@@ -636,8 +636,13 @@ static NetworkManager *sharedManager = nil;
     }
 }
 
-- (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
+- (void) testest:(void (^)(int result))completionHandler {
+    
+}
+
+- (void)uploadImageWithID:(NSInteger)imageID progress:(void (^)(double fraction))progress success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if([self checkValidSession]) {
+        NSMutableDictionary* metaImage = [self.uploadImages objectAtIndex:imageID];
         // Resize if necessary
         NSArray* resolutionString = [self.settingResolutionSelected componentsSeparatedByString:@" "];
         NSArray* resolutionSize = [[resolutionString objectAtIndex:0] componentsSeparatedByString:@"x"];
@@ -672,17 +677,11 @@ static NetworkManager *sharedManager = nil;
         [params setObject:self.sessionKey forKey:@"session"];
         if(self.settingGallerySelected > 0)
             [params setObject:[NSString stringWithFormat:@"%ld", self.settingGallerySelected] forKey:@"gallery"];
-        self.uploadTask = [[self getNetworkingManager] POST:@"upload" parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        self.uploadTask = [[self getNetworkingManager] POST:@"upload" parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData> _Nonnull formData) {
             [formData appendPartWithFileURL:[NSURL fileURLWithPath:[metaImage objectForKey:@"_path"]] name:@"img0" fileName:[metaImage objectForKey:@"_filename"] mimeType:@"image/jpeg" error:nil];
         } progress:^(NSProgress * _Nonnull uploadProgress) {
             [metaImage setObject:[NSNumber numberWithDouble:uploadProgress.fractionCompleted] forKey:@"_progress"];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                float p = uploadProgress.fractionCompleted;
-                if(p > 0.995) p = 0.995;
-                UIProgressView* tmpPV = [metaImage objectForKey:@"progressView"];
-                [tmpPV setProgress:p];
-                [tmpPV setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
-            });
+            progress(uploadProgress.fractionCompleted);
         } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
             //NSLog(@"uploadImagesNow:\r\n%@", tmpDict);

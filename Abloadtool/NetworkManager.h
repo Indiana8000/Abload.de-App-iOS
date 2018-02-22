@@ -78,7 +78,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 
 #pragma mark - HTTP-Image
 - (void)getImageListForGroup:(NSString*) gid success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
-- (void)uploadImagesNow:(NSMutableDictionary*)metaImage success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)uploadImageWithID:(NSInteger)imageID progress:(void (^)(double fraction))progress success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)deleteImageWithName:(NSString*) filename success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 
 

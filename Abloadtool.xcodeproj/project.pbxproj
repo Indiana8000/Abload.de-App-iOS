@@ -207,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				A18B58FC2012686100379284 /* Localizable.strings */,
+				A1B00A7120139A9000059ADE /* InfoPlist.strings */,
 				A18B58F1201266DA00379284 /* outputlinks.plist */,
 				A18B58F5201266ED00379284 /* resolutions.plist */,
 				A18B58F9201266F500379284 /* scalemethods.plist */,
@@ -214,7 +215,6 @@
 				A146C1F32012612B0070BC92 /* Info.plist */,
 				A1EE6B691F864E0700F78F24 /* LaunchScreen.storyboard */,
 				A1EE6B6D1F864E0700F78F24 /* main.m */,
-				A1B00A7120139A9000059ADE /* InfoPlist.strings */,
 			);
 			name = "Support Files";
 			sourceTree = "<group>";

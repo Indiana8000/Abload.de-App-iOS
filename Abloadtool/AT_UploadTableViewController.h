@@ -17,9 +17,10 @@
 #import "AT_SettingOutputLinksTableViewController.h"
 #import "AT_DetailedViewController.h"
 
-@interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate, UzysAssetsPickerControllerDelegate>
+@interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate, UzysAssetsPickerControllerDelegate, NSURLSessionDelegate>
     @property (nonatomic, strong) AT_SettingTableViewController* pageSetting;
     @property (nonatomic, strong) UINavigationController* navSetting;
     @property (nonatomic, strong) UzysAssetsPickerController* uzysPicker;
     @property (nonatomic, strong) AT_DetailedViewController* detailedViewController;
+    - (void)updateTableViewCellAtRow:(NSInteger) idx WithProgress:(double) fractionCompleted;
 @end

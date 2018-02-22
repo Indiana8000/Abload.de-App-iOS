@@ -57,6 +57,7 @@
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:UIApplicationWillEnterForegroundNotification object:nil];
+    //[self test];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -152,15 +153,22 @@
         cell.detailTextLabel.text = [self bytesToUIString:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filesize"]];
         cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"];
 
-        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] < 1) {
-            [cell.imageView setImageWithURL:[NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_thumb"]] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            [tmpCell.progressView setProgress:0.0];
-            [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
-        } else {
+        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] == 1) {
             NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
             [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
+            [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
+            [tmpCell.progressView setProgress:0.0];
+        } else if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] == -1) {
+            [cell.imageView setImageWithURL:[NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_thumb"]] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            [tmpCell.progressView setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
+            [tmpCell.progressView setProgress:[[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_progress"] doubleValue]];
+        } else {
+            [cell.imageView setImageWithURL:[NSURL fileURLWithPath:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_thumb"]] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
+            [tmpCell.progressView setProgress:0.0];
         }
         [[self.uploadImages objectAtIndex:indexPath.row] setObject:tmpCell.progressView forKey:@"progressView"];
     } else if(indexPath.section == 1) {
@@ -331,7 +339,7 @@
             self.btnAdd.enabled = NO;
             [self.navigationItem.leftBarButtonItem setEnabled:NO];
             [UIApplication sharedApplication].idleTimerDisabled = YES;
-            [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
+            //[NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
             [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
         }
     }
@@ -342,7 +350,7 @@
     for(i = 0;i < [self.uploadImages count];i++) {
         if([[[self.uploadImages objectAtIndex:i] objectForKey:@"_uploaded"] intValue] == 0) {
             [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
-            [self uploadImage:i];
+            [self uploadImageWithID:i];
             return;
         }
     }
@@ -352,39 +360,89 @@
     [self.navigationItem.leftBarButtonItem setEnabled:YES];
     [UIApplication sharedApplication].idleTimerDisabled = NO;
     [self.tableView scrollsToTop];
-    [NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:0.5 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
     [NetworkManager showMessage:NSLocalizedString(@"msg_upload_done", @"Upload Tab")];
 }
 
-- (void)uploadImage:(unsigned long) idx {
-    [[self.uploadImages objectAtIndex:idx] setObject:@"-1" forKey:@"_uploaded"];
-    [[NetworkManager sharedManager] uploadImagesNow:[self.uploadImages objectAtIndex:idx] success:^(NSDictionary *responseObject) {
-        if ( [[responseObject objectForKey:@"images"] objectForKey:@"image"] ) {
-            [[self.uploadImages objectAtIndex:idx] setObject:@"1" forKey:@"_uploaded"];
-            [[self.uploadImages objectAtIndex:idx] setObject:[[[responseObject objectForKey:@"images"] objectForKey:@"image"] objectForKey:@"_newname"] forKey:@"_filename"];
-            [[NetworkManager sharedManager] removeImageFromDisk:idx andList:NO];
+- (void)uploadImageWithID:(NSInteger) imageID {
+    [[self.uploadImages objectAtIndex:imageID] setObject:@"-1" forKey:@"_uploaded"];
+    [[NetworkManager sharedManager] uploadImageWithID:imageID progress:^(double fraction) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateTableViewCellAtRow:imageID WithProgress:fraction];
+        });
+    } success:^(NSDictionary *responseObject) {
+        if([[responseObject objectForKey:@"images"] objectForKey:@"image"]) {
+            [[self.uploadImages objectAtIndex:imageID] setObject:@"1" forKey:@"_uploaded"];
+            [[self.uploadImages objectAtIndex:imageID] setObject:[[[responseObject objectForKey:@"images"] objectForKey:@"image"] objectForKey:@"_newname"] forKey:@"_filename"];
+            [[NetworkManager sharedManager] removeImageFromDisk:imageID andList:NO];
             
-            UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];
-            [tmpPV setProgress:0.0];
-            [tmpPV setBackgroundColor:[UIColor clearColor]];
-            UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
+            AT_UploadTableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:imageID inSection:0]];
             tmpCell.accessoryType = UITableViewCellAccessoryCheckmark;
-            
+            [tmpCell.progressView setProgress:0.0];
+            [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
+
             [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
             [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
         }
     } failure:^(NSString *failureReason, NSInteger statusCode) {
-        [[self.uploadImages objectAtIndex:idx] setObject:@"0" forKey:@"_uploaded"];
+        [[self.uploadImages objectAtIndex:imageID] setObject:@"0" forKey:@"_uploaded"];
         
-        UIProgressView* tmpPV = [[self.uploadImages objectAtIndex:idx] objectForKey:@"progressView"];
-        [tmpPV setProgress:0.0];
-        UITableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-        tmpCell.accessoryType = UITableViewCellAccessoryNone;
-        
+        AT_UploadTableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:imageID inSection:0]];
+        tmpCell.accessoryType = UITableViewCellAccessoryCheckmark;
+        [tmpCell.progressView setProgress:0.0];
+        [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
+
         [self.navigationItem.leftBarButtonItem setEnabled:YES];
         [NetworkManager showMessage:failureReason];
     }];
 }
+
+- (void)updateTableViewCellAtRow:(NSInteger) idx WithProgress:(double) fractionCompleted {
+    for (NSIndexPath *indexPathForVisibleRow in self.tableView.indexPathsForVisibleRows) {
+        if(indexPathForVisibleRow.section == 0 && indexPathForVisibleRow.row == idx) {
+            AT_UploadTableViewCell *visibleCell = [self.tableView cellForRowAtIndexPath:indexPathForVisibleRow];
+            if (visibleCell != nil) {
+                [visibleCell.progressView setProgress:fractionCompleted];
+                [visibleCell.progressView setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
+            }
+        }
+    }
+}
+
+
+- (void)test {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString* fileFile = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"images/mobile.158.jpeg"];
+    
+    
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration ephemeralSessionConfiguration] delegate:self delegateQueue:nil];
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://abload.de/api/upload"]];
+    [request setHTTPMethod:@"POST"];
+
+    NSData *imageData = [NSData dataWithContentsOfFile:fileFile];
+
+    NSLog(@"UPLOAD - start");
+    NSURLSessionUploadTask *taskUpload = [session uploadTaskWithRequest:request fromData:imageData completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSHTTPURLResponse *httpResp = (NSHTTPURLResponse*) response;
+        if (!error && httpResp.statusCode == 200) {
+            
+            // Uploaded
+            NSLog(@"UPLOAD - done");
+            
+        } else {
+            
+            // alert for error saving / updating note
+            NSLog(@"ERROR: %@ AND HTTPREST ERROR : %ld", error, (long)httpResp.statusCode);
+        }
+    }];
+    [taskUpload resume];
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
+    NSLog(@"didSendBodyData: %lld / %lld = %lf", totalBytesSent, totalBytesExpectedToSend, totalBytesSent*100.0/totalBytesExpectedToSend  );
+}
+
 
 
 @end
