@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AFNetworking/UIImageView+AFNetworking.h>
 
+
 @interface AT_UploadTableViewCell : UITableViewCell
-    @property (nonatomic, strong) UIProgressView* progressView;
+    @property UIProgressView* progressView;
 @end

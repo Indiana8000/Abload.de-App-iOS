@@ -10,9 +10,11 @@
 
 #import "AT_SettingResolutionTableViewController.h"
 
+
 @interface AT_SettingResolutionTableViewController ()
 
 @end
+
 
 @implementation AT_SettingResolutionTableViewController
 

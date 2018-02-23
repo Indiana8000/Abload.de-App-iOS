@@ -10,6 +10,7 @@
 
 #import "NetworkManager.h"
 
+
 @interface AT_SettingResolutionTableViewController : UITableViewController
-    @property (nonatomic, strong) NSArray* listResolutions;
+    @property NSArray* listResolutions;
 @end

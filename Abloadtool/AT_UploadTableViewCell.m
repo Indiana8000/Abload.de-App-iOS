@@ -8,6 +8,7 @@
 
 #import "AT_UploadTableViewCell.h"
 
+
 @implementation AT_UploadTableViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier

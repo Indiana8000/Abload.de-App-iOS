@@ -8,6 +8,7 @@
 
 #import "AT_ImageTableViewCell.h"
 
+
 @implementation AT_ImageTableViewCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier

@@ -13,6 +13,7 @@
 #import "AT_SettingResolutionTableViewController.h"
 #import "AT_SettingScaleTableViewController.h"
 
+
 @interface AT_SettingTableViewController : UITableViewController
 
 @end

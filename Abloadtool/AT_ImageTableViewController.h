@@ -14,9 +14,10 @@
 #import "AT_DetailedViewController.h"
 #import "AT_SettingOutputLinksTableViewController.h"
 
+
 @interface AT_ImageTableViewController : UITableViewController
-    @property (nonatomic) NSString* gid;
-    @property (nonatomic, strong) AT_DetailedViewController* detailedViewController;
-    @property (nonatomic, strong) AT_SettingOutputLinksTableViewController* pageSetting;
-    @property (nonatomic, strong) UINavigationController* navSetting;
+    @property NSString* gid;
+    @property AT_DetailedViewController* detailedViewController;
+    @property AT_SettingOutputLinksTableViewController* pageSetting;
+    @property UINavigationController* navSetting;
 @end

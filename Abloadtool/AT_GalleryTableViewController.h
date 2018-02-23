@@ -13,6 +13,7 @@
 #import "AT_ImageTableViewCell.h"
 #import "AT_ImageTableViewController.h"
 
+
 @interface AT_GalleryTableViewController : UITableViewController
-    @property (nonatomic, strong) AT_ImageTableViewController* imageTableViewController;
+    @property AT_ImageTableViewController* imageTableViewController;
 @end

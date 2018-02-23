@@ -12,12 +12,14 @@
 
 #import "AT_UploadTableViewController.h"
 
+
 @interface AT_UploadTableViewController ()
-    @property (nonatomic, strong) NSString* uploadStatus;
-    @property (nonatomic, strong) NSMutableArray* uploadImages;
-    @property (nonatomic, strong) UIBarButtonItem* btnUpload;
-    @property (nonatomic, strong) UIBarButtonItem* btnAdd;
+    @property NSString* uploadStatus;
+    @property NSMutableArray* uploadImages;
+    @property UIBarButtonItem* btnUpload;
+    @property UIBarButtonItem* btnAdd;
 @end
+
 
 @implementation AT_UploadTableViewController
 

@@ -10,9 +10,11 @@
 
 #import "AT_SettingScaleTableViewController.h"
 
+
 @interface AT_SettingScaleTableViewController ()
 
 @end
+
 
 @implementation AT_SettingScaleTableViewController
 

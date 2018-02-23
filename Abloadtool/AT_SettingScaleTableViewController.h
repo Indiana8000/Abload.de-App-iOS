@@ -10,6 +10,7 @@
 
 #import "NetworkManager.h"
 
+
 @interface AT_SettingScaleTableViewController : UITableViewController
     
 @end

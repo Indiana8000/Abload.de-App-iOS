@@ -11,26 +11,23 @@
 
 
 @interface NetworkManager()
-    @property (nonatomic, strong) AFHTTPSessionManager *networkingManager;
-    @property (nonatomic, strong) MBProgressHUD *progressHUD;
-    @property (nonatomic, strong) NSUserDefaults *defaults;
+    @property AFHTTPSessionManager *networkingManager;
+    @property MBProgressHUD *progressHUD;
+    @property NSUserDefaults *defaults;
 
-    @property (nonatomic, strong) NSString* pathImagesUpload;
-    @property (nonatomic, strong) NSString* pathThumbnails;
-    @property (nonatomic, strong) NSString* pathImagesShared;
+    @property NSString* pathImagesUpload;
+    @property NSString* pathThumbnails;
+    @property NSString* pathImagesShared;
     @property NSInteger uploadNumber;
 
+    @property NSInteger settingLastMOD;
     @property NSInteger settingGallerySorted;
 
-    @property (nonatomic, strong) NSString* sessionKey;
-    @property NSInteger settingLastMOD;
-
+    @property NSString* sessionKey;
 @end
 
 
 @implementation NetworkManager
-@synthesize galleryList;
-
 
 #pragma mark - Constructors
 
@@ -294,7 +291,7 @@ static NetworkManager *sharedManager = nil;
 
 - (void)checkAndLoadSharedImages {
     NSInteger shareCount = [self.defaults integerForKey:@"share_count"];
-    NSLog(@"shareCount %ld", shareCount);
+    NSLog(@"NetworkManager - checkAndLoadSharedImages: %ld", shareCount);
     if(shareCount > 0) {
         NSFileManager* fileManager=[[NSFileManager alloc] init];
         NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtPath:self.pathImagesShared];
@@ -615,7 +612,7 @@ static NetworkManager *sharedManager = nil;
         [params setObject:self.sessionKey forKey:@"session"];
         if([gid caseInsensitiveCompare:@"x"] != NSOrderedSame) [params setObject:gid forKey:@"gid"];
         [self postRequestToAbload:@"images" WithOptions:params success:^(NSDictionary *responseObject) {
-            NSLog(@"getImageListForGroup:\r\n%@", responseObject);
+            //NSLog(@"getImageListForGroup:\r\n%@", responseObject);
             if(![responseObject objectForKey:@"status"]) {
                 if (success != nil) {
                     success(responseObject);

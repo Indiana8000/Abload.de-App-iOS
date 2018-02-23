@@ -13,6 +13,6 @@
 
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
-    @property (nonatomic, strong) UIWindow *window;
-    @property (nonatomic, strong) AT_TabBarController *tabBar;
+    @property (nonatomic) UIWindow *window;
+    @property AT_TabBarController *tabBar;
 @end

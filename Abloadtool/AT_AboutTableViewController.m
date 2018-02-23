@@ -8,10 +8,12 @@
 
 #import "AT_AboutTableViewController.h"
 
+
 @interface AT_AboutTableViewController ()
-    @property (nonatomic) UIImageView* abloadImage;
-    @property (nonatomic) UIImageView* bluepawImage;
+    @property UIImageView* abloadImage;
+    @property UIImageView* bluepawImage;
 @end
+
 
 @implementation AT_AboutTableViewController
 

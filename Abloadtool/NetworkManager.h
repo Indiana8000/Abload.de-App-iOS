@@ -39,22 +39,22 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 - (NSString*)getSessionKey;
 
 #pragma mark - ImageFiles
-@property (nonatomic, strong) NSMutableArray* uploadImages;
+@property NSMutableArray* uploadImages;
 - (void)saveImageToDisk:(NSData*) imageData;
 - (void)checkAndLoadSharedImages;
 - (void)removeImageFromDisk:(NSInteger) imageIndex andList:(BOOL) includeList;
 
 #pragma mark - Gallery
-@property (nonatomic, strong) NSArray* galleryList;
+@property NSArray* galleryList;
 @property NSInteger settingGallerySelected;
 - (void)saveGalleryList:(NSArray*) gallery;
 - (void)saveGallerySorted:(NSInteger) gallerySorted;
 - (void)saveGallerySelected:(NSInteger) galleryID;
 
 #pragma mark - Settings
-@property (nonatomic, strong) NSArray* settingAvailableScalingList;
-@property (nonatomic, strong) NSArray* settingAvailableOutputLinkList;
-@property (nonatomic, strong) NSString* settingResolutionSelected;
+@property NSArray* settingAvailableScalingList;
+@property NSArray* settingAvailableOutputLinkList;
+@property NSString* settingResolutionSelected;
 @property NSInteger settingScaleSelected;
 @property NSInteger settingOutputLinkSelected;
 - (void)saveResolutionSelected:(NSString*) name;
@@ -62,9 +62,9 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 - (void)saveOutputLinkSelected:(NSInteger) newOutputLinks;
 
 #pragma mark - HTTP
-@property (nonatomic, strong) NSURLSessionDataTask* uploadTask;
-@property (nonatomic, strong) NSMutableDictionary* imageList;
-@property (nonatomic, strong) NSArray* imageLast;
+@property NSURLSessionDataTask* uploadTask;
+@property NSMutableDictionary* imageList;
+@property NSArray* imageLast;
 - (void)checkSessionKeyWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
 - (void)showLoginWithCallback:(void(^)(void))successCallback;
 - (void)logoutWithCallback:(void(^)(void))successCallback;
