@@ -83,7 +83,7 @@ static NetworkManager *sharedManager = nil;
     if(![[NSFileManager defaultManager] fileExistsAtPath:self.pathImagesShared]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:self.pathImagesShared withIntermediateDirectories:YES attributes:nil error:nil];
     }
-    NSLog(@"PATH:\r\n%@\r\n%@\r\n%@",self.pathImagesUpload,self.pathThumbnails,self.pathImagesShared);
+    //NSLog(@"PATH:\r\n%@\r\n%@\r\n%@",self.pathImagesUpload,self.pathThumbnails,self.pathImagesShared);
 }
 
 - (void)loadImagesFromDisk {
@@ -291,7 +291,7 @@ static NetworkManager *sharedManager = nil;
 
 - (void)checkAndLoadSharedImages {
     NSInteger shareCount = [self.defaults integerForKey:@"share_count"];
-    NSLog(@"NetworkManager - checkAndLoadSharedImages: %ld", shareCount);
+    //NSLog(@"NetworkManager - checkAndLoadSharedImages: %ld", shareCount);
     if(shareCount > 0) {
         NSFileManager* fileManager=[[NSFileManager alloc] init];
         NSDirectoryEnumerator *dirEnum = [fileManager enumeratorAtPath:self.pathImagesShared];
@@ -537,8 +537,8 @@ static NetworkManager *sharedManager = nil;
 
 - (void)createGalleryWithName:(NSString*)name andDesc:(NSString*)desc success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if([self checkValidSession]) {
-        name = [[NSString alloc] initWithData:[name dataUsingEncoding:NSNonLossyASCIIStringEncoding] encoding:NSUTF8StringEncoding];
-        desc = [[NSString alloc] initWithData:[desc dataUsingEncoding:NSNonLossyASCIIStringEncoding] encoding:NSUTF8StringEncoding];
+        //name = [[NSString alloc] initWithData:[name dataUsingEncoding:NSNonLossyASCIIStringEncoding] encoding:NSUTF8StringEncoding];
+        //desc = [[NSString alloc] initWithData:[desc dataUsingEncoding:NSNonLossyASCIIStringEncoding] encoding:NSUTF8StringEncoding];
 
         NSMutableDictionary *params = [self getBaseParams];
         [params setObject:self.sessionKey forKey:@"session"];
