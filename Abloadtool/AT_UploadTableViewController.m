@@ -75,12 +75,11 @@
 
 - (void)reloadTable {
     [[NetworkManager sharedManager] checkAndLoadSharedImages];
+    [self.tableView reloadData];
     if([[[NetworkManager sharedManager] lastRefresh] timeIntervalSinceNow] < -300) {
         [[NetworkManager sharedManager] getGalleryList:^(NSDictionary *responseObject) {
             [self.tableView reloadData];
         } failure:nil];
-    } else {
-        [self.tableView reloadData];
     }
 }
 
