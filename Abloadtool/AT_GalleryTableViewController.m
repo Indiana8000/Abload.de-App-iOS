@@ -145,6 +145,7 @@
 
     [[NetworkManager sharedManager] getImageListForGroup:self.imageTableViewController.gid success:^(NSDictionary *responseObject) {
         [[NetworkManager sharedManager] hideProgressHUD];
+        [self.imageTableViewController setLastRefresh];
         [self.navigationController pushViewController:self.imageTableViewController animated:YES];
     } failure:^(NSString *failureReason, NSInteger statusCode) {
         [[NetworkManager sharedManager] hideProgressHUD];

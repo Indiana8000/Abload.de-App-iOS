@@ -20,4 +20,5 @@
     @property AT_DetailedViewController* detailedViewController;
     @property AT_SettingOutputLinksTableViewController* pageSetting;
     @property UINavigationController* navSetting;
+    - (void)setLastRefresh;
 @end

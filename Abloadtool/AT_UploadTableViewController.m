@@ -148,8 +148,8 @@
 
     if(indexPath.section == 0) {
         cell = [tableView dequeueReusableCellWithIdentifier:cUploadCell forIndexPath:indexPath];
-        AT_UploadTableViewCell* tmpCell = (id)cell;
         cell.separatorInset = UIEdgeInsetsZero;
+        AT_UploadTableViewCell* tmpCell = (id)cell;
         cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
         cell.detailTextLabel.text = [self bytesToUIString:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filesize"]];
         cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"];
@@ -340,6 +340,7 @@
             self.btnAdd.enabled = NO;
             [self.navigationItem.leftBarButtonItem setEnabled:NO];
             [UIApplication sharedApplication].idleTimerDisabled = YES;
+            [self.tableView reloadData];
             //[NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
             [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
         }
@@ -389,7 +390,7 @@
         [[self.uploadImages objectAtIndex:imageID] setObject:@"0" forKey:@"_uploaded"];
         
         AT_UploadTableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:imageID inSection:0]];
-        tmpCell.accessoryType = UITableViewCellAccessoryCheckmark;
+        tmpCell.accessoryType = UITableViewCellAccessoryNone;
         [tmpCell.progressView setProgress:0.0];
         [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
 

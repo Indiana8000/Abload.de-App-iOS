@@ -331,8 +331,8 @@ static NetworkManager *sharedManager = nil;
 - (NSMutableDictionary*)getBaseParams {
     NSMutableDictionary *baseParams = [NSMutableDictionary dictionary];
     [baseParams setObject:@"1.0" forKey:@"api_version"];
-    [baseParams setObject:@"iOS" forKey:@"device_vendor"];
-    [baseParams setObject:[NSString stringWithFormat:@"%ld", UIDevice.currentDevice.userInterfaceIdiom] forKey:@"device_type"];
+    //[baseParams setObject:@"iOS" forKey:@"device_vendor"];
+    //[baseParams setObject:[NSString stringWithFormat:@"%ld", UIDevice.currentDevice.userInterfaceIdiom] forKey:@"device_type"];
     [baseParams setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"] forKey:@"app_build"];
     return baseParams;
 }
@@ -351,7 +351,7 @@ static NetworkManager *sharedManager = nil;
     if (self.networkingManager == nil) {
         self.networkingManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:cURL_API]];
         self.networkingManager.requestSerializer = [AFHTTPRequestSerializer serializer];
-        [self.networkingManager.requestSerializer setValue:cURL_AGENT forHTTPHeaderField:@"User-Agent"];
+        //[self.networkingManager.requestSerializer setValue:@"Abloadtool" forHTTPHeaderField:@"User-Agent"];
         self.networkingManager.responseSerializer = [AFXMLParserResponseSerializer serializer];
         self.networkingManager.responseSerializer.acceptableContentTypes = [self.networkingManager.responseSerializer.acceptableContentTypes setByAddingObjectsFromArray:@[@"text/html", @"application/xml", @"text/xml"]];
         self.networkingManager.securityPolicy = [self getSecurityPolicy];
