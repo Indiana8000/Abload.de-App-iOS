@@ -9,7 +9,7 @@
 #import "ShareViewController.h"
 
 @interface ShareViewController ()
-
+@property UIButton* btnOK;
 @end
 
 @implementation ShareViewController
@@ -19,10 +19,18 @@
     [super viewDidLoad];
     self.title = NSLocalizedString(@"Abloadtool", @"Abloadtool");
     //self.textView.editable = NO;
+
+    [self didSelectPost];
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         // TODO: unknown
     }];
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+    [super viewSafeAreaInsetsDidChange];
+    self.btnOK.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.safeAreaInsets.top, self.view.bounds.size.width -self.view.safeAreaInsets.left -self.view.safeAreaInsets.right   , self.view.bounds.size.height - self.view.safeAreaInsets.top -self.view.safeAreaInsets.bottom);
+    
 }
 
 - (BOOL)isContentValid {
