@@ -74,15 +74,15 @@
 
                         [defaults setInteger:shareCount forKey:@"share_count"];
                         [defaults synchronize];
+                        
                     }
                 }];
             }
         }
+        [self showMessage:[NSString stringWithFormat:NSLocalizedString(@"share_msg_done %ld", @"ShareExtension"), extensionItem.attachments.count]];
     } else {
         // TODO: Error cant send Pictures!
     }
-
-    [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
 }
 
 - (NSArray *)configurationItems {
@@ -104,5 +104,19 @@
         return nil;
     }
 }
+
+- (void)showMessage:(NSString*) msg {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:msg
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_ok", @"Abloadtool") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
+
+    }];
+    [alert addAction:ok];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+
 
 @end

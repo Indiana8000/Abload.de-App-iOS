@@ -394,6 +394,8 @@
         [tmpCell.progressView setProgress:0.0];
         [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
 
+        self.uploadStatus = @"ADD";
+        self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
         [self.navigationItem.leftBarButtonItem setEnabled:YES];
         [NetworkManager showMessage:failureReason];
     }];

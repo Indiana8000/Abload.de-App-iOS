@@ -140,6 +140,7 @@
             if([[NetworkManager sharedManager] loggedin] == 0) {
                 [self doRefresh:sender];
             } else {
+                [[self refreshControl] endRefreshing];
                 [NetworkManager showMessage:failureReason];
             }
         }];

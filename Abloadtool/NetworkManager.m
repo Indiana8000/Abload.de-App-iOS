@@ -330,7 +330,7 @@ static NetworkManager *sharedManager = nil;
 
 - (NSMutableDictionary*)getBaseParams {
     NSMutableDictionary *baseParams = [NSMutableDictionary dictionary];
-    [baseParams setObject:@"1.0" forKey:@"api_version"];
+    [baseParams setObject:cURL_APIVERSION forKey:@"api_version"];
     //[baseParams setObject:@"iOS" forKey:@"device_vendor"];
     //[baseParams setObject:[NSString stringWithFormat:@"%ld", UIDevice.currentDevice.userInterfaceIdiom] forKey:@"device_type"];
     [baseParams setObject:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"] forKey:@"app_build"];
