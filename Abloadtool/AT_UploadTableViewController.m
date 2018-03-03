@@ -153,6 +153,7 @@
         cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
         cell.detailTextLabel.text = [self bytesToUIString:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filesize"]];
         cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"];
+        tmpCell.dateTextLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_date"];
 
         if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] == 1) {
             NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"]];

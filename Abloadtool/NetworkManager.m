@@ -88,6 +88,8 @@ static NetworkManager *sharedManager = nil;
 
 - (void)loadImagesFromDisk {
     self.uploadImages = [[NSMutableArray alloc] init];
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     NSFileManager* fileManager=[[NSFileManager alloc] init];
     NSDirectoryEnumerator* dirEnum = [fileManager enumeratorAtPath:self.pathImagesUpload];
     NSString *file;
@@ -95,8 +97,13 @@ static NetworkManager *sharedManager = nil;
         if ([[file pathExtension] isEqualToString: @"jpeg"]) {
             NSString* filePath = [self.pathImagesUpload stringByAppendingPathComponent:file];
             NSString* fileThumb = [self.pathThumbnails stringByAppendingPathComponent:file];
-            NSNumber* fileSize = [NSNumber numberWithLong:[[fileManager attributesOfItemAtPath:filePath error:nil] fileSize]];
-            NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", fileThumb, @"_thumb", file, @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", [NSNumber numberWithDouble:0], @"_progress", nil];
+            
+            NSDictionary<NSFileAttributeKey, id>* fileAttributes = [fileManager attributesOfItemAtPath:filePath error:nil];
+            NSNumber* fileSize = [NSNumber numberWithLong:[fileAttributes fileSize]];
+            NSDate* fileDate = [fileAttributes fileCreationDate];
+            
+            
+            NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:filePath, @"_path", fileThumb, @"_thumb", file, @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", [NSNumber numberWithDouble:0], @"_progress", [formatter stringFromDate:fileDate], @"_date", nil];
             [self.uploadImages addObject:photoDict];
         }
     }
@@ -285,12 +292,17 @@ static NetworkManager *sharedManager = nil;
     NSString* fileThumb = [self.pathThumbnails stringByAppendingFormat:@"/mobile.%ld.jpeg", self.uploadNumber];
     [dataThumb writeToFile:fileThumb atomically:YES];
 
-    NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:fileImage, @"_path", fileThumb, @"_thumb", [fileImage lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", [NSNumber numberWithDouble:0], @"_progress", nil];
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    
+    NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:fileImage, @"_path", fileThumb, @"_thumb", [fileImage lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded", [NSNumber numberWithDouble:0], @"_progress", [formatter stringFromDate:[NSDate date]], @"_date", nil];
     [self.uploadImages addObject:photoDict];
 }
 
 - (void)checkAndLoadSharedImages {
     NSInteger shareCount = [self.defaults integerForKey:@"share_count"];
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     //NSLog(@"NetworkManager - checkAndLoadSharedImages: %ld", shareCount);
     if(shareCount > 0) {
         NSFileManager* fileManager=[[NSFileManager alloc] init];
@@ -301,7 +313,10 @@ static NetworkManager *sharedManager = nil;
                 NSString* fileImageSrc = [self.pathImagesShared stringByAppendingPathComponent:file];
                 NSString* fileImageDst = [self.pathImagesUpload stringByAppendingFormat:@"/mobile.%ld.shared.jpeg", [self incrementUploadNumber]];
                 [fileManager moveItemAtPath:fileImageSrc toPath:fileImageDst error:nil];
-                NSNumber* fileSize = [NSNumber numberWithLong:[[fileManager attributesOfItemAtPath:fileImageDst error:nil] fileSize]];
+
+                NSDictionary<NSFileAttributeKey, id>* fileAttributes = [fileManager attributesOfItemAtPath:fileImageDst error:nil];
+                NSNumber* fileSize = [NSNumber numberWithLong:[fileAttributes fileSize]];
+                NSDate* fileDate = [fileAttributes fileCreationDate];
                 
                 UIImage* imageThumb = [[UIImage alloc] initWithContentsOfFile:fileImageDst];
                 imageThumb = [imageThumb panToSize:CGSizeMake(225, 150)];
@@ -309,7 +324,7 @@ static NetworkManager *sharedManager = nil;
                 NSString* fileThumb = [self.pathThumbnails stringByAppendingFormat:@"/mobile.%ld.shared.jpeg", self.uploadNumber];
                 [dataThumb writeToFile:fileThumb atomically:YES];
 
-                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys: fileImageDst, @"_path", fileThumb, @"_thumb",[fileImageDst lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded",  [NSNumber numberWithDouble:0], @"_progress", nil];
+                NSMutableDictionary* photoDict = [NSMutableDictionary dictionaryWithObjectsAndKeys: fileImageDst, @"_path", fileThumb, @"_thumb",[fileImageDst lastPathComponent], @"_filename", fileSize, @"_filesize", @"0", @"_uploaded",  [NSNumber numberWithDouble:0], @"_progress", [formatter stringFromDate:fileDate], @"_date", nil];
                 [self.uploadImages addObject:photoDict];
             }
         }

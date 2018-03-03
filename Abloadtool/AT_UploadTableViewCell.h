@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import <AFNetworking/UIImageView+AFNetworking.h>
+#import "AT_ImageTableViewCell.h"
 
-
-@interface AT_UploadTableViewCell : UITableViewCell
+@interface AT_UploadTableViewCell : AT_ImageTableViewCell
     @property UIProgressView* progressView;
 @end
