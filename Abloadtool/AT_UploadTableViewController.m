@@ -336,7 +336,7 @@
             }];
         } else {
             self.uploadStatus = @"UPLOAD";
-            self.btnUpload.title = NSLocalizedString(@"btn_upload_chancel", @"Upload Tab");
+            self.btnUpload.title = NSLocalizedString(@"btn_upload_cancel", @"Upload Tab");
             self.btnAdd.enabled = NO;
             [self.navigationItem.leftBarButtonItem setEnabled:NO];
             [UIApplication sharedApplication].idleTimerDisabled = YES;
@@ -396,8 +396,10 @@
 
         self.uploadStatus = @"ADD";
         self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
+        self.btnAdd.enabled = YES;
         [self.navigationItem.leftBarButtonItem setEnabled:YES];
         [NetworkManager showMessage:failureReason];
+        [self.tableView reloadData];
     }];
 }
 

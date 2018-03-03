@@ -14,4 +14,5 @@
 @property(nonatomic , strong) PHFetchResult *assetsFetchResults;
 @property(nonatomic , strong) PHCachingImageManager *imageManager;
 @property(nonatomic , strong) NSMutableDictionary *imageList;
+
 @end

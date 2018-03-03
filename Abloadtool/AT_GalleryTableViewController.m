@@ -244,7 +244,7 @@
                                                }];
     [alert addAction:ok];
 
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"newgallery_btn_chancel", @"Gallery") style:UIAlertActionStyleDefault
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"newgallery_btn_cancel", @"Gallery") style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
                                                        [alert dismissViewControllerAnimated:YES completion:nil];
                                                    }];
@@ -300,7 +300,7 @@
                                                }];
     [alert addAction:ok2];
     
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"delgallery_btn_chancel", @"Gallery") style:UIAlertActionStyleCancel
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"delgallery_btn_cancel", @"Gallery") style:UIAlertActionStyleCancel
                                                    handler:^(UIAlertAction * action) {
                                                        [alert dismissViewControllerAnimated:YES completion:nil];
                                                    }];

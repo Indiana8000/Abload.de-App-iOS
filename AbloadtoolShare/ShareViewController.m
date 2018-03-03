@@ -9,7 +9,7 @@
 #import "ShareViewController.h"
 
 @interface ShareViewController ()
-@property UIButton* btnOK;
+@property NSNumber* imagesToTransfere;
 @end
 
 @implementation ShareViewController
@@ -18,19 +18,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = NSLocalizedString(@"Abloadtool", @"Abloadtool");
-    //self.textView.editable = NO;
-
-    [self didSelectPost];
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         // TODO: unknown
     }];
-}
-
-- (void)viewSafeAreaInsetsDidChange {
-    [super viewSafeAreaInsetsDidChange];
-    self.btnOK.frame = CGRectMake(self.view.safeAreaInsets.left, self.view.safeAreaInsets.top, self.view.bounds.size.width -self.view.safeAreaInsets.left -self.view.safeAreaInsets.right   , self.view.bounds.size.height - self.view.safeAreaInsets.top -self.view.safeAreaInsets.bottom);
     
+    NSExtensionItem* extensionItem = self.extensionContext.inputItems[0];
+    self.imagesToTransfere = [NSNumber numberWithLong: extensionItem.attachments.count];
+
+    [self didSelectPost];
 }
 
 - (BOOL)isContentValid {
@@ -45,6 +41,7 @@
     if(![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:nil];
     }
+    NSLog(@"PATH:\r\n%@", filePath);
     
     if(securityPath) {
         PHFetchOptions *options = [[PHFetchOptions alloc] init];
@@ -58,8 +55,11 @@
 
         NSExtensionItem* extensionItem = self.extensionContext.inputItems[0];
         for(NSItemProvider* itemProvider in extensionItem.attachments) {
+            //NSLog(@"itemProvider - Type: %@", itemProvider.registeredTypeIdentifiers);
             if ([itemProvider hasItemConformingToTypeIdentifier:itemProvider.registeredTypeIdentifiers.firstObject]) {
-                [itemProvider loadItemForTypeIdentifier:itemProvider.registeredTypeIdentifiers.firstObject options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                NSLog(@"itemProvider - Try: %@", itemProvider.registeredTypeIdentifiers.firstObject);
+                [itemProvider loadItemForTypeIdentifier:itemProvider.registeredTypeIdentifiers.firstObject options:nil completionHandler:^(id<NSSecureCoding>  _Nullable item, NSError * _Null_unspecified error) {
+                    NSLog(@"itemProvider - Data: %@", item);
                     NSData* imgData = nil;
                     if( [(NSObject*)item isKindOfClass:[NSURL class]]) {
                         //imgData = [NSData dataWithContentsOfURL:(NSURL*)item];
@@ -83,13 +83,32 @@
                         [defaults setInteger:shareCount forKey:@"share_count"];
                         [defaults synchronize];
                         
+                        self.imagesToTransfere = [NSNumber numberWithLong:([self.imagesToTransfere longValue] -1)];
+                        NSLog(@"imagesToTransfere :: %ld", [self.imagesToTransfere longValue]);
+                        if([self.imagesToTransfere longValue] <= 0) {
+                            [self processingDone];
+                        }
                     }
                 }];
             }
         }
-        [self showMessage:[NSString stringWithFormat:NSLocalizedString(@"share_msg_done %ld", @"ShareExtension"), extensionItem.attachments.count]];
     } else {
-        // TODO: Error cant send Pictures!
+        [self showMessage:@"FATAL ERROR: Permission denied!"];
+    }
+}
+
+- (void)processingDone {
+    NSURL *destinationURL = [NSURL URLWithString:@"abloadtool://share"];
+    // Get "UIApplication" class name through ASCII Character codes.
+    NSString *className = [[NSString alloc] initWithData:[NSData dataWithBytes:(unsigned char []){0x55, 0x49, 0x41, 0x70, 0x70, 0x6C, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E} length:13] encoding:NSASCIIStringEncoding];
+    NSLog(@"className: %@", className);
+    if(NSClassFromString(className)) {
+        id object = [NSClassFromString(className) performSelector:@selector(sharedApplication)];
+        [object performSelector:@selector(openURL:) withObject:destinationURL];
+        [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
+    } else {
+        NSExtensionItem* extensionItem = self.extensionContext.inputItems[0];
+        [self showMessage:[NSString stringWithFormat:NSLocalizedString(@"share_msg_done %ld", @"ShareExtension"), extensionItem.attachments.count]];
     }
 }
 
@@ -98,6 +117,7 @@
 }
 
 - (NSData*)fetchImage:(NSString*) filename {
+    NSLog(@"fetchImage - Start: %@", filename);
     if([_imageList objectForKey:filename]) {
         PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
         options.synchronous = YES;
@@ -107,8 +127,10 @@
         [_imageManager requestImageDataForAsset:[_imageList objectForKey:filename] options:options resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
             tmp = imageData;
         }];
+        NSLog(@"fetchImage - Found!");
         return tmp;
     } else {
+        NSLog(@"fetchImage - Missed!");
         return nil;
     }
 }
@@ -119,7 +141,6 @@
                                                             preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_ok", @"Abloadtool") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
-
     }];
     [alert addAction:ok];
     [self presentViewController:alert animated:YES completion:nil];

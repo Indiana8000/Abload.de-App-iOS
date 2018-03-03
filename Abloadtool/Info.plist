@@ -18,8 +18,21 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>2.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>de.bluepaw.Abloadtool.URL</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>abloadtool</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
-	<string>17</string>
+	<string>18</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

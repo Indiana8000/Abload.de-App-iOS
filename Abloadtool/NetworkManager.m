@@ -83,7 +83,7 @@ static NetworkManager *sharedManager = nil;
     if(![[NSFileManager defaultManager] fileExistsAtPath:self.pathImagesShared]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:self.pathImagesShared withIntermediateDirectories:YES attributes:nil error:nil];
     }
-    //NSLog(@"PATH:\r\n%@\r\n%@\r\n%@",self.pathImagesUpload,self.pathThumbnails,self.pathImagesShared);
+    NSLog(@"PATH:\r\n%@\r\n%@\r\n%@",self.pathImagesUpload,self.pathThumbnails,self.pathImagesShared);
 }
 
 - (void)loadImagesFromDisk {
@@ -313,6 +313,7 @@ static NetworkManager *sharedManager = nil;
                 [self.uploadImages addObject:photoDict];
             }
         }
+        [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_added_images_from_share %ld", @"Upload Tab"), shareCount]];
         shareCount = 0;
         [self.defaults setInteger:shareCount forKey:@"share_count"];
         [self.defaults synchronize];
