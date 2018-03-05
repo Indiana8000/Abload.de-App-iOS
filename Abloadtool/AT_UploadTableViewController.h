@@ -18,7 +18,7 @@
 #import "AT_DetailedViewController.h"
 
 
-@interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate, UzysAssetsPickerControllerDelegate, NSURLSessionDelegate>
+@interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate, UzysAssetsPickerControllerDelegate>
     @property AT_SettingTableViewController* pageSetting;
     @property UINavigationController* navSetting;
     @property UzysAssetsPickerController* uzysPicker;

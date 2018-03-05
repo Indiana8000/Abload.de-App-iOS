@@ -417,39 +417,4 @@
 }
 
 
-- (void)test {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString* fileFile = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"images/mobile.158.jpeg"];
-    
-    
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration ephemeralSessionConfiguration] delegate:self delegateQueue:nil];
-    
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://abload.de/api/upload"]];
-    [request setHTTPMethod:@"POST"];
-
-    NSData *imageData = [NSData dataWithContentsOfFile:fileFile];
-
-    NSLog(@"UPLOAD - start");
-    NSURLSessionUploadTask *taskUpload = [session uploadTaskWithRequest:request fromData:imageData completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSHTTPURLResponse *httpResp = (NSHTTPURLResponse*) response;
-        if (!error && httpResp.statusCode == 200) {
-            
-            // Uploaded
-            NSLog(@"UPLOAD - done");
-            
-        } else {
-            
-            // alert for error saving / updating note
-            NSLog(@"ERROR: %@ AND HTTPREST ERROR : %ld", error, (long)httpResp.statusCode);
-        }
-    }];
-    [taskUpload resume];
-}
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
-    NSLog(@"didSendBodyData: %lld / %lld = %lf", totalBytesSent, totalBytesExpectedToSend, totalBytesSent*100.0/totalBytesExpectedToSend  );
-}
-
-
-
 @end

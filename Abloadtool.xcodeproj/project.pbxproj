@@ -78,6 +78,7 @@
 		A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingScaleTableViewController.m; sourceTree = "<group>"; };
 		A11E2A561FCEBD16008055E4 /* AT_SettingResolutionTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingResolutionTableViewController.h; sourceTree = "<group>"; };
 		A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingResolutionTableViewController.m; sourceTree = "<group>"; };
+		A1262136204C79AA006E7D67 /* libAFNetworking.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAFNetworking.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A12E2274200759CF000623E5 /* AT_DetailedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_DetailedViewController.h; sourceTree = "<group>"; };
 		A12E2275200759CF000623E5 /* AT_DetailedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_DetailedViewController.m; sourceTree = "<group>"; };
 		A146C1F32012612B0070BC92 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -164,6 +165,7 @@
 		15B5AA95DD45F0A80546805E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A1262136204C79AA006E7D67 /* libAFNetworking.a */,
 				A1866B992008D8DA00752895 /* libUzysAssetsPickerController.a */,
 				A1623B261FD30BBE00B6DF49 /* libQBImagePickerController.a */,
 				A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */,
