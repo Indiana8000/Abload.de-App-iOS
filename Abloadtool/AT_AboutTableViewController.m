@@ -103,7 +103,7 @@
         case 7:
             cell.textLabel.text = NSLocalizedString(@"label_bluepaw_slogan", @"About");
             NSString* appBuildString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-            cell.textLabel.text = [NSString stringWithFormat:NSLocalizedString(@"label_bluepaw_build %@", @"About"), appBuildString];
+            cell.textLabel.text = [NSString stringWithFormat:NSLocalizedString(@"label_bluepaw_build %@ %@", @"About"), appBuildString, [[NetworkManager sharedManager] lastServer]];
             break;
     }
     

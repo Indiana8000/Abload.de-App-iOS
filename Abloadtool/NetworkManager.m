@@ -49,6 +49,7 @@ static NetworkManager *sharedManager = nil;
         self.loggedin = 0;
         self.noad = 0;
         self.lastRefresh = [NSDate date];
+        self.lastServer = @"";
         self.imageList = [[NSMutableDictionary alloc] init];
         self.imageLast = [[NSArray alloc] init];
         [self initPathVariables];
@@ -389,6 +390,7 @@ static NetworkManager *sharedManager = nil;
 - (void)postRequestToAbload:(NSString*)action WithOptions:(NSMutableDictionary*)params success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     [[self getNetworkingManager] POST:action parameters:params progress:nil success:^(NSURLSessionTask *task, id responseObject) {
         NSDictionary *tmpDict = [NSDictionary dictionaryWithXMLParser:responseObject];
+        self.lastServer = [[tmpDict objectForKey:@"generator"] objectForKey:@"_serverid"];
         if([[tmpDict objectForKey:@"login"] objectForKey:@"_session"]) {
             [self saveSessionKey:[[tmpDict objectForKey:@"login"] objectForKey:@"_session"]];
             NSString *tmpStr = [[tmpDict objectForKey:@"login"] objectForKey:@"_disable_advertising"];
@@ -490,7 +492,7 @@ static NetworkManager *sharedManager = nil;
         [params setObject:email forKey:@"name"];
         [params setObject:password forKey:@"password"];
         [self postRequestToAbload:@"login" WithOptions:params success:^(NSDictionary *responseObject) {
-            NSLog(@"authenticateWithEmail:\r\n%@", responseObject);
+            //NSLog(@"authenticateWithEmail:\r\n%@", responseObject);
             if([responseObject objectForKey:@"status"] && [[[responseObject objectForKey:@"status"] objectForKey:@"_code"] intValue]  == 801) {
                 self.loggedin = 1;
                 if(![responseObject objectForKey:@"galleries"]) {

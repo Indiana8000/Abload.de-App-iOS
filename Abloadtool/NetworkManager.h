@@ -36,6 +36,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 @property NSInteger loggedin;
 @property NSInteger noad;
 @property NSDate* lastRefresh;
+@property NSString* lastServer;
 - (NSString*)getSessionKey;
 
 #pragma mark - ImageFiles
