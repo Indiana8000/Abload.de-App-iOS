@@ -31,6 +31,11 @@
     [self initImage:self.bluepawImage];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
+}
+
 - (void)initImage:(UIImageView*)img {
     img.layer.shadowColor = [UIColor blackColor].CGColor;
     img.layer.shadowOpacity = 0.70;

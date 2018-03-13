@@ -35,7 +35,7 @@
         self.view = self.detailedScrollView;
         
         self.imageView = [[UIImageView alloc] init];
-        self.imageView.backgroundColor = [UIColor yellowColor];
+        self.imageView.backgroundColor = [UIColor clearColor];
         [self.view addSubview:self.imageView];
         
         UITapGestureRecognizer *tapTwice = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeZoom)];
