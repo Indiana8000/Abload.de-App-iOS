@@ -42,11 +42,12 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     CGFloat cellOffset         = (self.bounds.size.height -50) / 2;
+    CGFloat cellWidth          = self.bounds.size.width -self.safeAreaInsets.left -self.safeAreaInsets.right;
     
-    self.imageView.frame       = CGRectMake(10                          , cellOffset              , 50                             , 50);
-    self.textLabel.frame       = CGRectMake(70                          , cellOffset              , self.bounds.size.width -75 -105, self.bounds.size.height/2 -cellOffset);
-    self.dateTextLabel.frame   = CGRectMake(self.bounds.size.width - 105, cellOffset              , 100                            , self.bounds.size.height/2 -cellOffset);
-    self.detailTextLabel.frame = CGRectMake(70                          , self.frame.size.height/2, self.bounds.size.width -75     , self.bounds.size.height/2 -cellOffset);
+    self.imageView.frame       = CGRectMake(10            , cellOffset              , 50                , 50);
+    self.textLabel.frame       = CGRectMake(70            , cellOffset              , cellWidth -75 -105, self.bounds.size.height/2 -cellOffset);
+    self.dateTextLabel.frame   = CGRectMake(cellWidth -105 +self.safeAreaInsets.left, cellOffset              , 100               , self.bounds.size.height/2 -cellOffset);
+    self.detailTextLabel.frame = CGRectMake(70            , self.frame.size.height/2, cellWidth -75     , self.bounds.size.height/2 -cellOffset);
 }
 
 

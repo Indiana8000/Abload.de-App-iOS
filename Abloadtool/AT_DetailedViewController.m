@@ -10,6 +10,9 @@
 
 
 @interface AT_DetailedViewController ()
+@property UIPageControl* pageControl;
+@property UIButton* arrowLeft;
+@property UIButton* arrowRight;
 
 @end
 
@@ -21,10 +24,11 @@
     if (self) {
         self.navigationItem.title = NSLocalizedString(@"label_loading", @"Image");
         self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_zoom", @"Image") style:UIBarButtonItemStylePlain target:self action:@selector(changeZoom)];
+        self.view.backgroundColor = [UIColor lightGrayColor];
         
         self.detailedScrollView = [[UIScrollView alloc] init];
         self.detailedScrollView.delegate = self;
-        self.detailedScrollView.backgroundColor = [UIColor lightGrayColor];
+        self.detailedScrollView.backgroundColor = [UIColor clearColor];
         self.detailedScrollView.scrollEnabled = YES;
         self.detailedScrollView.canCancelContentTouches = NO;
         self.detailedScrollView.clipsToBounds = YES;
@@ -32,12 +36,40 @@
         self.detailedScrollView.maximumZoomScale = 10.0;
         self.detailedScrollView.minimumZoomScale = 0.05;
         self.detailedScrollView.contentMode = UIViewContentModeCenter;
-        self.view = self.detailedScrollView;
+        //self.view = self.detailedScrollView;
+        [self.view addSubview:self.detailedScrollView];
         
         self.imageView = [[UIImageView alloc] init];
         self.imageView.backgroundColor = [UIColor clearColor];
-        [self.view addSubview:self.imageView];
+        [self.detailedScrollView addSubview:self.imageView];
         
+        self.pageControl = [[UIPageControl alloc] init];
+        self.pageControl.hidesForSinglePage = YES;
+        self.pageControl.numberOfPages = 1;
+        [self.view addSubview:self.pageControl];
+        [self.pageControl addTarget:self action:@selector(pageChanged:) forControlEvents:UIControlEventValueChanged];
+        
+        self.arrowLeft = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.arrowLeft.alpha = 0.35f;
+        self.arrowLeft.layer.shadowColor = [UIColor blackColor].CGColor;
+        self.arrowLeft.layer.shadowRadius = 2.0f;
+        self.arrowLeft.layer.shadowOpacity = 1.0f;
+        self.arrowLeft.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+        [self.arrowLeft setImage:[UIImage imageNamed:@"arrow_left"] forState:UIControlStateNormal];
+        [self.view addSubview:self.arrowLeft];
+        [self.arrowLeft addTarget:self action:@selector(loadPrev) forControlEvents:UIControlEventTouchDown];
+
+        self.arrowRight = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.arrowRight.alpha = 0.35f;
+        self.arrowRight.layer.shadowColor = [UIColor blackColor].CGColor;
+        self.arrowRight.layer.shadowRadius = 2.0f;
+        self.arrowRight.layer.shadowOpacity = 1.0f;
+        self.arrowRight.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
+        [self.arrowRight setImage:[UIImage imageNamed:@"arrow_right"] forState:UIControlStateNormal];
+        [self.view addSubview:self.arrowRight];
+        [self.arrowRight addTarget:self action:@selector(loadNext) forControlEvents:UIControlEventTouchDown];
+
+
         UITapGestureRecognizer *tapTwice = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeZoom)];
         tapTwice.numberOfTapsRequired = 2;
         [self.view addGestureRecognizer:tapTwice];
@@ -50,9 +82,8 @@
         swipeRight.direction = UISwipeGestureRecognizerDirectionRight;
         [self.view addGestureRecognizer:swipeRight];
 
-        UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onSelfLongpressDetected:)];
+        UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onSelfLongPressGestureDetected:)];
         [self.view addGestureRecognizer:longPressGesture];
-
     }
     return self;
 }
@@ -65,6 +96,24 @@
     return YES;
 }
 
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    self.detailedScrollView.frame = self.view.bounds;
+
+    CGSize pageControlleSize = [self.pageControl sizeForNumberOfPages:self.pageControl.numberOfPages];
+    self.pageControl.frame = CGRectMake(  self.view.safeAreaInsets.left
+                                        , self.view.bounds.size.height -self.view.safeAreaInsets.top -pageControlleSize.height
+                                        , self.view.bounds.size.width -self.view.safeAreaInsets.left -self.view.safeAreaInsets.right
+                                        , pageControlleSize.height);
+    self.arrowLeft.frame = CGRectMake(  self.view.safeAreaInsets.left
+                                      , self.view.bounds.size.height/2 -self.arrowLeft.currentImage.size.height/2
+                                      , self.arrowLeft.currentImage.size.width
+                                      , self.arrowLeft.currentImage.size.height);
+    self.arrowRight.frame = CGRectMake( self.view.bounds.size.width -self.view.safeAreaInsets.right -self.arrowLeft.currentImage.size.width
+                                       , self.view.bounds.size.height/2 -self.arrowLeft.currentImage.size.height/2
+                                       , self.arrowLeft.currentImage.size.width
+                                       , self.arrowLeft.currentImage.size.height);
+}
 
 #pragma mark - View
 
@@ -73,9 +122,9 @@
     [self loadImage];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+//    return YES;
+//}
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     if(toInterfaceOrientation == UIInterfaceOrientationPortrait) {
@@ -139,6 +188,9 @@
     } else {
         self.imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@/img/%@", cURL_BASE, [[self.imageList objectAtIndex:self.imageID] objectForKey:@"_filename"]]];
     }
+    
+    self.pageControl.numberOfPages = [self.imageList count];
+    self.pageControl.currentPage = self.imageID;
 
     __unsafe_unretained typeof(self) weakSelf = self;
     [self.detailedScrollView setZoomScale:1.0 animated:NO];
@@ -180,7 +232,12 @@
     }
 }
 
-- (void)onSelfLongpressDetected:(UILongPressGestureRecognizer*)pGesture {
+- (void)pageChanged:(id) sender {
+    self.imageID = self.pageControl.currentPage;
+    [self loadImage];
+}
+
+- (void)onSelfLongPressGestureDetected:(UILongPressGestureRecognizer*)pGesture {
     if(pGesture.state == UIGestureRecognizerStateBegan) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
                                                                        message:nil

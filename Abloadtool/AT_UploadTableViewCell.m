@@ -22,11 +22,12 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     CGFloat cellOffset         = (self.bounds.size.height -50) / 2;
+    CGFloat cellWidth          = self.bounds.size.width -self.safeAreaInsets.left -self.safeAreaInsets.right;
 
-    self.imageView.frame       = CGRectMake(10, cellOffset                  , 75                              , 50);
-    self.textLabel.frame       = CGRectMake(95, cellOffset                  , self.bounds.size.width -100 -105, self.bounds.size.height/2 -cellOffset);
-    self.detailTextLabel.frame = CGRectMake(95, self.bounds.size.height/2   , self.bounds.size.width -100     , self.bounds.size.height/2 -cellOffset);
-    self.progressView.frame    = CGRectMake(95, self.bounds.size.height/2 -1, self.bounds.size.width -100     , 2);
+    self.imageView.frame       = CGRectMake(10, cellOffset                  , 75                  , 50);
+    self.textLabel.frame       = CGRectMake(95, cellOffset                  , cellWidth -100 -105, self.bounds.size.height/2 -cellOffset);
+    self.detailTextLabel.frame = CGRectMake(95, self.bounds.size.height/2   , cellWidth -100     , self.bounds.size.height/2 -cellOffset);
+    self.progressView.frame    = CGRectMake(95 +self.safeAreaInsets.left, self.bounds.size.height/2 -1, cellWidth -100     , 2);
 }
 
 

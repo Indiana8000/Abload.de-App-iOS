@@ -64,13 +64,16 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self.navigationController setToolbarHidden:NO animated:NO];
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:animated];
+    [self.tabBarController.tabBar setHidden:NO];
+    [self.navigationController setToolbarHidden:NO animated:animated];
     [self.tableView reloadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self.navigationController setToolbarHidden:YES animated:NO];
+    [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
 - (void)reloadTable {
