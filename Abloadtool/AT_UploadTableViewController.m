@@ -327,6 +327,7 @@
                 [self.uploadImages removeObjectAtIndex:(i -1)];
         }
         self.btnAdd.enabled = YES;
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
         [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
         [self.tableView reloadData];
     }
@@ -363,7 +364,6 @@
     [[NetworkManager sharedManager] getGalleryList:nil failure:nil];
     self.uploadStatus = @"DONE";
     self.btnUpload.title = NSLocalizedString(@"btn_upload_clear", @"Upload Tab");
-    [self.navigationItem.leftBarButtonItem setEnabled:YES];
     [UIApplication sharedApplication].idleTimerDisabled = NO;
     [self.tableView scrollsToTop];
     [NSTimer scheduledTimerWithTimeInterval:0.5 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];

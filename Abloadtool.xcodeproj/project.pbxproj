@@ -427,7 +427,6 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-Abloadtool/Pods-Abloadtool-resources.sh",
-				$PODS_CONFIGURATION_BUILD_DIR/QBImagePickerController/QBImagePicker.bundle,
 				"${PODS_ROOT}/UzysAssetsPickerController/UzysAssetsPickerController/Library/UzysAssetsPickerController.xib",
 				"${PODS_ROOT}/UzysAssetsPickerController/UzysAssetsPickerController/Library/UzysAssetPickerController.bundle",
 			);

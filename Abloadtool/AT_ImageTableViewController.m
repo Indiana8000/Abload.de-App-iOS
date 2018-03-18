@@ -30,6 +30,7 @@
     self.refreshControl = refreshControl;
     
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
+    self.tableView.allowsMultipleSelection = YES;
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
 }
 
@@ -78,7 +79,7 @@
     NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
     [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     
-    //UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onSelfLongpressDetected:)];
+    //UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(doShowImage:)];
     //[cell addGestureRecognizer:longPressGesture];
     
     return cell;
@@ -115,9 +116,16 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     self.detailedViewController.imageID = indexPath.row;
     self.detailedViewController.imageList = [[[NetworkManager sharedManager] imageList] objectForKey:self.gid];
-    
     self.detailedViewController.title = NSLocalizedString(@"label_loading", @"Image");
     [self.navigationController pushViewController:self.detailedViewController animated:YES];
+    /*
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    AT_ImageTableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    if(cell.accessoryType == UITableViewCellAccessoryCheckmark)
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    else
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+     */
 }
 
 
@@ -163,6 +171,17 @@
 
 
 #pragma mark - Actions
+
+- (void)doShowImage:(UIGestureRecognizer *)gestureRecognizer {
+    if(gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        NSLog(@"gestureRecognizer: %@", gestureRecognizer.view);
+        NSIndexPath* indexPath = [self.tableView indexPathForCell:(AT_ImageTableViewCell*)gestureRecognizer.view];
+        self.detailedViewController.imageID = indexPath.row;
+        self.detailedViewController.imageList = [[[NetworkManager sharedManager] imageList] objectForKey:self.gid];
+        self.detailedViewController.title = NSLocalizedString(@"label_loading", @"Image");
+        [self.navigationController pushViewController:self.detailedViewController animated:YES];
+    }
+}
 
 - (void)doCopyLinks {
     NSMutableString* linkX = [[NSMutableString alloc] init];

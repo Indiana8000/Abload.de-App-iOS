@@ -23,7 +23,7 @@
     self = [super init];
     if (self) {
         self.navigationItem.title = NSLocalizedString(@"label_loading", @"Image");
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_zoom", @"Image") style:UIBarButtonItemStylePlain target:self action:@selector(changeZoom)];
+        //self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_zoom", @"Image") style:UIBarButtonItemStylePlain target:self action:@selector(changeZoom)];
         self.view.backgroundColor = [UIColor lightGrayColor];
         
         self.detailedScrollView = [[UIScrollView alloc] init];
@@ -46,7 +46,7 @@
         self.pageControl = [[UIPageControl alloc] init];
         self.pageControl.hidesForSinglePage = YES;
         self.pageControl.numberOfPages = 1;
-        [self.view addSubview:self.pageControl];
+        //[self.view addSubview:self.pageControl];
         [self.pageControl addTarget:self action:@selector(pageChanged:) forControlEvents:UIControlEventValueChanged];
         
         self.arrowLeft = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -56,7 +56,7 @@
         self.arrowLeft.layer.shadowOpacity = 1.0f;
         self.arrowLeft.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
         [self.arrowLeft setImage:[UIImage imageNamed:@"arrow_left"] forState:UIControlStateNormal];
-        [self.view addSubview:self.arrowLeft];
+        //)[self.view addSubview:self.arrowLeft];
         [self.arrowLeft addTarget:self action:@selector(loadPrev) forControlEvents:UIControlEventTouchDown];
 
         self.arrowRight = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -66,7 +66,7 @@
         self.arrowRight.layer.shadowOpacity = 1.0f;
         self.arrowRight.layer.shadowOffset = CGSizeMake(2.0f, 2.0f);
         [self.arrowRight setImage:[UIImage imageNamed:@"arrow_right"] forState:UIControlStateNormal];
-        [self.view addSubview:self.arrowRight];
+        //[self.view addSubview:self.arrowRight];
         [self.arrowRight addTarget:self action:@selector(loadNext) forControlEvents:UIControlEventTouchDown];
 
 

@@ -28,15 +28,39 @@
 	</dict>
 	<dict>
 		<key>name</key>
-		<string>Thumbnail for HTML</string>
+		<string>Textlink for forums</string>
 		<key>url</key>
-		<string>&lt;a href=&quot;$B$/image.php?img=$I$&quot;&gt;&lt;img src=&quot;$B$/thumb/$I$&quot; alt=&quot;$$I$&quot; /&gt;&lt;/a&gt;</string>
+		<string>[url=$B$/image.php?img=$I$]Bild &quot;$I$&quot; anzeigen.[/url]</string>
 	</dict>
 	<dict>
 		<key>name</key>
 		<string>Thumbnail for Markdown</string>
 		<key>url</key>
 		<string>[![Image $I$ from abload.de]($B$/thumb/$I$)]($B$/image.php?img=$I$)</string>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Thumbnail for HTML</string>
+		<key>url</key>
+		<string>&lt;a href=&quot;$B$/image.php?img=$I$&quot;&gt;&lt;img src=&quot;$B$/thumb/$I$&quot; alt=&quot;$$I$&quot; /&gt;&lt;/a&gt;</string>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Direct link for forums</string>
+		<key>url</key>
+		<string>[url=$B$/image.php?img=$I$][img]$B$/img/$I$[/img][/url]</string>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Direct link for Markdown</string>
+		<key>url</key>
+		<string>[![Bild $I$ auf abload.de]($B$/img/$I$)]($B$/image.php?img=$I$)</string>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>Direct link for HTML</string>
+		<key>url</key>
+		<string>&lt;a href=&quot;$B$/image.php?img=$I$&quot;&gt;&lt;img src=&quot;$B$/img/$I$&quot; alt=&quot;&quot; /&gt;&lt;/a&gt;</string>
 	</dict>
 </array>
 </plist>
