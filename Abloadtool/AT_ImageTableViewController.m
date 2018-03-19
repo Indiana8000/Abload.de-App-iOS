@@ -36,7 +36,7 @@
 
 - (void) viewWillAppear:(BOOL)animated {
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:animated];
+    //[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:animated];
     [self.tabBarController.tabBar setHidden:NO];
     [self.tableView reloadData];
 }
