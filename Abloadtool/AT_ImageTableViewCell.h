@@ -12,4 +12,8 @@
 
 @interface AT_ImageTableViewCell : UITableViewCell
     @property UILabel* dateTextLabel;
+    @property UIImageView* marked;
+
+    @property BOOL canbeSelected;
+    @property BOOL isSelected;
 @end

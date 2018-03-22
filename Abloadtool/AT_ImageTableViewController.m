@@ -12,7 +12,7 @@
 
 
 @interface AT_ImageTableViewController ()
-
+@property BOOL multiSelectMode;
 @end
 
 
@@ -20,24 +20,51 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.multiSelectMode = NO;
+    
+    /*
     self.navigationItem.rightBarButtonItems = @[
                                                 [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)],
                                                 [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)]
                                                 ];
+     */
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Auswählen" style:UIBarButtonItemStylePlain target:self action:@selector(switchSelectMode)];
 
+    UIBarButtonItem* btnSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem* btnLinkOptions = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
+    UIBarButtonItem* btnLinkCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
+    [self setToolbarItems:@[btnSpace, btnLinkOptions, btnLinkCopy]];
+    
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(doRefresh:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
     
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
-    self.tableView.allowsMultipleSelection = YES;
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
 }
 
-- (void) viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated {
     [self.navigationController setNavigationBarHidden:NO animated:animated];
     //[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:animated];
     [self.tabBarController.tabBar setHidden:NO];
+    [self.tableView reloadData];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.multiSelectMode = NO;
+}
+
+- (void)switchSelectMode {
+    self.multiSelectMode = !self.multiSelectMode;
+    if(self.multiSelectMode) {
+        self.navigationItem.rightBarButtonItem.title = @"Abbrechen";
+        [self.navigationController setToolbarHidden:NO animated:YES];
+    } else {
+        self.navigationItem.rightBarButtonItem.title = @"Auswählen";
+        [self.navigationController setToolbarHidden:YES animated:YES];
+    }
     [self.tableView reloadData];
 }
 
@@ -79,6 +106,8 @@
     NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
     [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     
+    cell.canbeSelected = self.multiSelectMode;
+    
     //UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(doShowImage:)];
     //[cell addGestureRecognizer:longPressGesture];
     
@@ -114,18 +143,16 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    self.detailedViewController.imageID = indexPath.row;
-    self.detailedViewController.imageList = [[[NetworkManager sharedManager] imageList] objectForKey:self.gid];
-    self.detailedViewController.title = NSLocalizedString(@"label_loading", @"Image");
-    [self.navigationController pushViewController:self.detailedViewController animated:YES];
-    /*
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    AT_ImageTableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    if(cell.accessoryType == UITableViewCellAccessoryCheckmark)
-        cell.accessoryType = UITableViewCellAccessoryNone;
-    else
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-     */
+    if(self.multiSelectMode) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        AT_ImageTableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        cell.isSelected = !cell.isSelected;
+    } else {
+        self.detailedViewController.imageID = indexPath.row;
+        self.detailedViewController.imageList = [[[NetworkManager sharedManager] imageList] objectForKey:self.gid];
+        self.detailedViewController.title = NSLocalizedString(@"label_loading", @"Image");
+        [self.navigationController pushViewController:self.detailedViewController animated:YES];
+    }
 }
 
 

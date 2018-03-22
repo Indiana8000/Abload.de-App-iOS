@@ -16,6 +16,8 @@
 #import "AT_SettingTableViewController.h"
 #import "AT_SettingOutputLinksTableViewController.h"
 #import "AT_DetailedViewController.h"
+#import "AT_AlbumTableViewController.h"
+#import "AT_ImagePickerViewController.h"
 
 
 @interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate, UzysAssetsPickerControllerDelegate>

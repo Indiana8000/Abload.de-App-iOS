@@ -13,6 +13,9 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
+    
+    self.canbeSelected = NO;
+    self.isSelected = NO;
 
     self.backgroundColor                           = [UIColor whiteColor];
     self.imageView.layer.masksToBounds             = YES;
@@ -26,6 +29,9 @@
     self.dateTextLabel.adjustsFontSizeToFitWidth   = YES;
     [self addSubview:self.dateTextLabel];
     
+    self.marked                                    = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"photo_deselected"]];
+    [self addSubview:self.marked];
+
     // Debug
     //self.textLabel.backgroundColor = [UIColor greenColor];
     //self.detailTextLabel.backgroundColor = [UIColor blueColor];
@@ -48,6 +54,17 @@
     self.textLabel.frame       = CGRectMake(70            , cellOffset              , cellWidth -75 -105, self.bounds.size.height/2 -cellOffset);
     self.dateTextLabel.frame   = CGRectMake(cellWidth -105 +self.safeAreaInsets.left, cellOffset              , 100               , self.bounds.size.height/2 -cellOffset);
     self.detailTextLabel.frame = CGRectMake(70            , self.frame.size.height/2, cellWidth -75     , self.bounds.size.height/2 -cellOffset);
+
+    if(self.canbeSelected) {
+        if(self.isSelected) {
+            self.marked.image = [UIImage imageNamed:@"photo_selected"];
+        } else {
+            self.marked.image = [UIImage imageNamed:@"photo_deselected"];
+        }
+        self.marked.frame          = CGRectMake(45            , cellOffset +30          , 20                , 20);
+    } else {
+        self.marked.frame          = CGRectMake(0, 0, 0, 0);
+    }
 }
 
 

@@ -18,6 +18,10 @@
     @property NSMutableArray* uploadImages;
     @property UIBarButtonItem* btnUpload;
     @property UIBarButtonItem* btnAdd;
+
+@property AT_AlbumTableViewController* albumTableViewController;
+@property AT_ImagePickerViewController* imagePickerViewController;
+@property UINavigationController* imagePickerNavigationController;
 @end
 
 
@@ -58,8 +62,13 @@
         }];
     }
     
+    UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc] init];
+
+    self.albumTableViewController = [[AT_AlbumTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    self.imagePickerViewController = [[AT_ImagePickerViewController alloc] initWithCollectionViewLayout:layout];
+    self.imagePickerNavigationController = [[UINavigationController alloc] initWithRootViewController:self.albumTableViewController];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:UIApplicationWillEnterForegroundNotification object:nil];
-    //[self test];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -288,11 +297,28 @@
 #pragma mark - Add Image
 
 - (void)showImagePicker {
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        if(status == PHAuthorizationStatusAuthorized) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.imagePickerViewController prepareDisplay];
+                self.albumTableViewController.imagePickerViewController = self.imagePickerViewController;
+                self.imagePickerViewController.collectionView.backgroundColor = self.tableView.backgroundColor;
+                [self presentViewController:self.imagePickerNavigationController animated:YES completion:nil];
+                [self.imagePickerNavigationController pushViewController:self.imagePickerViewController animated:NO];
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [NetworkManager showMessage:@"Leider hast du den Zugriff deine Bilder nicht genehmigt."];
+            });
+        }
+    }];
+    /*
     self.uzysPicker = [[UzysAssetsPickerController alloc] init];
     self.uzysPicker.delegate = (id)self;
     self.uzysPicker.maximumNumberOfSelectionVideo = 0;
     self.uzysPicker.maximumNumberOfSelectionPhoto = 999;
     [self presentViewController:self.uzysPicker animated:YES completion:nil];
+     */
 }
 
 - (void)uzysAssetsPickerController:(UzysAssetsPickerController *)picker didFinishPickingAssets:(NSArray *)assets {

@@ -15,6 +15,8 @@
 
     self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
     [self addSubview:self.progressView];
+    
+    [self.marked removeFromSuperview];
 
     return self;
 }

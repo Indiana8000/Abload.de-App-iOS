@@ -16,6 +16,7 @@
 		A12E2276200759CF000623E5 /* AT_DetailedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E2275200759CF000623E5 /* AT_DetailedViewController.m */; };
 		A1780F0F1FB5D807009BFED0 /* AT_SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */; };
 		A1780F121FB60385009BFED0 /* AT_SettingGalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */; };
+		A178D7FF205FF1DA008A0828 /* AT_ImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A178D7FE205FF1DA008A0828 /* AT_ImagePickerViewController.m */; };
 		A17DD45A2003A21700642310 /* AT_ImageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */; };
 		A17DD45D2003CD0500642310 /* AT_UploadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */; };
 		A181C69E202E104700DA6282 /* AT_AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A181C69D202E104700DA6282 /* AT_AboutTableViewController.m */; };
@@ -34,6 +35,8 @@
 		A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B1E3C71F98E70300C05787 /* AT_GalleryTableViewController.m */; };
 		A1B94BB81FB0769900929CBC /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = A1B94BB71FB0769900929CBC /* LICENSE */; };
 		A1BAD3FD1FA251F400865051 /* AT_TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1BAD3FC1FA251F400865051 /* AT_TabBarController.m */; };
+		A1C0D3B92064027B00FF9477 /* AT_AlbumTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C0D3B82064027B00FF9477 /* AT_AlbumTableViewController.m */; };
+		A1C0D3BC20640F4B00FF9477 /* AT_ImagePickerCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C0D3BB20640F4B00FF9477 /* AT_ImagePickerCollectionViewCell.m */; };
 		A1C5492B20065BA900121C46 /* AT_ImageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C5492A20065BA900121C46 /* AT_ImageTableViewController.m */; };
 		A1E504DE1F8BECEB0029146D /* libXMLDictionary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */; };
 		A1EE6B5D1F864E0700F78F24 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EE6B5C1F864E0700F78F24 /* AppDelegate.m */; };
@@ -87,6 +90,8 @@
 		A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingTableViewController.m; sourceTree = "<group>"; };
 		A1780F101FB60385009BFED0 /* AT_SettingGalleryTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingGalleryTableViewController.h; sourceTree = "<group>"; };
 		A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingGalleryTableViewController.m; sourceTree = "<group>"; };
+		A178D7FD205FF1DA008A0828 /* AT_ImagePickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_ImagePickerViewController.h; sourceTree = "<group>"; };
+		A178D7FE205FF1DA008A0828 /* AT_ImagePickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_ImagePickerViewController.m; sourceTree = "<group>"; };
 		A17DD4582003A21700642310 /* AT_ImageTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_ImageTableViewCell.h; sourceTree = "<group>"; };
 		A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_ImageTableViewCell.m; sourceTree = "<group>"; };
 		A17DD45B2003CD0500642310 /* AT_UploadTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_UploadTableViewCell.h; sourceTree = "<group>"; };
@@ -121,6 +126,10 @@
 		A1B94BB71FB0769900929CBC /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		A1BAD3FB1FA251F400865051 /* AT_TabBarController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_TabBarController.h; sourceTree = "<group>"; };
 		A1BAD3FC1FA251F400865051 /* AT_TabBarController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_TabBarController.m; sourceTree = "<group>"; };
+		A1C0D3B72064027B00FF9477 /* AT_AlbumTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_AlbumTableViewController.h; sourceTree = "<group>"; };
+		A1C0D3B82064027B00FF9477 /* AT_AlbumTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_AlbumTableViewController.m; sourceTree = "<group>"; };
+		A1C0D3BA20640F4B00FF9477 /* AT_ImagePickerCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_ImagePickerCollectionViewCell.h; sourceTree = "<group>"; };
+		A1C0D3BB20640F4B00FF9477 /* AT_ImagePickerCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_ImagePickerCollectionViewCell.m; sourceTree = "<group>"; };
 		A1C5492920065BA900121C46 /* AT_ImageTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_ImageTableViewController.h; sourceTree = "<group>"; };
 		A1C5492A20065BA900121C46 /* AT_ImageTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_ImageTableViewController.m; sourceTree = "<group>"; };
 		A1E504DF1F8BECEB0029146D /* libXMLDictionary.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libXMLDictionary.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -194,6 +203,19 @@
 			name = SettingsViews;
 			sourceTree = "<group>";
 		};
+		A178D7FC205FD4B5008A0828 /* ImagePicker */ = {
+			isa = PBXGroup;
+			children = (
+				A1C0D3B72064027B00FF9477 /* AT_AlbumTableViewController.h */,
+				A1C0D3B82064027B00FF9477 /* AT_AlbumTableViewController.m */,
+				A178D7FD205FF1DA008A0828 /* AT_ImagePickerViewController.h */,
+				A178D7FE205FF1DA008A0828 /* AT_ImagePickerViewController.m */,
+				A1C0D3BA20640F4B00FF9477 /* AT_ImagePickerCollectionViewCell.h */,
+				A1C0D3BB20640F4B00FF9477 /* AT_ImagePickerCollectionViewCell.m */,
+			);
+			name = ImagePicker;
+			sourceTree = "<group>";
+		};
 		A181C69B202E0F9400DA6282 /* ExtraClasses */ = {
 			isa = PBXGroup;
 			children = (
@@ -201,6 +223,8 @@
 				A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */,
 				A17DD45B2003CD0500642310 /* AT_UploadTableViewCell.h */,
 				A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */,
+				A1B00A642013734600059ADE /* UIImage+Scale.h */,
+				A1B00A652013734600059ADE /* UIImage+Scale.m */,
 			);
 			name = ExtraClasses;
 			sourceTree = "<group>";
@@ -271,11 +295,10 @@
 				A12E2275200759CF000623E5 /* AT_DetailedViewController.m */,
 				A181C69C202E104700DA6282 /* AT_AboutTableViewController.h */,
 				A181C69D202E104700DA6282 /* AT_AboutTableViewController.m */,
+				A178D7FC205FD4B5008A0828 /* ImagePicker */,
 				A181C69B202E0F9400DA6282 /* ExtraClasses */,
 				A1067D7F1F866CCF007D1D89 /* NetworkManager.h */,
 				A1067D801F866CCF007D1D89 /* NetworkManager.m */,
-				A1B00A642013734600059ADE /* UIImage+Scale.h */,
-				A1B00A652013734600059ADE /* UIImage+Scale.m */,
 				A1E504E01F8C06BB0029146D /* README.md */,
 				A1B94BB71FB0769900929CBC /* LICENSE */,
 				A1E504E11F8C06C70029146D /* API.md */,
@@ -490,6 +513,7 @@
 				A1049B23201104BE0099A2AE /* AT_SettingOutputLinksTableViewController.m in Sources */,
 				A17DD45A2003A21700642310 /* AT_ImageTableViewCell.m in Sources */,
 				A18EDF441FA34E6300F8E80E /* AT_UploadTableViewController.m in Sources */,
+				A178D7FF205FF1DA008A0828 /* AT_ImagePickerViewController.m in Sources */,
 				A1C5492B20065BA900121C46 /* AT_ImageTableViewController.m in Sources */,
 				A1780F121FB60385009BFED0 /* AT_SettingGalleryTableViewController.m in Sources */,
 				A1EE6B5D1F864E0700F78F24 /* AppDelegate.m in Sources */,
@@ -497,11 +521,13 @@
 				A1780F0F1FB5D807009BFED0 /* AT_SettingTableViewController.m in Sources */,
 				A181C69E202E104700DA6282 /* AT_AboutTableViewController.m in Sources */,
 				A11E2A581FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m in Sources */,
+				A1C0D3B92064027B00FF9477 /* AT_AlbumTableViewController.m in Sources */,
 				A12E2276200759CF000623E5 /* AT_DetailedViewController.m in Sources */,
 				A11E2A551FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m in Sources */,
 				A17DD45D2003CD0500642310 /* AT_UploadTableViewCell.m in Sources */,
 				A1EE6B6E1F864E0700F78F24 /* main.m in Sources */,
 				A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */,
+				A1C0D3BC20640F4B00FF9477 /* AT_ImagePickerCollectionViewCell.m in Sources */,
 				A1067D811F866CCF007D1D89 /* NetworkManager.m in Sources */,
 				A1B00A662013734600059ADE /* UIImage+Scale.m in Sources */,
 			);
