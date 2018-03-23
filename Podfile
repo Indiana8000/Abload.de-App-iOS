@@ -10,6 +10,6 @@ target 'Abloadtool' do
   pod 'MBProgressHUD', '~> 1'
   pod 'XMLDictionary', '~> 1'
   # pod 'QBImagePickerController'
-  pod 'UzysAssetsPickerController'
+  # pod 'UzysAssetsPickerController'
 
 end

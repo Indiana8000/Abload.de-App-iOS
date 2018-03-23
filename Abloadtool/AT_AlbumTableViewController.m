@@ -19,8 +19,8 @@
 - (instancetype)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     if(self) {
-        self.title = @"Album";
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Abbruch" style:UIBarButtonItemStylePlain target:self action:@selector(cancleView)];
+        self.title = NSLocalizedString(@"nav_title_album", @"Navigation");
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_cancel", @"ImagePicker") style:UIBarButtonItemStylePlain target:self action:@selector(cancleView)];
         [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
     }
     return self;

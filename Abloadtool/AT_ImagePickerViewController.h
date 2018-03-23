@@ -10,6 +10,7 @@
 #import <Photos/Photos.h>
 #import <MBProgressHUD/MBProgressHUD.h>
 
+#import "NetworkManager.h"
 #import "AT_ImagePickerCollectionViewCell.h"
 
 @interface AT_ImagePickerViewController : UICollectionViewController

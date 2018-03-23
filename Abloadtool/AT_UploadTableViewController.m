@@ -308,31 +308,11 @@
             });
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [NetworkManager showMessage:@"Leider hast du den Zugriff deine Bilder nicht genehmigt."];
+                [NetworkManager showMessage:NSLocalizedString(@"msg_no_access", @"Upload Tab")];
             });
         }
     }];
-    /*
-    self.uzysPicker = [[UzysAssetsPickerController alloc] init];
-    self.uzysPicker.delegate = (id)self;
-    self.uzysPicker.maximumNumberOfSelectionVideo = 0;
-    self.uzysPicker.maximumNumberOfSelectionPhoto = 999;
-    [self presentViewController:self.uzysPicker animated:YES completion:nil];
-     */
 }
-
-- (void)uzysAssetsPickerController:(UzysAssetsPickerController *)picker didFinishPickingAssets:(NSArray *)assets {
-    [assets enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        ALAsset *asset = obj;
-        ALAssetRepresentation *rep = [asset defaultRepresentation];
-        Byte *buffer = (Byte*)malloc(rep.size);
-        NSUInteger buffered = [rep getBytes:buffer fromOffset:0.0 length:rep.size error:nil];
-        NSData *data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
-        [[NetworkManager sharedManager] saveImageToDisk:data];
-    }];
-    [self.tableView reloadData];
-}
-
 
 #pragma mark - Upload
 

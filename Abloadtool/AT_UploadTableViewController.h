@@ -20,7 +20,7 @@
 #import "AT_ImagePickerViewController.h"
 
 
-@interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate, UzysAssetsPickerControllerDelegate>
+@interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate>
     @property AT_SettingTableViewController* pageSetting;
     @property UINavigationController* navSetting;
     @property UzysAssetsPickerController* uzysPicker;

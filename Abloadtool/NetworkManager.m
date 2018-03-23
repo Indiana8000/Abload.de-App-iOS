@@ -651,10 +651,6 @@ static NetworkManager *sharedManager = nil;
     }
 }
 
-- (void) testest:(void (^)(int result))completionHandler {
-    
-}
-
 - (void)uploadImageWithID:(NSInteger)imageID progress:(void (^)(double fraction))progress success:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure {
     if([self checkValidSession]) {
         NSMutableDictionary* metaImage = [self.uploadImages objectAtIndex:imageID];
@@ -806,5 +802,10 @@ static NetworkManager *sharedManager = nil;
     return [NSString stringWithFormat:@"%@/gallery.php?key=%@", cURL_BASE, name];
 }
 
+- (NSString*)generateLinkForItemProvider:(NSString*) name {
+    NSString* link = [[[self.settingAvailableOutputLinkList objectAtIndex:1] objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"$B$" withString:cURL_BASE];
+    link = [link stringByReplacingOccurrencesOfString:@"$I$" withString:name];
+    return link;
+}
 
 @end

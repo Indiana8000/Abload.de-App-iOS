@@ -14,13 +14,13 @@
 		A11E2A551FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A541FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m */; };
 		A11E2A581FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A11E2A571FCEBD16008055E4 /* AT_SettingResolutionTableViewController.m */; };
 		A12E2276200759CF000623E5 /* AT_DetailedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E2275200759CF000623E5 /* AT_DetailedViewController.m */; };
+		A15E9E0E2064E56900D8AEB3 /* AT_ActivityItemProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = A15E9E0D2064E56900D8AEB3 /* AT_ActivityItemProvider.m */; };
 		A1780F0F1FB5D807009BFED0 /* AT_SettingTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */; };
 		A1780F121FB60385009BFED0 /* AT_SettingGalleryTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1780F111FB60385009BFED0 /* AT_SettingGalleryTableViewController.m */; };
 		A178D7FF205FF1DA008A0828 /* AT_ImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A178D7FE205FF1DA008A0828 /* AT_ImagePickerViewController.m */; };
 		A17DD45A2003A21700642310 /* AT_ImageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD4592003A21700642310 /* AT_ImageTableViewCell.m */; };
 		A17DD45D2003CD0500642310 /* AT_UploadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */; };
 		A181C69E202E104700DA6282 /* AT_AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A181C69D202E104700DA6282 /* AT_AboutTableViewController.m */; };
-		A1866B982008D8DA00752895 /* libUzysAssetsPickerController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1866B992008D8DA00752895 /* libUzysAssetsPickerController.a */; };
 		A18B58EF201266DA00379284 /* outputlinks.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F1201266DA00379284 /* outputlinks.plist */; };
 		A18B58F3201266ED00379284 /* resolutions.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F5201266ED00379284 /* resolutions.plist */; };
 		A18B58F7201266F500379284 /* scalemethods.plist in Resources */ = {isa = PBXBuildFile; fileRef = A18B58F9201266F500379284 /* scalemethods.plist */; };
@@ -85,6 +85,8 @@
 		A12E2274200759CF000623E5 /* AT_DetailedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_DetailedViewController.h; sourceTree = "<group>"; };
 		A12E2275200759CF000623E5 /* AT_DetailedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_DetailedViewController.m; sourceTree = "<group>"; };
 		A146C1F32012612B0070BC92 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A15E9E0C2064E56900D8AEB3 /* AT_ActivityItemProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_ActivityItemProvider.h; sourceTree = "<group>"; };
+		A15E9E0D2064E56900D8AEB3 /* AT_ActivityItemProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_ActivityItemProvider.m; sourceTree = "<group>"; };
 		A1623B261FD30BBE00B6DF49 /* libQBImagePickerController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libQBImagePickerController.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1780F0D1FB5D807009BFED0 /* AT_SettingTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AT_SettingTableViewController.h; sourceTree = "<group>"; };
 		A1780F0E1FB5D807009BFED0 /* AT_SettingTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AT_SettingTableViewController.m; sourceTree = "<group>"; };
@@ -161,7 +163,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1866B982008D8DA00752895 /* libUzysAssetsPickerController.a in Frameworks */,
 				A1E504DE1F8BECEB0029146D /* libXMLDictionary.a in Frameworks */,
 				A1067D7D1F8652D0007D1D89 /* libAFNetworking.a in Frameworks */,
 				3E3A6511E0C2E1EABD867CBC /* libPods-Abloadtool.a in Frameworks */,
@@ -225,6 +226,8 @@
 				A17DD45C2003CD0500642310 /* AT_UploadTableViewCell.m */,
 				A1B00A642013734600059ADE /* UIImage+Scale.h */,
 				A1B00A652013734600059ADE /* UIImage+Scale.m */,
+				A15E9E0C2064E56900D8AEB3 /* AT_ActivityItemProvider.h */,
+				A15E9E0D2064E56900D8AEB3 /* AT_ActivityItemProvider.m */,
 			);
 			name = ExtraClasses;
 			sourceTree = "<group>";
@@ -524,6 +527,7 @@
 				A1C0D3B92064027B00FF9477 /* AT_AlbumTableViewController.m in Sources */,
 				A12E2276200759CF000623E5 /* AT_DetailedViewController.m in Sources */,
 				A11E2A551FCEBCF7008055E4 /* AT_SettingScaleTableViewController.m in Sources */,
+				A15E9E0E2064E56900D8AEB3 /* AT_ActivityItemProvider.m in Sources */,
 				A17DD45D2003CD0500642310 /* AT_UploadTableViewCell.m in Sources */,
 				A1EE6B6E1F864E0700F78F24 /* main.m in Sources */,
 				A1B1E3C81F98E70300C05787 /* AT_GalleryTableViewController.m in Sources */,

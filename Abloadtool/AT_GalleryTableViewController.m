@@ -142,6 +142,7 @@
         self.imageTableViewController.gid = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_id"];
         self.imageTableViewController.navigationItem.title = name;
     }
+    [self.imageTableViewController resetForNewGroup];
 
     [[NetworkManager sharedManager] getImageListForGroup:self.imageTableViewController.gid success:^(NSDictionary *responseObject) {
         [[NetworkManager sharedManager] hideProgressHUD];

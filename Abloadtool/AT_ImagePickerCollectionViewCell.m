@@ -25,9 +25,9 @@
 }
 
 - (void)layoutSubviews {
-    self.contentView.frame = self.bounds;
-    self.imageView.frame = self.bounds;
-    
+    [super layoutSubviews];
+    self.imageView.frame = self.contentView.bounds;
+
     if(self.isSelected) {
         self.marked.image = [UIImage imageNamed:@"photo_selected"];
     } else {

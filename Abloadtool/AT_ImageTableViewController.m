@@ -13,6 +13,9 @@
 
 @interface AT_ImageTableViewController ()
 @property BOOL multiSelectMode;
+@property NSMutableIndexSet* selectedImages;
+@property UIBarButtonItem* btnShare;
+@property UIBarButtonItem* btnLinkCopy;
 @end
 
 
@@ -22,19 +25,17 @@
     [super viewDidLoad];
     
     self.multiSelectMode = NO;
-    
-    /*
-    self.navigationItem.rightBarButtonItems = @[
-                                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)],
-                                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)]
-                                                ];
-     */
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Auswählen" style:UIBarButtonItemStylePlain target:self action:@selector(switchSelectMode)];
+    self.selectedImages = [[NSMutableIndexSet alloc] init];
+
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_select", @"Image") style:UIBarButtonItemStylePlain target:self action:@selector(switchSelectMode)];
 
     UIBarButtonItem* btnSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     UIBarButtonItem* btnLinkOptions = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
-    UIBarButtonItem* btnLinkCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
-    [self setToolbarItems:@[btnSpace, btnLinkOptions, btnLinkCopy]];
+    self.btnShare = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(askShare)];
+    self.btnLinkCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
+    self.btnLinkCopy.enabled = NO;
+    self.btnShare.enabled = NO;
+    [self setToolbarItems:@[self.btnShare, btnSpace, btnLinkOptions, self.btnLinkCopy]];
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(doRefresh:) forControlEvents:UIControlEventValueChanged];
@@ -49,20 +50,30 @@
     //[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:animated];
     [self.tabBarController.tabBar setHidden:NO];
     [self.tableView reloadData];
+    if(self.multiSelectMode)
+        [self.navigationController setToolbarHidden:NO animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    self.multiSelectMode = NO;
+    [self.navigationController setToolbarHidden:YES animated:YES];
+}
+
+- (void)resetForNewGroup {
+    self.btnLinkCopy.enabled = NO;
+    self.btnShare.enabled = NO;
+    [self.selectedImages removeAllIndexes];
+    if(self.multiSelectMode)
+        [self switchSelectMode];
 }
 
 - (void)switchSelectMode {
     self.multiSelectMode = !self.multiSelectMode;
     if(self.multiSelectMode) {
-        self.navigationItem.rightBarButtonItem.title = @"Abbrechen";
+        self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"label_cancel", @"Image");
         [self.navigationController setToolbarHidden:NO animated:YES];
     } else {
-        self.navigationItem.rightBarButtonItem.title = @"Auswählen";
+        self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"label_select", @"Image");
         [self.navigationController setToolbarHidden:YES animated:YES];
     }
     [self.tableView reloadData];
@@ -107,6 +118,11 @@
     [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     
     cell.canbeSelected = self.multiSelectMode;
+    if([self.selectedImages containsIndex:indexPath.row]) {
+        cell.isSelected = YES;
+    } else {
+        cell.isSelected = NO;
+    }
     
     //UILongPressGestureRecognizer* longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(doShowImage:)];
     //[cell addGestureRecognizer:longPressGesture];
@@ -146,7 +162,20 @@
     if(self.multiSelectMode) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
         AT_ImageTableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-        cell.isSelected = !cell.isSelected;
+        if([self.selectedImages containsIndex:indexPath.row]) {
+            [self.selectedImages removeIndex:indexPath.row];
+            cell.isSelected = NO;
+        } else {
+            [self.selectedImages addIndex:indexPath.row];
+            cell.isSelected = YES;
+        }
+        if([self.selectedImages count] > 0) {
+            self.btnLinkCopy.enabled = YES;
+            self.btnShare.enabled = YES;
+        } else {
+            self.btnLinkCopy.enabled = NO;
+            self.btnShare.enabled = NO;
+        }
     } else {
         self.detailedViewController.imageID = indexPath.row;
         self.detailedViewController.imageList = [[[NetworkManager sharedManager] imageList] objectForKey:self.gid];
@@ -212,13 +241,19 @@
 
 - (void)doCopyLinks {
     NSMutableString* linkX = [[NSMutableString alloc] init];
-    unsigned long i;
-    for(i = 0;i < [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count];i++) {
+    /*
+    for(NSUInteger i = 0;i < [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count];i++) {
         [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:i] objectForKey:@"_filename"]]];
         [linkX appendString:@"\n"];
     }
+     */
+    [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:idx] objectForKey:@"_filename"]]];
+        [linkX appendString:@"\n"];
+    }];
     [UIPasteboard generalPasteboard].string = linkX;
-    [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_copylink_done %ld", @"Upload Tab"), i]];
+    NSUInteger numberOfOccurrences = [[linkX componentsSeparatedByString:@"\n"] count] - 1;
+    [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_copylink_done %ld", @"Upload Tab"), numberOfOccurrences]];
 }
 
 - (void)doCopyLinksForRow:(long) row AsType:(int) linkType {
@@ -266,9 +301,44 @@
     } else {
         [self.navigationController presentViewController:self.navSetting animated:YES completion:nil];
         UIPopoverPresentationController *presentationController =[self.navSetting popoverPresentationController];
-        presentationController.barButtonItem = self.navigationItem.rightBarButtonItems[1];
+        presentationController.barButtonItem = self.btnLinkCopy;
     }
 }
 
+- (void)askShare {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:NSLocalizedString(@"label_share_warning", @"Image")
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_ok", @"Upload Tab")  style:UIAlertActionStyleDefault
+                                                  handler:^(UIAlertAction * action) {
+                                                      [self doShare];
+                                                  }];
+    [alert addAction:ok];
+
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction * action) {
+                                                       [alert dismissViewControllerAnimated:YES completion:nil];
+                                                   }];
+    [alert addAction:cancel];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)doShare {
+    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
+    [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        AT_ActivityItemProvider* tmp = [[AT_ActivityItemProvider alloc] initWithPlaceholderItem:[[UIImage alloc] init]];
+        tmp.imageName = [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:idx] objectForKey:@"_filename"];
+        [activityItems addObject:tmp];
+    }];
+
+    UIActivityViewController *activityViewControntroller = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    activityViewControntroller.excludedActivityTypes = @[];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        activityViewControntroller.popoverPresentationController.barButtonItem = self.btnShare;
+    }
+    [self presentViewController:activityViewControntroller animated:true completion:nil];
+}
 
 @end

@@ -13,10 +13,17 @@
 @property BOOL firstLoad;
 @property PHFetchOptions *fetchOptions;
 @property UICollectionViewController* collectionViewController;
+@property UIBarButtonItem* btnDone;
+@property UIBarButtonItem* btnCount;
+@property UIImageView* btnCountView;
+@property UILabel* btnCountLabel;
+
 
 @end
 
 @implementation AT_ImagePickerViewController
+
+#pragma mark - Contructor
 
 - (instancetype)initWithCollectionViewLayout:(UICollectionViewLayout *)layout {
     self = [super initWithCollectionViewLayout:layout];
@@ -29,9 +36,27 @@
     [self.collectionView registerClass:[AT_ImagePickerCollectionViewCell class] forCellWithReuseIdentifier:@"cCollectionViewCellImage"];
     self.collectionView.alwaysBounceVertical = YES;
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Abbruch" style:UIBarButtonItemStylePlain target:self action:@selector(cancleView)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_cancel", @"ImagePicker") style:UIBarButtonItemStylePlain target:self action:@selector(cancleView)];
+    
+    UIBarButtonItem* btnSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    self.btnDone = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_done", @"ImagePicker") style:UIBarButtonItemStyleDone target:self action:@selector(saveAndDone)];
+
+    self.btnCountView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"photo_number_icon"]];
+    self.btnCount = [[UIBarButtonItem alloc] initWithCustomView:self.btnCountView];
+    
+    self.btnCountLabel = [[UILabel alloc] init];
+    self.btnCountLabel.adjustsFontSizeToFitWidth = YES;
+    self.btnCountLabel.text = @"0";
+    self.btnCountLabel.textAlignment = NSTextAlignmentCenter;
+    self.btnCountLabel.textColor = [UIColor whiteColor];
+    [self.btnCountView addSubview:self.btnCountLabel];
+    self.btnCountLabel.frame = CGRectMake(2.0, 0.0, self.btnCountView.bounds.size.width -4.0, self.btnCountView.bounds.size.height);
+
+    [self setToolbarItems:@[btnSpace, self.btnCount, self.btnDone]];
     return self;
 }
+
+#pragma mark - ViewDelegate
 
 - (void)cancleView {
     [self.selectedImages removeAllIndexes];
@@ -45,6 +70,7 @@
     [self.collectionView reloadData];
     self.navigationItem.title = [[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"localizedTitle"];
     [self.navigationController setToolbarHidden:NO animated:animated];
+    [self updateCounterButton];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -70,6 +96,31 @@
     flowLayout.itemSize = CGSizeMake(itemSize, itemSize);
 }
 
+- (void)updateCounterButton {
+    self.btnCountLabel.text = [NSString stringWithFormat:@"%ld", [self.selectedImages count]];
+    if([self.selectedImages count] > 0) {
+        self.btnDone.enabled = YES;
+        self.btnCountView.hidden = NO;
+
+        NSNumber *animationScale1 = @(0.5);
+        NSNumber *animationScale2 = @(1.15);
+        [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+            [self.btnCountView.layer setValue:animationScale1 forKeyPath:@"transform.scale"];
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+                [self.btnCountView.layer setValue:animationScale2 forKeyPath:@"transform.scale"];
+            } completion:^(BOOL finished) {
+                [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+                    [self.btnCountView.layer setValue:@(1.0) forKeyPath:@"transform.scale"];
+                } completion:nil];
+            }];
+        }];
+    } else {
+        self.btnDone.enabled = NO;
+        self.btnCountView.hidden = YES;
+    }
+}
+
 #pragma mark <UICollectionViewDataSource>
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -77,7 +128,6 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    NSLog(@"selectedImages: %@", self.selectedImages);
     return [[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count];
 }
 
@@ -115,6 +165,7 @@
         [self.selectedImages addIndex:indexPath.row];
         cell.isSelected = YES;
     }
+    [self updateCounterButton];
 }
 
 #pragma mark - Other
@@ -135,7 +186,7 @@
     [self hideProgressHUD];
     self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
     [self.progressHUD removeFromSuperViewOnHide];
-    self.progressHUD.label.text = @"Loading ...";
+    self.progressHUD.label.text = NSLocalizedString(@"label_loading_album", @"ImagePicker");
     self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.1 alpha:1.0];
     self.progressHUD.contentColor = [UIColor whiteColor];
 }
@@ -183,6 +234,29 @@
 - (void)getImages {
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"collection"] options:self.fetchOptions];
     [[self.albumArr objectAtIndex:self.selectedAlbum] setObject:fetchResult forKey:@"fetchResult"];
+}
+
+- (void)saveAndDone {
+    [[NetworkManager sharedManager] showProgressHUD];
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+        PHFetchResult* fetchResult = [[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"];
+        PHImageRequestOptions* requestOptions = [[PHImageRequestOptions alloc] init];
+        requestOptions.networkAccessAllowed = YES;
+        requestOptions.synchronous = YES;
+        requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        
+        [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+            PHAsset* asset = [fetchResult objectAtIndex:idx];
+            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:requestOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+                if(imageData)
+                    [[NetworkManager sharedManager] saveImageToDisk:imageData];
+            }];
+        }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NetworkManager sharedManager] hideProgressHUD];
+            [self cancleView];
+        });
+    });
 }
 
 

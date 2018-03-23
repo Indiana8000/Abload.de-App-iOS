@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import <AFNetworking/UIImageView+AFNetworking.h>
+#import <AFNetworking/AFImageDownloader.h>
 
 #import "NetworkManager.h"
 #import "AT_ImageTableViewCell.h"
 #import "AT_DetailedViewController.h"
 #import "AT_SettingOutputLinksTableViewController.h"
+#import "AT_ActivityItemProvider.h"
 
 
 @interface AT_ImageTableViewController : UITableViewController
@@ -21,4 +23,5 @@
     @property AT_SettingOutputLinksTableViewController* pageSetting;
     @property UINavigationController* navSetting;
     - (void)setLastRefresh;
+    - (void)resetForNewGroup;
 @end
