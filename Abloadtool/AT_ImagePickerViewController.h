@@ -13,7 +13,7 @@
 #import "NetworkManager.h"
 #import "AT_ImagePickerCollectionViewCell.h"
 
-@interface AT_ImagePickerViewController : UICollectionViewController
+@interface AT_ImagePickerViewController : UICollectionViewController <UIImagePickerControllerDelegate>
 @property NSMutableArray *albumArr;
 @property NSInteger selectedAlbum;
 @property NSMutableIndexSet* selectedImages;

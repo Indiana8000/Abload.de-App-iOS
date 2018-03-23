@@ -17,8 +17,9 @@
 @property UIBarButtonItem* btnCount;
 @property UIImageView* btnCountView;
 @property UILabel* btnCountLabel;
-
-
+@property UIBarButtonItem* btnCamera;
+@property UIImagePickerController* pickerController;
+@property NSInteger observerEnabled;
 @end
 
 @implementation AT_ImagePickerViewController
@@ -39,6 +40,10 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_cancel", @"ImagePicker") style:UIBarButtonItemStylePlain target:self action:@selector(cancleView)];
     
     UIBarButtonItem* btnSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    self.btnCamera = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(takePicture)];
+    if(![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        self.btnCamera.enabled = NO;
+    }
     self.btnDone = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_done", @"ImagePicker") style:UIBarButtonItemStyleDone target:self action:@selector(saveAndDone)];
 
     self.btnCountView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"photo_number_icon"]];
@@ -52,13 +57,33 @@
     [self.btnCountView addSubview:self.btnCountLabel];
     self.btnCountLabel.frame = CGRectMake(2.0, 0.0, self.btnCountView.bounds.size.width -4.0, self.btnCountView.bounds.size.height);
 
-    [self setToolbarItems:@[btnSpace, self.btnCount, self.btnDone]];
+    [self setToolbarItems:@[self.btnCamera, btnSpace, self.btnCount, self.btnDone]];
+    
+    self.pickerController = [[UIImagePickerController alloc] init];
+    self.pickerController.delegate = (id)self;
+
+    self.observerEnabled = 0;
+    
     return self;
 }
 
 #pragma mark - ViewDelegate
 
+- (void)prepareDisplay {
+    [self showProgressHUD];
+    if(self.firstLoad) {
+        [self getAllAlbums];
+        self.selectedAlbum = 0;
+        self.firstLoad = NO;
+    } else {
+        [self getImages];
+    }
+    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:(id)self];
+    [self hideProgressHUD];
+}
+
 - (void)cancleView {
+    [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:(id)self];
     [self.selectedImages removeAllIndexes];
     [self dismissViewControllerAnimated:YES completion:nil];
     [self.navigationController popViewControllerAnimated:YES];
@@ -121,7 +146,7 @@
     }
 }
 
-#pragma mark <UICollectionViewDataSource>
+#pragma mark - UICollectionViewDataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
@@ -150,7 +175,7 @@
     return cell;
 }
 
-#pragma mark <UICollectionViewDelegate>
+#pragma mark - UICollectionViewDelegate
 
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
@@ -167,20 +192,54 @@
     }
     [self updateCounterButton];
 }
+#pragma mark - ImagePicker
+
+- (void)takePicture {
+    self.observerEnabled = 2;
+    self.pickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+    [self presentViewController:self.pickerController animated:YES completion:nil];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    self.observerEnabled = 0;
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
+    if(self.selectedAlbum != 0) {
+        self.selectedAlbum = 0;
+        [self.selectedImages removeAllIndexes];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.navigationItem.title = [[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"localizedTitle"];
+        });
+    }
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        NSData *data = UIImageJPEGRepresentation(image, 0.9);
+        PHAssetResourceCreationOptions *options = [[PHAssetResourceCreationOptions alloc] init];
+        options.shouldMoveFile = YES;
+        PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAsset];
+        [request addResourceWithType:PHAssetResourceTypePhoto data:data options:options];
+        request.creationDate = [NSDate date];
+    } completionHandler:^(BOOL success, NSError *error) {
+        if(success) {
+            [self getImages];
+            NSUInteger item = [[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count] -1;
+            [self.selectedImages addIndex:item];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.collectionView reloadData];
+                [self updateCounterButton];
+                [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:item inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+            });
+        } else {
+            NSLog(@"didFinishPickingMediaWithInfo withError: %@",error.localizedDescription);
+            self.observerEnabled = 0;
+        }
+    }];
+}
 
 #pragma mark - Other
-
-- (void)prepareDisplay {
-    [self showProgressHUD];
-    if(self.firstLoad) {
-        [self getAllAlbums];
-        self.selectedAlbum = 0;
-        self.firstLoad = NO;
-    } else {
-        [self getImages];
-    }
-    [self hideProgressHUD];
-}
 
 - (void)showProgressHUD {
     [self hideProgressHUD];
@@ -234,6 +293,26 @@
 - (void)getImages {
     PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"collection"] options:self.fetchOptions];
     [[self.albumArr objectAtIndex:self.selectedAlbum] setObject:fetchResult forKey:@"fetchResult"];
+}
+
+- (void)photoLibraryDidChange:(PHChange *)changeInfo {
+    if(self.observerEnabled <= 0) {
+        NSLog(@"photoLibraryDidChange");
+        NSUInteger oldCount = [[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count];
+        [self getAllAlbums];
+        if(oldCount != [[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count]) {
+            while([self.selectedImages indexGreaterThanOrEqualToIndex:[[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count]] != NSNotFound) {
+                NSUInteger tooLarge = [self.selectedImages indexGreaterThanOrEqualToIndex:[[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count]];
+                [self.selectedImages removeIndex:tooLarge];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.collectionView reloadData];
+                [self updateCounterButton];
+            });
+        }
+    } else {
+        self.observerEnabled--;
+    }
 }
 
 - (void)saveAndDone {
