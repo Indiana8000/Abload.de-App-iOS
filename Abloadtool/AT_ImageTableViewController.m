@@ -37,11 +37,8 @@
     UIBarButtonItem* btnSpaceX = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     btnSpaceX.width = 40;
 
-    UIBarButtonItem* btnSelAll = [[UIBarButtonItem alloc] initWithCustomView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"photo_selected"]]];
-    [btnSelAll.customView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectAll)]];
-    
-    UIBarButtonItem* btnDeSelAll = [[UIBarButtonItem alloc] initWithCustomView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"photo_deselected"]]];
-    [btnDeSelAll.customView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(deSelectAll)]];
+    UIBarButtonItem* btnSelAll = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"photo_select_btn"] style:UIBarButtonItemStylePlain target:self action:@selector(selectAll)];
+    UIBarButtonItem* btnDeSelAll = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"photo_deselected"] style:UIBarButtonItemStylePlain target:self action:@selector(deSelectAll)];
 
     UIBarButtonItem* btnLinkOptions = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
     self.btnLinkCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
@@ -268,7 +265,7 @@
 
 - (void)doShowImage:(UIGestureRecognizer *)gestureRecognizer {
     if(gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        NSLog(@"gestureRecognizer: %@", gestureRecognizer.view);
+        //NSLog(@"gestureRecognizer: %@", gestureRecognizer.view);
         NSIndexPath* indexPath = [self.tableView indexPathForCell:(AT_ImageTableViewCell*)gestureRecognizer.view];
         self.detailedViewController.imageID = indexPath.row;
         self.detailedViewController.imageList = [[[NetworkManager sharedManager] imageList] objectForKey:self.gid];

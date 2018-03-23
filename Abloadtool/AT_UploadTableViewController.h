@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <AFNetworking/UIImageView+AFNetworking.h>
-#import "UzysAssetsPickerController.h"
 
 #import "NetworkManager.h"
 #import "AT_UploadTableViewCell.h"
@@ -23,6 +22,5 @@
 @interface AT_UploadTableViewController : UITableViewController <UIPopoverPresentationControllerDelegate>
     @property AT_SettingTableViewController* pageSetting;
     @property UINavigationController* navSetting;
-    @property UzysAssetsPickerController* uzysPicker;
     @property AT_DetailedViewController* detailedViewController;
 @end

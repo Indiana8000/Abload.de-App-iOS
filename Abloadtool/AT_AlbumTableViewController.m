@@ -37,6 +37,7 @@
 
 - (void)cancleView {
     [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:(id)self.imagePickerViewController];
+    [self.imagePickerViewController.selectedImages removeAllIndexes];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
