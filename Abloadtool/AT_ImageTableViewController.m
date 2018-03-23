@@ -30,12 +30,24 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_select", @"Image") style:UIBarButtonItemStylePlain target:self action:@selector(switchSelectMode)];
 
     UIBarButtonItem* btnSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    UIBarButtonItem* btnLinkOptions = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
+
     self.btnShare = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(askShare)];
+    self.btnShare.enabled = NO;
+
+    UIBarButtonItem* btnSpaceX = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    btnSpaceX.width = 40;
+
+    UIBarButtonItem* btnSelAll = [[UIBarButtonItem alloc] initWithCustomView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"photo_selected"]]];
+    [btnSelAll.customView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(selectAll)]];
+    
+    UIBarButtonItem* btnDeSelAll = [[UIBarButtonItem alloc] initWithCustomView:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"photo_deselected"]]];
+    [btnDeSelAll.customView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(deSelectAll)]];
+
+    UIBarButtonItem* btnLinkOptions = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
     self.btnLinkCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
     self.btnLinkCopy.enabled = NO;
-    self.btnShare.enabled = NO;
-    [self setToolbarItems:@[self.btnShare, btnSpace, btnLinkOptions, self.btnLinkCopy]];
+
+    [self setToolbarItems:@[self.btnShare, btnSpace, btnSpaceX, btnSelAll, btnDeSelAll, btnSpace, btnLinkOptions, self.btnLinkCopy]];
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(doRefresh:) forControlEvents:UIControlEventValueChanged];
@@ -76,6 +88,23 @@
         self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"label_select", @"Image");
         [self.navigationController setToolbarHidden:YES animated:YES];
     }
+    [self.tableView reloadData];
+}
+
+- (void)selectAll {
+    if([[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count] > 0) {
+        [self.selectedImages removeAllIndexes];
+        [self.selectedImages addIndexesInRange:NSMakeRange(0, [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count])];
+        self.btnLinkCopy.enabled = YES;
+        self.btnShare.enabled = YES;
+        [self.tableView reloadData];
+    }
+}
+
+- (void)deSelectAll {
+    [self.selectedImages removeAllIndexes];
+    self.btnLinkCopy.enabled = NO;
+    self.btnShare.enabled = NO;
     [self.tableView reloadData];
 }
 
@@ -146,6 +175,15 @@
     UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"btn_slide_delete", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
         [[NetworkManager sharedManager] deleteImageWithName:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:indexPath.row] objectForKey:@"_filename"] success:^(NSDictionary *responseObject) {
             [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] removeObjectAtIndex:indexPath.row];
+            NSMutableIndexSet* newIndexSet = [[NSMutableIndexSet alloc] init];
+            [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+                if(idx < indexPath.row) {
+                    [newIndexSet addIndex:idx];
+                } else {
+                    [newIndexSet addIndex:(idx -1)];
+                }
+            }];
+            self.selectedImages = newIndexSet;
             [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
         } failure:^(NSString *failureReason, NSInteger statusCode) {
             [NetworkManager showMessage:failureReason];
