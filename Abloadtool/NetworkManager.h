@@ -30,6 +30,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 #pragma mark - Help-Functions
 + (void)showMessage:(NSString*) msg;
 - (void)showProgressHUD;
+- (void)showProgressHUDWithText:(NSString*) msg;
 - (void)hideProgressHUD;
 
 #pragma mark - Session

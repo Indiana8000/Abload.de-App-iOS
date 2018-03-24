@@ -60,12 +60,12 @@
     [self.tabBarController.tabBar setHidden:NO];
     [self.tableView reloadData];
     if(self.multiSelectMode)
-        [self.navigationController setToolbarHidden:NO animated:YES];
+        [self.navigationController setToolbarHidden:NO animated:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self.navigationController setToolbarHidden:YES animated:YES];
+    [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
 - (void)resetForNewGroup {
@@ -172,6 +172,7 @@
     UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"btn_slide_delete", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
         [[NetworkManager sharedManager] deleteImageWithName:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:indexPath.row] objectForKey:@"_filename"] success:^(NSDictionary *responseObject) {
             [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] removeObjectAtIndex:indexPath.row];
+            [self.selectedImages removeIndex:indexPath.row];
             NSMutableIndexSet* newIndexSet = [[NSMutableIndexSet alloc] init];
             [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
                 if(idx < indexPath.row) {
@@ -276,12 +277,6 @@
 
 - (void)doCopyLinks {
     NSMutableString* linkX = [[NSMutableString alloc] init];
-    /*
-    for(NSUInteger i = 0;i < [[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count];i++) {
-        [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:i] objectForKey:@"_filename"]]];
-        [linkX appendString:@"\n"];
-    }
-     */
     [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
         [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:idx] objectForKey:@"_filename"]]];
         [linkX appendString:@"\n"];
@@ -366,6 +361,7 @@
         AT_ActivityItemProvider* tmp = [[AT_ActivityItemProvider alloc] initWithPlaceholderItem:[[UIImage alloc] init]];
         tmp.imageName = [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:idx] objectForKey:@"_filename"];
         [activityItems addObject:tmp];
+        tmp.msg = [NSString stringWithFormat:NSLocalizedString(@"label_downloading %ld %ld", @"Image"), [activityItems count], [self.selectedImages count]];
     }];
 
     UIActivityViewController *activityViewControntroller = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];

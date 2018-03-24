@@ -91,7 +91,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self setItemSize:self.view.bounds.size];
     [self.collectionView reloadData];
     self.navigationItem.title = [[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"localizedTitle"];
     [self.navigationController setToolbarHidden:NO animated:animated];
@@ -107,6 +106,11 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     [self setItemSize:size];
     [self.collectionView reloadData];
+}
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    [self setItemSize:self.view.bounds.size];
 }
 
 - (void)setItemSize:(CGSize)newSize {

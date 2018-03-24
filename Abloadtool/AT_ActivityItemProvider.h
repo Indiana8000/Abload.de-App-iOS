@@ -11,5 +11,5 @@
 
 @interface AT_ActivityItemProvider : UIActivityItemProvider
 @property NSString* imageName;
-
+@property NSString* msg;
 @end

@@ -15,9 +15,18 @@
 }
 
 - (id)item {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NetworkManager sharedManager] showProgressHUDWithText:self.msg];
+    });
     NSString *tmpURL = [NSString stringWithFormat:@"%@/img/%@", cURL_BASE, self.imageName];
-    NSData* tmpData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:tmpURL]];
+    __block NSData* tmpData;
+    dispatch_sync(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0), ^{
+        tmpData = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:tmpURL]];
+    });
     UIImage *image = [[UIImage alloc] initWithData:tmpData];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NetworkManager sharedManager] hideProgressHUD];
+    });
     return image;
 }
 

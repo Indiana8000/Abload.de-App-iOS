@@ -127,6 +127,16 @@ static NetworkManager *sharedManager = nil;
     self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
     [self.progressHUD removeFromSuperViewOnHide];
     self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.0 alpha:1.0];
+    self.progressHUD.label.text = @"";
+    self.progressHUD.contentColor = [UIColor whiteColor];
+}
+
+- (void)showProgressHUDWithText:(NSString*) msg {
+    [self hideProgressHUD];
+    self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+    [self.progressHUD removeFromSuperViewOnHide];
+    self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.0 alpha:1.0];
+    self.progressHUD.label.text = msg;
     self.progressHUD.contentColor = [UIColor whiteColor];
 }
 
