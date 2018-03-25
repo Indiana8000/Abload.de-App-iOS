@@ -307,9 +307,23 @@
                 [self.imagePickerNavigationController pushViewController:self.imagePickerViewController animated:NO];
             });
         } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [NetworkManager showMessage:NSLocalizedString(@"msg_no_access", @"Upload Tab")];
-            });
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                           message:NSLocalizedString(@"msg_no_access_photos", @"Upload Tab")
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            
+            UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_settings", @"Upload Tab")  style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:[[NSDictionary alloc] init] completionHandler:nil];
+                                                       }];
+            [alert addAction:ok];
+            
+            UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") style:UIAlertActionStyleCancel
+                                                           handler:^(UIAlertAction * action) {
+                                                               [alert dismissViewControllerAnimated:YES completion:nil];
+                                                           }];
+            [alert addAction:cancel];
+            
+            [self presentViewController:alert animated:YES completion:nil];
         }
     }];
 }

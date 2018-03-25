@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
 #import <MBProgressHUD/MBProgressHUD.h>
+#import "UIImage+Scale.h"
 
 #import "NetworkManager.h"
 #import "AT_ImagePickerCollectionViewCell.h"

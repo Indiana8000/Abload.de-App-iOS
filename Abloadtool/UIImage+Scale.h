@@ -15,6 +15,6 @@
 -(UIImage *)cutToSize:(CGSize)size;
 
 -(UIImage *)thumbnailOfSize:(CGSize)size;
--(UIImage *)rotate;
+-(UIImage *)fixOrientation;
 
 @end

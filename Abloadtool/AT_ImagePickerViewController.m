@@ -199,9 +199,30 @@
 #pragma mark - ImagePicker
 
 - (void)takePicture {
-    self.observerEnabled = 2;
-    self.pickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    [self presentViewController:self.pickerController animated:YES completion:nil];
+    [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+        if(granted) {
+            self.observerEnabled = 2;
+            self.pickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+            [self presentViewController:self.pickerController animated:YES completion:nil];
+        } else {
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                           message:NSLocalizedString(@"msg_no_access_camera", @"ImagePicker")
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            
+            UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_settings", @"Upload Tab")  style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:[[NSDictionary alloc] init] completionHandler:nil];
+                                                       }];
+            [alert addAction:ok];
+            
+            UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") style:UIAlertActionStyleCancel
+                                                           handler:^(UIAlertAction * action) {
+                                                               [alert dismissViewControllerAnimated:YES completion:nil];
+                                                           }];
+            [alert addAction:cancel];
+            
+            [self presentViewController:alert animated:YES completion:nil];        }
+    }];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -322,23 +343,25 @@
 - (void)saveAndDone {
     [[NetworkManager sharedManager] showProgressHUD];
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
-        PHFetchResult* fetchResult = [[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"];
-        PHImageRequestOptions* requestOptions = [[PHImageRequestOptions alloc] init];
-        requestOptions.networkAccessAllowed = YES;
-        requestOptions.synchronous = YES;
-        requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-        
-        [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-            PHAsset* asset = [fetchResult objectAtIndex:idx];
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:requestOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-                if(imageData)
-                    [[NetworkManager sharedManager] saveImageToDisk:imageData];
-            }];
-        }];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NetworkManager sharedManager] hideProgressHUD];
-            [self cancleView];
-        });
+            @autoreleasepool {
+                PHFetchResult* fetchResult = [[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"];
+                PHImageRequestOptions* requestOptions = [[PHImageRequestOptions alloc] init];
+                requestOptions.networkAccessAllowed = YES;
+                requestOptions.synchronous = YES;
+                requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                
+                [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+                    PHAsset* asset = [fetchResult objectAtIndex:idx];
+                    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:requestOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+                        if(imageData)
+                            [[NetworkManager sharedManager] saveImageToDisk:imageData];
+                    }];
+                }];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NetworkManager sharedManager] hideProgressHUD];
+                    [self cancleView];
+                });
+            }
     });
 }
 
