@@ -31,7 +31,7 @@
 
     UIBarButtonItem* btnSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
-    self.btnShare = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(askShare)];
+    self.btnShare = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(doShareLink)];
     self.btnShare.enabled = NO;
 
     UIBarButtonItem* btnSpaceX = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
@@ -364,6 +364,22 @@
         tmp.msg = [NSString stringWithFormat:NSLocalizedString(@"label_downloading %ld %ld", @"Image"), [activityItems count], [self.selectedImages count]];
     }];
 
+    UIActivityViewController *activityViewControntroller = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    activityViewControntroller.excludedActivityTypes = @[];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        activityViewControntroller.popoverPresentationController.barButtonItem = self.btnShare;
+    }
+    [self presentViewController:activityViewControntroller animated:true completion:nil];
+}
+
+- (void)doShareLink {
+    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
+    [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString* tmpName = [[[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] objectAtIndex:idx] objectForKey:@"_filename"];
+        NSString* tmpURL = [[NetworkManager sharedManager] generateLinkForImage:tmpName];
+        [activityItems addObject:tmpURL];
+    }];
+    
     UIActivityViewController *activityViewControntroller = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
     activityViewControntroller.excludedActivityTypes = @[];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
