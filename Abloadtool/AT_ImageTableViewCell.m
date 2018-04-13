@@ -14,8 +14,8 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     
-    self.canbeSelected = NO;
-    self.isSelected = NO;
+    self.canbeSelected                             = NO;
+    self.isSelected                                = NO;
 
     self.backgroundColor                           = [UIColor whiteColor];
     self.imageView.layer.masksToBounds             = YES;

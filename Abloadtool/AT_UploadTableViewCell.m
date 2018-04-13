@@ -15,8 +15,6 @@
 
     self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
     [self addSubview:self.progressView];
-    
-    [self.marked removeFromSuperview];
 
     return self;
 }
@@ -26,10 +24,16 @@
     CGFloat cellOffset         = (self.bounds.size.height -50) / 2;
     CGFloat cellWidth          = self.bounds.size.width -self.safeAreaInsets.left -self.safeAreaInsets.right;
 
-    self.imageView.frame       = CGRectMake(10, cellOffset                  , 75                  , 50);
+    self.imageView.frame       = CGRectMake(10, cellOffset                  , 75                 , 50);
     self.textLabel.frame       = CGRectMake(95, cellOffset                  , cellWidth -100 -105, self.bounds.size.height/2 -cellOffset);
     self.detailTextLabel.frame = CGRectMake(95, self.bounds.size.height/2   , cellWidth -100     , self.bounds.size.height/2 -cellOffset);
     self.progressView.frame    = CGRectMake(95 +self.safeAreaInsets.left, self.bounds.size.height/2 -1, cellWidth -100     , 2);
+
+    if(self.canbeSelected) {
+        self.marked.frame      = CGRectMake(58, cellOffset +30              , 20                , 20);
+    } else {
+        self.marked.frame      = CGRectMake(0, 0, 0, 0);
+    }
 }
 
 

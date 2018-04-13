@@ -6,7 +6,6 @@
 //  Copyright © 2017 Andreas Kreisl. All rights reserved.
 //
 
-#define cButtonCell @"ButtonTableViewCell"
 #define cUploadCell @"UploadTableViewCell"
 #define cImageCell  @"ImageTableViewCell"
 
@@ -16,36 +15,58 @@
 @interface AT_UploadTableViewController ()
     @property NSString* uploadStatus;
     @property NSMutableArray* uploadImages;
+
+    @property UIBarButtonItem* btnSpace;
     @property UIBarButtonItem* btnUpload;
     @property UIBarButtonItem* btnAdd;
 
-@property AT_AlbumTableViewController* albumTableViewController;
-@property AT_ImagePickerViewController* imagePickerViewController;
-@property UINavigationController* imagePickerNavigationController;
+    @property UIBarButtonItem* btnShare;
+    @property UIBarButtonItem* btnSpaceX;
+    @property UIBarButtonItem* btnSelAll;
+    @property UIBarButtonItem* btnDeSelAll;
+    @property UIBarButtonItem* btnLinkOptions;
+    @property UIBarButtonItem* btnLinkCopy;
+
+    @property BOOL multiSelectMode;
+    @property NSMutableIndexSet* selectedImages;
+
+    @property AT_AlbumTableViewController* albumTableViewController;
+    @property AT_ImagePickerViewController* imagePickerViewController;
+    @property UINavigationController* imagePickerNavigationController;
 @end
 
 
 @implementation AT_UploadTableViewController
 
+#pragma mark - View Live Cycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.title = NSLocalizedString(@"nav_title_upload", @"Navigation");
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-cloud"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsUpload)];
-
-    UIBarButtonItem* btnCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(copyLinksPasteboard)];
-    UIBarButtonItem* btnSettingsLinkType = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
-    self.navigationItem.rightBarButtonItems = @[btnCopy,btnSettingsLinkType];
-    [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"label_select", @"Image") style:UIBarButtonItemStylePlain target:self action:@selector(switchSelectMode)];
+    self.navigationItem.rightBarButtonItem.enabled = NO;
+    self.multiSelectMode = NO;
+    self.selectedImages = [[NSMutableIndexSet alloc] init];
 
     [self.tableView registerClass:[AT_UploadTableViewCell class] forCellReuseIdentifier:cUploadCell];
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
-    [self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:cButtonCell];
     
     self.btnUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"btn_upload_upload", @"Upload Tab") style:UIBarButtonItemStylePlain target:self action:@selector(startUpload)];
     self.btnAdd = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"btn_image_add", @"Upload Tab") style:UIBarButtonItemStylePlain target:self action:@selector(showImagePicker)];
-    UIBarButtonItem* btnSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    [self setToolbarItems:@[btnSpace, self.btnUpload, btnSpace, self.btnAdd, btnSpace]];
+    self.btnSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    [self setToolbarItems:@[self.btnSpace, self.btnUpload, self.btnSpace, self.btnAdd, self.btnSpace]];
 
+    self.btnShare = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(doShareLink)];
+    self.btnShare.enabled = NO;
+    self.btnSpaceX = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    self.btnSpaceX.width = 40;
+    self.btnSelAll = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"photo_select_btn"] style:UIBarButtonItemStylePlain target:self action:@selector(selectAll)];
+    self.btnDeSelAll = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"photo_deselected"] style:UIBarButtonItemStylePlain target:self action:@selector(deSelectAll)];
+    self.btnLinkOptions = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
+    self.btnLinkCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
+    self.btnLinkCopy.enabled = NO;
+    
     self.uploadImages = [[NetworkManager sharedManager] uploadImages];
     self.uploadStatus = @"ADD";
     self.detailedViewController = [[AT_DetailedViewController alloc] init];
@@ -63,7 +84,6 @@
     }
     
     UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc] init];
-
     self.albumTableViewController = [[AT_AlbumTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
     self.imagePickerViewController = [[AT_ImagePickerViewController alloc] initWithCollectionViewLayout:layout];
     self.imagePickerNavigationController = [[UINavigationController alloc] initWithRootViewController:self.albumTableViewController];
@@ -74,7 +94,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-    //[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:animated];
     [self.tabBarController.tabBar setHidden:NO];
     [self.navigationController setToolbarHidden:NO animated:animated];
     [self.tableView reloadData];
@@ -95,6 +114,34 @@
     }
 }
 
+#pragma mark - Image Selection
+
+- (void)switchSelectMode {
+    self.multiSelectMode = !self.multiSelectMode;
+    if(self.multiSelectMode) {
+        self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"label_cancel", @"Image");
+        [self setToolbarItems:@[self.btnShare, self.btnSpaceX, self.btnSpace, self.btnSelAll, self.btnDeSelAll, self.btnSpace, self.btnLinkOptions, self.btnLinkCopy]];
+    } else {
+        self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"label_select", @"Image");
+        [self setToolbarItems:@[self.btnSpace, self.btnUpload, self.btnSpace, self.btnAdd, self.btnSpace]];
+    }
+    [self.tableView reloadData];
+}
+
+- (void)selectAll {
+    [self.selectedImages removeAllIndexes];
+    [self.selectedImages addIndexesInRange:NSMakeRange(0, [self.uploadImages count])];
+    self.btnLinkCopy.enabled = YES;
+    self.btnShare.enabled = YES;
+    [self.tableView reloadData];
+}
+
+- (void)deSelectAll {
+    [self.selectedImages removeAllIndexes];
+    self.btnLinkCopy.enabled = NO;
+    self.btnShare.enabled = NO;
+    [self.tableView reloadData];
+}
 
 #pragma mark - Helper
 
@@ -166,7 +213,12 @@
         cell.detailTextLabel.text = [self bytesToUIString:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filesize"]];
         cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"];
         tmpCell.dateTextLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_date"];
-
+        tmpCell.canbeSelected = self.multiSelectMode;
+        if([self.selectedImages containsIndex:indexPath.row]) {
+            tmpCell.isSelected = YES;
+        } else {
+            tmpCell.isSelected = NO;
+        }
         if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] == 1) {
             NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
             [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
@@ -184,7 +236,6 @@
             [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
             [tmpCell.progressView setProgress:0.0];
         }
-        [[self.uploadImages objectAtIndex:indexPath.row] setObject:tmpCell.progressView forKey:@"progressView"];
     } else if(indexPath.section == 1) {
         cell = [tableView dequeueReusableCellWithIdentifier:cImageCell forIndexPath:indexPath];
         cell.separatorInset = UIEdgeInsetsZero;
@@ -233,10 +284,29 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if(indexPath.section == 0) {
-        self.detailedViewController.imageList = self.uploadImages;
-        self.detailedViewController.imageID = indexPath.row;
-        [self.navigationController pushViewController:self.detailedViewController animated:YES];
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        if(self.multiSelectMode) {
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            AT_UploadTableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            if([self.selectedImages containsIndex:indexPath.row]) {
+                [self.selectedImages removeIndex:indexPath.row];
+                cell.isSelected = NO;
+            } else {
+                [self.selectedImages addIndex:indexPath.row];
+                cell.isSelected = YES;
+            }
+            if([self.selectedImages count] > 0) {
+                self.btnLinkCopy.enabled = YES;
+                self.btnShare.enabled = YES;
+            } else {
+                self.btnLinkCopy.enabled = NO;
+                self.btnShare.enabled = NO;
+            }
+        } else {
+            self.detailedViewController.imageList = self.uploadImages;
+            self.detailedViewController.imageID = indexPath.row;
+            [self.navigationController pushViewController:self.detailedViewController animated:YES];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        }
     } else if(indexPath.section == 1) {
         self.detailedViewController.imageList = [[NetworkManager sharedManager] imageLast];
         self.detailedViewController.imageID = indexPath.row;
@@ -276,21 +346,31 @@
     }
 }
 
-- (void)copyLinksPasteboard {
+- (void)doCopyLinks {
     NSMutableString* linkX = [[NSMutableString alloc] init];
-    unsigned long i;
-    unsigned long k = 0;
-    for(i = 0;i < [self.uploadImages count];i++) {
-        if([[[self.uploadImages objectAtIndex:i] objectForKey:@"_uploaded"] intValue] == 1) {
-            [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[self.uploadImages objectAtIndex:i] objectForKey:@"_filename"]]];
-            [linkX appendString:@"\n"];
-            k++;
-        }
+    [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        [linkX appendString:[[NetworkManager sharedManager] generateLinkForImage:[[self.uploadImages objectAtIndex:idx] objectForKey:@"_filename"]]];
+        [linkX appendString:@"\n"];
+    }];
+    [UIPasteboard generalPasteboard].string = linkX;
+    NSUInteger numberOfOccurrences = [[linkX componentsSeparatedByString:@"\n"] count] - 1;
+    [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_copylink_done %ld", @"Upload Tab"), numberOfOccurrences]];
+}
+
+- (void)doShareLink {
+    NSMutableArray *activityItems = [[NSMutableArray alloc] init];
+    [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString* tmpName = [[self.uploadImages objectAtIndex:idx] objectForKey:@"_filename"];
+        NSString* tmpURL = [[NetworkManager sharedManager] generateLinkForImage:tmpName];
+        [activityItems addObject:tmpURL];
+    }];
+    
+    UIActivityViewController *activityViewControntroller = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    activityViewControntroller.excludedActivityTypes = @[];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        activityViewControntroller.popoverPresentationController.barButtonItem = self.btnShare;
     }
-    if(k > 0) {
-        [UIPasteboard generalPasteboard].string = linkX;
-        [NetworkManager showMessage:[NSString stringWithFormat:NSLocalizedString(@"msg_copylink_done %ld", @"Upload Tab"), k]];
-    }
+    [self presentViewController:activityViewControntroller animated:true completion:nil];
 }
 
 
@@ -347,8 +427,9 @@
                 [self.uploadImages removeObjectAtIndex:(i -1)];
         }
         self.btnAdd.enabled = YES;
-        [self.navigationItem.leftBarButtonItem setEnabled:YES];
-        [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
+        self.navigationItem.leftBarButtonItem.enabled = YES;
+        self.navigationItem.rightBarButtonItem.enabled = NO;
+        [self.selectedImages removeAllIndexes];
         [self.tableView reloadData];
     }
 }
@@ -363,7 +444,7 @@
             self.uploadStatus = @"UPLOAD";
             self.btnUpload.title = NSLocalizedString(@"btn_upload_cancel", @"Upload Tab");
             self.btnAdd.enabled = NO;
-            [self.navigationItem.leftBarButtonItem setEnabled:NO];
+            self.navigationItem.leftBarButtonItem.enabled = NO;
             [UIApplication sharedApplication].idleTimerDisabled = YES;
             [self.tableView reloadData];
             //[NSTimer scheduledTimerWithTimeInterval:0.1 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
@@ -381,12 +462,16 @@
             return;
         }
     }
-    [[NetworkManager sharedManager] getGalleryList:nil failure:nil];
+    [[NetworkManager sharedManager] getGalleryList:^(NSDictionary *responseObject) {
+        [self.tableView reloadData];
+    } failure:^(NSString *failureReason, NSInteger statusCode) {
+        [self.tableView reloadData];
+    }];
     self.uploadStatus = @"DONE";
     self.btnUpload.title = NSLocalizedString(@"btn_upload_clear", @"Upload Tab");
+    self.navigationItem.rightBarButtonItem.enabled = YES;
     [UIApplication sharedApplication].idleTimerDisabled = NO;
     [self.tableView scrollsToTop];
-    [NSTimer scheduledTimerWithTimeInterval:0.5 target:self.tableView selector:@selector(reloadData) userInfo:nil repeats:NO];
     [NetworkManager showMessage:NSLocalizedString(@"msg_upload_done", @"Upload Tab")];
 }
 
@@ -407,7 +492,6 @@
             [tmpCell.progressView setProgress:0.0];
             [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
 
-            [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
             [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(uploadNextImage) userInfo:nil repeats:NO];
         }
     } failure:^(NSString *failureReason, NSInteger statusCode) {
