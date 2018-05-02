@@ -284,7 +284,7 @@
 }
 
 - (void)getAllAlbums {
-    self.albumArr = [NSMutableArray array];
+    NSMutableArray* tmpArr = [NSMutableArray array];
 
     PHFetchResult *myPhotoStreamAlbum = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumMyPhotoStream options:nil];
     PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
@@ -306,13 +306,14 @@
 
             if(collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary) {
                 [albumObj setObject:@"1" forKey:@"isCameraRoll"];
-                [self.albumArr insertObject:albumObj atIndex:0];
+                [tmpArr insertObject:albumObj atIndex:0];
             } else {
                 [albumObj setObject:@"0" forKey:@"isCameraRoll"];
-                [self.albumArr addObject:albumObj];
+                [tmpArr addObject:albumObj];
             }
         }
     }
+    self.albumArr = tmpArr;
 }
 
 - (void)getImages {

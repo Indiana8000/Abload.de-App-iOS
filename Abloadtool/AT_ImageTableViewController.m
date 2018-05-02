@@ -16,6 +16,7 @@
 @property NSMutableIndexSet* selectedImages;
 @property UIBarButtonItem* btnShare;
 @property UIBarButtonItem* btnLinkCopy;
+@property UIBarButtonItem* btnLinkOptions;
 @end
 
 
@@ -40,11 +41,11 @@
     UIBarButtonItem* btnSelAll = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"photo_select_btn"] style:UIBarButtonItemStylePlain target:self action:@selector(selectAll)];
     UIBarButtonItem* btnDeSelAll = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"photo_deselected"] style:UIBarButtonItemStylePlain target:self action:@selector(deSelectAll)];
 
-    UIBarButtonItem* btnLinkOptions = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
+    self.btnLinkOptions = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"20-gear-clip"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsLinkType)];
     self.btnLinkCopy = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"901-clipboard"] style:UIBarButtonItemStylePlain target:self action:@selector(doCopyLinks)];
     self.btnLinkCopy.enabled = NO;
 
-    [self setToolbarItems:@[self.btnShare, btnSpace, btnSpaceX, btnSelAll, btnDeSelAll, btnSpace, btnLinkOptions, self.btnLinkCopy]];
+    [self setToolbarItems:@[self.btnShare, btnSpace, btnSpaceX, btnSelAll, btnDeSelAll, btnSpace, self.btnLinkOptions, self.btnLinkCopy]];
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(doRefresh:) forControlEvents:UIControlEventValueChanged];
@@ -331,7 +332,7 @@
     } else {
         [self.navigationController presentViewController:self.navSetting animated:YES completion:nil];
         UIPopoverPresentationController *presentationController =[self.navSetting popoverPresentationController];
-        presentationController.barButtonItem = self.btnLinkCopy;
+        presentationController.barButtonItem = self.btnLinkOptions;
     }
 }
 

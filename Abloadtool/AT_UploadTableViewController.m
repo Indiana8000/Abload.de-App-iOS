@@ -342,7 +342,7 @@
     } else {
         [self.navigationController presentViewController:tmpNC animated:YES completion:nil];
         UIPopoverPresentationController *presentationController =[tmpNC popoverPresentationController];
-        presentationController.barButtonItem = self.navigationItem.rightBarButtonItems[1];
+        presentationController.barButtonItem = self.btnLinkOptions;
     }
 }
 
