@@ -325,13 +325,34 @@
     if(self.observerEnabled <= 0) {
         NSLog(@"photoLibraryDidChange");
         NSUInteger oldCount = [[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count];
+        NSString *oldName = [[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"localizedTitle"];
         [self getAllAlbums];
-        if(oldCount != [[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count]) {
-            while([self.selectedImages indexGreaterThanOrEqualToIndex:[[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count]] != NSNotFound) {
-                NSUInteger tooLarge = [self.selectedImages indexGreaterThanOrEqualToIndex:[[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count]];
-                [self.selectedImages removeIndex:tooLarge];
+        if(self.selectedAlbum < [self.albumArr count]) {
+            if([oldName compare:[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"localizedTitle"]] == NSOrderedSame) {
+                if(oldCount != [[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count]) {
+                    while([self.selectedImages indexGreaterThanOrEqualToIndex:[[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count]] != NSNotFound) {
+                        NSUInteger tooLarge = [self.selectedImages indexGreaterThanOrEqualToIndex:[[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count]];
+                        [self.selectedImages removeIndex:tooLarge];
+                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.collectionView reloadData];
+                        [self updateCounterButton];
+                    });
+                }
+            } else {
+                self.selectedAlbum = 0;
+                [self.selectedImages removeAllIndexes];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.navigationItem.title = [[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"localizedTitle"];
+                    [self.collectionView reloadData];
+                    [self updateCounterButton];
+                });
             }
+        } else {
+            self.selectedAlbum = 0;
+            [self.selectedImages removeAllIndexes];
             dispatch_async(dispatch_get_main_queue(), ^{
+                self.navigationItem.title = [[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"localizedTitle"];
                 [self.collectionView reloadData];
                 [self updateCounterButton];
             });
