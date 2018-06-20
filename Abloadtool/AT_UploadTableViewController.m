@@ -211,6 +211,12 @@
         AT_UploadTableViewCell* tmpCell = (id)cell;
         cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
         cell.detailTextLabel.text = [self bytesToUIString:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filesize"]];
+        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filesize"] intValue] > APIMAXSIZE) {
+            cell.detailTextLabel.textColor = [UIColor redColor];
+            cell.detailTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"table_toolarge %@", @"Upload Tab"), cell.detailTextLabel.text];
+        } else {
+            cell.detailTextLabel.textColor = [UIColor darkTextColor];
+        }
         cell.textLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"];
         tmpCell.dateTextLabel.text = [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_date"];
         tmpCell.canbeSelected = self.multiSelectMode;
@@ -414,11 +420,13 @@
     if([self.uploadStatus caseInsensitiveCompare:@"ADD"] == NSOrderedSame) {
         [self startUploadingImages];
     } else if([self.uploadStatus caseInsensitiveCompare:@"UPLOAD"] == NSOrderedSame) {
-        [[[NetworkManager sharedManager] uploadTask] cancel];
-        self.uploadStatus = @"ADD";
-        self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
-        self.btnAdd.enabled = YES;
-        [self.tableView reloadData];
+        if([[NetworkManager sharedManager] uploadTask]) {
+            [[[NetworkManager sharedManager] uploadTask] cancel];
+            self.uploadStatus = @"ADD";
+            self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
+            self.btnAdd.enabled = YES;
+            [self.tableView reloadData];
+        }
     } else if([self.uploadStatus caseInsensitiveCompare:@"DONE"] == NSOrderedSame) {
         self.uploadStatus = @"ADD";
         self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
@@ -458,7 +466,9 @@
     for(i = 0;i < [self.uploadImages count];i++) {
         if([[[self.uploadImages objectAtIndex:i] objectForKey:@"_uploaded"] intValue] == 0) {
             [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0] atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
-            [self uploadImageWithID:i];
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+                [self uploadImageWithID:i];
+            });
             return;
         }
     }
@@ -479,7 +489,13 @@
     [[self.uploadImages objectAtIndex:imageID] setObject:@"-1" forKey:@"_uploaded"];
     [[NetworkManager sharedManager] uploadImageWithID:imageID progress:^(double fraction) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateTableViewCellAtRow:imageID WithProgress:fraction];
+            if(fraction >= 0.0) {
+                [self updateTableViewCellAtRow:imageID WithProgress:fraction];
+            } else if(fraction == -2.0) {
+                [self updateTableViewCellAtRow:imageID WithText:NSLocalizedString(@"label_resizing_image", @"Upload Tab")];
+            } else if(fraction == -1.0) {
+                [self updateTableViewCellAtRow:imageID WithText:[self bytesToUIString:[[self.uploadImages objectAtIndex:imageID] objectForKey:@"_filesize"]]];
+            }
         });
     } success:^(NSDictionary *responseObject) {
         if([[responseObject objectForKey:@"images"] objectForKey:@"image"]) {
@@ -497,17 +513,20 @@
     } failure:^(NSString *failureReason, NSInteger statusCode) {
         [[self.uploadImages objectAtIndex:imageID] setObject:@"0" forKey:@"_uploaded"];
         
-        AT_UploadTableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:imageID inSection:0]];
-        tmpCell.accessoryType = UITableViewCellAccessoryNone;
-        [tmpCell.progressView setProgress:0.0];
-        [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            AT_UploadTableViewCell* tmpCell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:imageID inSection:0]];
+            tmpCell.accessoryType = UITableViewCellAccessoryNone;
+            [tmpCell.progressView setProgress:0.0];
+            [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
 
-        self.uploadStatus = @"ADD";
-        self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
-        self.btnAdd.enabled = YES;
-        [self.navigationItem.leftBarButtonItem setEnabled:YES];
-        [NetworkManager showMessage:failureReason];
-        [self.tableView reloadData];
+            self.uploadStatus = @"ADD";
+            self.btnUpload.title = NSLocalizedString(@"btn_upload_upload", @"Upload Tab");
+            self.btnAdd.enabled = YES;
+            [self.navigationItem.leftBarButtonItem setEnabled:YES];
+            [NetworkManager showMessage:failureReason];
+            [self.tableView reloadData];
+        });
+
     }];
 }
 
@@ -518,6 +537,17 @@
             if (visibleCell != nil) {
                 [visibleCell.progressView setProgress:fractionCompleted];
                 [visibleCell.progressView setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
+            }
+        }
+    }
+}
+
+- (void)updateTableViewCellAtRow:(NSInteger) idx WithText:(NSString*) text {
+    for (NSIndexPath *indexPathForVisibleRow in self.tableView.indexPathsForVisibleRows) {
+        if(indexPathForVisibleRow.section == 0 && indexPathForVisibleRow.row == idx) {
+            AT_UploadTableViewCell *visibleCell = [self.tableView cellForRowAtIndexPath:indexPathForVisibleRow];
+            if (visibleCell != nil) {
+                visibleCell.detailTextLabel.text = text;
             }
         }
     }

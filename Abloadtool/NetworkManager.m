@@ -668,6 +668,7 @@ static NetworkManager *sharedManager = nil;
         NSArray* resolutionString = [self.settingResolutionSelected componentsSeparatedByString:@" "];
         NSArray* resolutionSize = [[resolutionString objectAtIndex:0] componentsSeparatedByString:@"x"];
         if([resolutionSize count] > 1) {
+            progress(-2.0);
             UIImage* imageOriginal = [[UIImage alloc] initWithContentsOfFile:[metaImage objectForKey:@"_path"]];
             UIImage* imageNew = nil;
             switch (self.settingScaleSelected) {
@@ -685,13 +686,33 @@ static NetworkManager *sharedManager = nil;
             }
             if(imageNew != nil) {
                 float jpegQuality = 0.95;
-                if((imageNew.size.width > 500 && imageNew.size.height > 500) || imageNew.size.width > 2500 || imageNew.size.height > 2500) {
+                if((imageNew.size.width > 2000 && imageNew.size.height > 2000) || imageNew.size.width > 4500 || imageNew.size.height > 4500) {
                     jpegQuality = 0.85;
                 }
                 NSData* imageData = UIImageJPEGRepresentation(imageNew, jpegQuality);
                 [imageData writeToFile:[metaImage objectForKey:@"_path"] atomically:YES];
                 [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
             }
+            progress(-1.0);
+        }
+        // Reduce Quality if too large
+        if([[metaImage objectForKey:@"_filesize"] intValue] > APIMAXSIZE) {
+            progress(-2.0);
+            UIImage* imageOriginal = [[UIImage alloc] initWithContentsOfFile:[metaImage objectForKey:@"_path"]];
+            float jpegQuality = 0.95;
+            NSData* imageData;
+            do {
+                jpegQuality -= 0.03;
+                imageData = UIImageJPEGRepresentation(imageOriginal, jpegQuality);
+                if(jpegQuality < 0.3) {
+                    failure(NSLocalizedString(@"error_image_toolarge", @"NetworkManager"), -1);
+                    return;
+                }
+                [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
+                progress(-1.0);
+            } while(imageData.length > APIMAXSIZE);
+            [imageData writeToFile:[metaImage objectForKey:@"_path"] atomically:YES];
+            [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
         }
         // Upload Image
         NSMutableDictionary *params = [self getBaseParams];

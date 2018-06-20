@@ -9,6 +9,7 @@
 #define cURL_BASE @"https://abload.de"
 #define cURL_API  @"https://abload.de/api/"
 #define cURL_APIVERSION @"1.0.0"
+#define APIMAXSIZE 10485760
 
 #import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>

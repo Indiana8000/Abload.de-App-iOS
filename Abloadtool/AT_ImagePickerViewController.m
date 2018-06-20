@@ -30,6 +30,7 @@
     self = [super initWithCollectionViewLayout:layout];
     self.selectedImages = [[NSMutableIndexSet alloc] init];
     self.firstLoad = YES;
+    self.firstView = YES;
     
     self.fetchOptions = [[PHFetchOptions alloc] init];
     self.fetchOptions.predicate = [NSPredicate predicateWithFormat:@"mediaType == %ld", PHAssetMediaTypeImage];
@@ -111,6 +112,13 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     [self setItemSize:self.view.bounds.size];
+    
+    if(self.firstView) {
+        self.firstView = NO;
+        NSInteger row = [[[self.albumArr objectAtIndex:self.selectedAlbum] objectForKey:@"fetchResult"] count] - 1;
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+        [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
+    }
 }
 
 - (void)setItemSize:(CGSize)newSize {

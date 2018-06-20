@@ -18,6 +18,7 @@
 @property NSMutableArray *albumArr;
 @property NSInteger selectedAlbum;
 @property NSMutableIndexSet* selectedImages;
+@property BOOL firstView;
 
 - (void)prepareDisplay;
 

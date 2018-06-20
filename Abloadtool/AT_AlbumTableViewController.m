@@ -80,6 +80,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if(self.imagePickerViewController.selectedAlbum != indexPath.row) {
         [self.imagePickerViewController.selectedImages removeAllIndexes];
+        self.imagePickerViewController.firstView = YES;
     }
     self.imagePickerViewController.selectedAlbum = indexPath.row;
     [self.navigationController pushViewController:self.imagePickerViewController animated:YES];
