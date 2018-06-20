@@ -126,30 +126,21 @@
 //}
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    NSLog(@"viewWillTransitionToSize: withTransitionCoordinator: %@", coordinator);
-}
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    if(toInterfaceOrientation == UIInterfaceOrientationPortrait) {
+    if(size.height > size.width) {
         [self.navigationController setNavigationBarHidden:NO animated:YES];
-        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:YES];
         [self.tabBarController.tabBar setHidden:NO];
     } else {
         [self.navigationController setNavigationBarHidden:YES animated:YES];
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:YES];
         [self.tabBarController.tabBar setHidden:YES];
     }
-}
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    float s1 = self.detailedScrollView.frame.size.width / self.imageView.image.size.width;
-    float s2 = self.detailedScrollView.frame.size.height / self.imageView.image.size.height;
+    float s1 = size.width / self.imageView.image.size.width;
+    float s2 = size.height / self.imageView.image.size.height;
     if(s2 < s1) s1 = s2;
     if(s1 >= self.detailedScrollView.minimumZoomScale && s1 <= self.detailedScrollView.maximumZoomScale)
         [self.detailedScrollView setZoomScale:s1 animated:YES];
     self.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),s1];
 }
-
 
 #pragma mark - ScrollView
 
