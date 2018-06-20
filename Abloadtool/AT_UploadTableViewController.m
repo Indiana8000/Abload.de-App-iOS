@@ -211,9 +211,9 @@
         AT_UploadTableViewCell* tmpCell = (id)cell;
         cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
         cell.detailTextLabel.text = [self bytesToUIString:[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filesize"]];
-        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filesize"] intValue] > APIMAXSIZE) {
+        if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filesize"] intValue] > [NetworkManager apiMaxImageSize]) {
             cell.detailTextLabel.textColor = [UIColor redColor];
-            cell.detailTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"table_toolarge %@", @"Upload Tab"), cell.detailTextLabel.text];
+            cell.detailTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"label_toolarge %@ %@", @"Upload Tab"), cell.detailTextLabel.text, [self bytesToUIString:[NSNumber numberWithInt:[NetworkManager apiMaxImageSize]]]];
         } else {
             cell.detailTextLabel.textColor = [UIColor darkTextColor];
         }

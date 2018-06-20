@@ -32,6 +32,7 @@
 #pragma mark - Constructors
 
 static NetworkManager *sharedManager = nil;
+static int settingMaxImageSize = 10485760;
 
 + (NetworkManager*)sharedManager {
     static dispatch_once_t once;
@@ -40,6 +41,10 @@ static NetworkManager *sharedManager = nil;
                       sharedManager = [[NetworkManager alloc] init];
                   });
     return sharedManager;
+}
+
++ (int)apiMaxImageSize {
+    return settingMaxImageSize;
 }
 
 - (id)init {
@@ -414,6 +419,9 @@ static NetworkManager *sharedManager = nil;
             [self saveMODTime:[[[tmpDict objectForKey:@"motd"] objectForKey:@"_time"] integerValue]];
             [NetworkManager showMessage:[[tmpDict objectForKey:@"motd"] objectForKey:@"_text"]];
         }
+        if([[tmpDict objectForKey:@"settings"] objectForKey:@"_maximgsize"]) {
+            settingMaxImageSize = [[[tmpDict objectForKey:@"settings"] objectForKey:@"_maximgsize"] intValue];
+        }
         if([[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]) {
             if([[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"] isKindOfClass:[NSArray class]]) { // Array = Multiple Galleries
                 [self saveGalleryList:[[tmpDict objectForKey:@"galleries"] objectForKey:@"gallery"]];
@@ -696,7 +704,7 @@ static NetworkManager *sharedManager = nil;
             progress(-1.0);
         }
         // Reduce Quality if too large
-        if([[metaImage objectForKey:@"_filesize"] intValue] > APIMAXSIZE) {
+        if([[metaImage objectForKey:@"_filesize"] intValue] > settingMaxImageSize) {
             progress(-2.0);
             UIImage* imageOriginal = [[UIImage alloc] initWithContentsOfFile:[metaImage objectForKey:@"_path"]];
             float jpegQuality = 0.95;
@@ -710,7 +718,7 @@ static NetworkManager *sharedManager = nil;
                 }
                 [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
                 progress(-1.0);
-            } while(imageData.length > APIMAXSIZE);
+            } while(imageData.length > settingMaxImageSize);
             [imageData writeToFile:[metaImage objectForKey:@"_path"] atomically:YES];
             [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
         }
