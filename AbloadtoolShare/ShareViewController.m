@@ -81,7 +81,7 @@
                         if(imgData == nil)
                             imgData = [self fetchImage:[[(NSURL*)item pathComponents] lastObject]];
                     } else if( [(NSObject*)item isKindOfClass:[UIImage class]]) {
-                        imgData = UIImageJPEGRepresentation((UIImage*)item, 0.85);
+                        imgData = UIImageJPEGRepresentation((UIImage*)item, 0.92);
                     } else if( [(NSObject*)item isKindOfClass:[NSData class]]) {
                         imgData = (NSData*)item;
                     }
