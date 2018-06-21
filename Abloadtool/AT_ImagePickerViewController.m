@@ -279,8 +279,8 @@
     self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
     [self.progressHUD removeFromSuperViewOnHide];
     self.progressHUD.label.text = NSLocalizedString(@"label_loading_album", @"ImagePicker");
-    self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.1 alpha:1.0];
-    self.progressHUD.contentColor = [UIColor whiteColor];
+    //self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.1 alpha:1.0];
+    //self.progressHUD.contentColor = [UIColor whiteColor];
 }
 
 - (void)hideProgressHUD {
@@ -379,12 +379,20 @@
                 requestOptions.networkAccessAllowed = YES;
                 requestOptions.synchronous = YES;
                 requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                requestOptions.version = PHVideoRequestOptionsVersionOriginal;
                 
                 [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
                     PHAsset* asset = [fetchResult objectAtIndex:idx];
                     [[PHImageManager defaultManager] requestImageDataForAsset:asset options:requestOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-                        if(imageData)
+                        if(imageData) {
+                            if(!dataUTI)
+                                dataUTI = [asset valueForKey: @"uniformTypeIdentifier"];
+                            if(![dataUTI containsString:@"jpeg"]) {
+                                UIImage *tmpImage = [UIImage imageWithData:imageData];
+                                imageData = UIImageJPEGRepresentation(tmpImage, 0.9);
+                            }
                             [[NetworkManager sharedManager] saveImageToDisk:imageData];
+                        }
                     }];
                 }];
                 dispatch_async(dispatch_get_main_queue(), ^{
