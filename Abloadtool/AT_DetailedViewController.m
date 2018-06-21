@@ -7,6 +7,7 @@
 //
 
 #import "AT_DetailedViewController.h"
+#import "UIImage+Scale.h"
 
 
 @interface AT_DetailedViewController ()
@@ -239,8 +240,19 @@
     } success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull image) {
         weakSelf.imageView.hidden = NO;
         unsigned long imageMemory  = CGImageGetHeight(image.CGImage) * CGImageGetBytesPerRow(image.CGImage);
-        NSLog(@"imageMemory: %ld", imageMemory);
-        if(imageMemory < 800000000) {
+        if(imageMemory > 800000000) {
+            image = [image panToSize:CGSizeMake(image.size.width, image.size.height)];
+            imageMemory  = CGImageGetHeight(image.CGImage) * CGImageGetBytesPerRow(image.CGImage);
+        }
+        if(imageMemory > 800000000) {
+            if(image.size.width > 15000 || image.size.height > 15000) {
+                image = [image panToSize:CGSizeMake(15000, 15000)];
+            } else {
+                image = [image panToSize:CGSizeMake(image.size.width *0.8, image.size.height *0.8)];
+            }
+            imageMemory  = CGImageGetHeight(image.CGImage) * CGImageGetBytesPerRow(image.CGImage);
+        }
+        if(imageMemory <= 800000000) {
             weakSelf.imageView.image = image;
             [weakSelf.imageView setFrame:CGRectMake(0, 0, weakSelf.imageView.image.size.width, weakSelf.imageView.image.size.height)];
             float s1 = self.detailedScrollView.frame.size.width / self.imageView.image.size.width;

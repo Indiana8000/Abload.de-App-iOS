@@ -29,9 +29,8 @@
 
 + (void)initialize {
     NSLog(@"AppDelegate - initialize");
-    // Disable URLCache by aktivating Cache with 0 bytes
-    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
-    [NSURLCache setSharedURLCache:sharedCache];
+    //NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
+    //[NSURLCache setSharedURLCache:sharedCache];
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
