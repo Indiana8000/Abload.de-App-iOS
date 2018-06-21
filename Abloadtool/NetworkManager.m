@@ -128,21 +128,16 @@ static int settingMaxImageSize = 10485760;
 }
 
 - (void)showProgressHUD {
-    [self hideProgressHUD];
-    self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-    [self.progressHUD removeFromSuperViewOnHide];
-    self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.0 alpha:1.0];
-    self.progressHUD.label.text = @"";
-    self.progressHUD.contentColor = [UIColor whiteColor];
+    [self showProgressHUDWithText:@""];
 }
 
 - (void)showProgressHUDWithText:(NSString*) msg {
     [self hideProgressHUD];
     self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
     [self.progressHUD removeFromSuperViewOnHide];
-    self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.0 alpha:1.0];
     self.progressHUD.label.text = msg;
-    self.progressHUD.contentColor = [UIColor whiteColor];
+    //self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.0 alpha:1.0];
+    //self.progressHUD.contentColor = [UIColor whiteColor];
 }
 
 - (void)hideProgressHUD {
@@ -707,20 +702,28 @@ static int settingMaxImageSize = 10485760;
         if([[metaImage objectForKey:@"_filesize"] intValue] > settingMaxImageSize) {
             progress(-2.0);
             UIImage* imageOriginal = [[UIImage alloc] initWithContentsOfFile:[metaImage objectForKey:@"_path"]];
-            float jpegQuality = 0.95;
+            float jpegQuality = 0.93;
             NSData* imageData;
             do {
                 jpegQuality -= 0.03;
-                imageData = UIImageJPEGRepresentation(imageOriginal, jpegQuality);
-                if(jpegQuality < 0.3) {
+                if(jpegQuality < 0.2) {
                     failure(NSLocalizedString(@"error_image_toolarge", @"NetworkManager"), -1);
                     return;
                 }
-                [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
-                progress(-1.0);
+                imageData = UIImageJPEGRepresentation(imageOriginal, jpegQuality);
+                double ratioSize = imageData.length *1.0 / settingMaxImageSize;
+                //NSLog(@"jpegQuality: %lf - %lf", jpegQuality, ratioSize);
+                if(ratioSize > 5) {
+                    jpegQuality -= 0.40;
+                } else if(ratioSize > 2) {
+                    jpegQuality -= 0.12;
+                } else if(ratioSize > 1.4) {
+                    jpegQuality -= 0.07;
+                }
             } while(imageData.length > settingMaxImageSize);
             [imageData writeToFile:[metaImage objectForKey:@"_path"] atomically:YES];
             [metaImage setObject:[NSNumber numberWithLong:[imageData length]] forKey:@"_filesize"];
+            progress(-1.0);
         }
         // Upload Image
         NSMutableDictionary *params = [self getBaseParams];

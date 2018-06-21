@@ -13,7 +13,7 @@
 @property UIPageControl* pageControl;
 @property UIButton* arrowLeft;
 @property UIButton* arrowRight;
-
+@property MBProgressHUD *progressHUD;
 @end
 
 
@@ -173,8 +173,49 @@
     }
 }
 
+#pragma mark - Helper
+
+- (NSString *)bytesToUIString:(NSNumber *) number {
+    double size = [number doubleValue];
+    unsigned long i = 0;
+    while (size >= 1024) {
+        size /= 1024;
+        i++;
+    }
+    NSArray *extension = [[NSArray alloc] initWithObjects:@"Byte", @"KB", @"MB", @"GB", @"TB", @"PB", @"EB", @"ZB", @"YB" ,@"???" , nil];
+    
+    if(i>([extension count]-2)) i = [extension count]-1;
+    return [NSString stringWithFormat:@"%.1f %@", size, [extension objectAtIndex:i]];
+}
+
+- (void)showProgressHUDWithText:(NSString*) msg {
+    [self hideProgressHUD];
+    self.progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+    [self.progressHUD removeFromSuperViewOnHide];
+    self.progressHUD.label.text = msg;
+    self.progressHUD.mode = MBProgressHUDModeAnnularDeterminate;
+    self.progressHUD.progress = 0.0;
+    //self.progressHUD.bezelView.color = [UIColor colorWithWhite:0.0 alpha:1.0];
+    //self.progressHUD.contentColor = [UIColor whiteColor];
+    [self.progressHUD.button addTarget:self action:@selector(cancelImage) forControlEvents:UIControlEventTouchUpInside];
+    [self.progressHUD.button setTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") forState:UIControlStateNormal];
+}
+
+- (void)hideProgressHUD {
+    if (self.progressHUD != nil) {
+        [self.progressHUD hideAnimated:YES];
+        [self.progressHUD removeFromSuperview];
+        self.progressHUD = nil;
+    }
+}
 
 #pragma mark - Image
+
+- (void)cancelImage {
+    [self.imageView cancelImageDownloadTask];
+    [self hideProgressHUD];
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 - (void)loadImage {
     if([[self.imageList objectAtIndex:self.imageID] objectForKey:@"_uploaded"] && ([[[self.imageList objectAtIndex:self.imageID] objectForKey:@"_uploaded"] intValue] < 1)) {
@@ -189,23 +230,34 @@
     __unsafe_unretained typeof(self) weakSelf = self;
     [self.detailedScrollView setZoomScale:1.0 animated:NO];
     [self.imageView setFrame:CGRectMake(0, 0, 128, 128)];
-    [[NetworkManager sharedManager] showProgressHUD];
+    
+    NSString *loadTest = [NSString stringWithFormat:@"%@ - %@", [[self.imageList objectAtIndex:self.imageID] objectForKey:@"_filename"], [self bytesToUIString:[[self.imageList objectAtIndex:self.imageID] objectForKey:@"_filesize"]]];
+    [self showProgressHUDWithText:loadTest];
     self.imageView.hidden = YES;
-    [self.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:self.imageURL] placeholderImage:[UIImage imageNamed:@"AppIcon"] success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull image) {
+    [self.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:self.imageURL] placeholderImage:[UIImage imageNamed:@"AppIcon"] progress:^(NSProgress * _Nonnull downloadProgress) {
+        weakSelf.progressHUD.progress = downloadProgress.fractionCompleted;
+    } success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull image) {
         weakSelf.imageView.hidden = NO;
-        [[NetworkManager sharedManager] hideProgressHUD];
-        weakSelf.imageView.image = image;
-        [weakSelf.imageView setFrame:CGRectMake(0, 0, weakSelf.imageView.image.size.width, weakSelf.imageView.image.size.height)];
-        
-        float s1 = self.detailedScrollView.frame.size.width / self.imageView.image.size.width;
-        float s2 = self.detailedScrollView.frame.size.height / self.imageView.image.size.height;
-        if(s2 < s1) s1 = s2;
-        if(s1 >= self.detailedScrollView.minimumZoomScale && s1 <= self.detailedScrollView.maximumZoomScale)
-            [weakSelf.detailedScrollView setZoomScale:s1 animated:NO];
-        weakSelf.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),s1];
-        [weakSelf.imageView becomeFirstResponder];
+        unsigned long imageMemory  = CGImageGetHeight(image.CGImage) * CGImageGetBytesPerRow(image.CGImage);
+        NSLog(@"imageMemory: %ld", imageMemory);
+        if(imageMemory < 800000000) {
+            weakSelf.imageView.image = image;
+            [weakSelf.imageView setFrame:CGRectMake(0, 0, weakSelf.imageView.image.size.width, weakSelf.imageView.image.size.height)];
+            float s1 = self.detailedScrollView.frame.size.width / self.imageView.image.size.width;
+            float s2 = self.detailedScrollView.frame.size.height / self.imageView.image.size.height;
+            if(s2 < s1) s1 = s2;
+            if(s1 >= self.detailedScrollView.minimumZoomScale && s1 <= self.detailedScrollView.maximumZoomScale)
+                [weakSelf.detailedScrollView setZoomScale:s1 animated:NO];
+            weakSelf.navigationController.visibleViewController.title = [NSString stringWithFormat:NSLocalizedString(@"label_zoomed %.2fx", @"Image"),s1];
+            [weakSelf hideProgressHUD];
+            [weakSelf.imageView becomeFirstResponder];
+        } else {
+            [weakSelf.imageView setFrame:CGRectMake(0, 0, 0, 0)];
+            [weakSelf hideProgressHUD];
+            [NetworkManager showMessage:NSLocalizedString(@"error_cant_display_toolarge", @"Image")];
+        }
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, NSError * _Nonnull error) {
-        [[NetworkManager sharedManager] hideProgressHUD];
+        [weakSelf hideProgressHUD];
         [NetworkManager showMessage:[error localizedDescription]];
     }];
 }
