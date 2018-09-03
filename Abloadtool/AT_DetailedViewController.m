@@ -37,6 +37,8 @@
         self.detailedScrollView.maximumZoomScale = 10.0;
         self.detailedScrollView.minimumZoomScale = 0.05;
         self.detailedScrollView.contentMode = UIViewContentModeCenter;
+        self.detailedScrollView.alwaysBounceVertical = YES;
+        self.detailedScrollView.alwaysBounceHorizontal = YES;
         [self.view addSubview:self.detailedScrollView];
         
         self.imageView = [[UIImageView alloc] init];
@@ -303,7 +305,7 @@
         
         UIAlertAction *btnSave = [UIAlertAction actionWithTitle:NSLocalizedString(@"label_download_image", @"Image") style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
-                                                       UIImageWriteToSavedPhotosAlbum(self.imageView.image, nil, nil, nil);
+                                                       [self saveImage];
                                                    }];
         [alert addAction:btnSave];
         
@@ -350,5 +352,30 @@
     [self presentViewController:alert animated:YES completion:nil];
 }
 
+- (void)saveImage {
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        if(status == PHAuthorizationStatusAuthorized) {
+            UIImageWriteToSavedPhotosAlbum(self.imageView.image, nil, nil, nil);
+        } else {
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                           message:NSLocalizedString(@"msg_no_access_photos", @"Upload Tab")
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+            
+            UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"btn_settings", @"Upload Tab")  style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:[[NSDictionary alloc] init] completionHandler:nil];
+                                                       }];
+            [alert addAction:ok];
+            
+            UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") style:UIAlertActionStyleCancel
+                                                           handler:^(UIAlertAction * action) {
+                                                               [alert dismissViewControllerAnimated:YES completion:nil];
+                                                           }];
+            [alert addAction:cancel];
+            
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+    }];
+}
 
 @end
