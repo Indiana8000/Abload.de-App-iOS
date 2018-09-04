@@ -355,7 +355,9 @@
 - (void)saveImage {
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         if(status == PHAuthorizationStatusAuthorized) {
-            UIImageWriteToSavedPhotosAlbum(self.imageView.image, nil, nil, nil);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIImageWriteToSavedPhotosAlbum(self.imageView.image, nil, nil, nil);
+            });
         } else {
             UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
                                                                            message:NSLocalizedString(@"msg_no_access_photos", @"Upload Tab")
