@@ -231,40 +231,57 @@
 }
 
 - (void)doAddGallery:(id)sender {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"newgallery_title", @"Gallery")
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"newgallery_btn_create", @"Gallery") style:UIAlertActionStyleDefault
-                                               handler:^(UIAlertAction * action) {
-                                                   [[NetworkManager sharedManager] showProgressHUD];
-                                                   [[NetworkManager sharedManager] createGalleryWithName:[[alert.textFields objectAtIndex:0] text] andDesc:[[alert.textFields objectAtIndex:1] text] success:^(id responseObject) {
-                                                       [[NetworkManager sharedManager] hideProgressHUD];
-                                                       [self.tableView reloadData];
-                                                   } failure:^(NSString *failureReason, NSInteger statusCode) {
-                                                       [[NetworkManager sharedManager] hideProgressHUD];
-                                                       [NetworkManager showMessage:failureReason];
-                                                   }];
-                                               }];
-    [alert addAction:ok];
-
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"newgallery_btn_cancel", @"Gallery") style:UIAlertActionStyleDefault
+    if([[NetworkManager sharedManager] loggedin] == 1) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"newgallery_title", @"Gallery")
+                                                                       message:nil
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"newgallery_btn_create", @"Gallery") style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
-                                                       [alert dismissViewControllerAnimated:YES completion:nil];
+                                                       [[NetworkManager sharedManager] showProgressHUD];
+                                                       [[NetworkManager sharedManager] createGalleryWithName:[[alert.textFields objectAtIndex:0] text] andDesc:[[alert.textFields objectAtIndex:1] text] success:^(id responseObject) {
+                                                           [[NetworkManager sharedManager] hideProgressHUD];
+                                                           [self.tableView reloadData];
+                                                       } failure:^(NSString *failureReason, NSInteger statusCode) {
+                                                           [[NetworkManager sharedManager] hideProgressHUD];
+                                                           [NetworkManager showMessage:failureReason];
+                                                       }];
                                                    }];
-    [alert addAction:cancel];
+        [alert addAction:ok];
+        
+        UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"newgallery_btn_cancel", @"Gallery") style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           [alert dismissViewControllerAnimated:YES completion:nil];
+                                                       }];
+        [alert addAction:cancel];
+        
+        [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+            textField.placeholder = NSLocalizedString(@"newgallery_label_name", @"Gallery");
+            textField.keyboardType = UIKeyboardTypeDefault;
+        }];
+        
+        [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+            textField.placeholder = NSLocalizedString(@"newgallery_label_description", @"Gallery");
+            textField.keyboardType = UIKeyboardTypeDefault;
+        }];
+        
+        [self presentViewController:alert animated:YES completion:nil];
+    } else if ([[NetworkManager sharedManager] loggedin] == -1) {
+        [[NetworkManager sharedManager] checkSessionKeyWithSuccess:^(NSDictionary *responseObject) {
+            [self doAddGallery:sender];
+        }  failure:^(NSString *failureReason, NSInteger statusCode) {
+            if([[NetworkManager sharedManager] loggedin] == 0) {
+                [self doAddGallery:sender];
+            } else {
+                [NetworkManager showMessage:failureReason];
+            }
+        }];
+    } else {
+        [[NetworkManager sharedManager] showLoginWithCallback:^(void) {
+            [self doAddGallery:sender];
+        }];
+    }
 
-    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = NSLocalizedString(@"newgallery_label_name", @"Gallery");
-        textField.keyboardType = UIKeyboardTypeDefault;
-    }];
-
-    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = NSLocalizedString(@"newgallery_label_description", @"Gallery");
-        textField.keyboardType = UIKeyboardTypeDefault;
-    }];
-
-    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)doDeleteGallery:(NSInteger) row {

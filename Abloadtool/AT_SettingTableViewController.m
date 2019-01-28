@@ -64,20 +64,7 @@
     switch (indexPath.section) {
         case 0: {
             cell.textLabel.text = NSLocalizedString(@"label_gallery",@"Settings");
-            if([[NetworkManager sharedManager] settingGallerySelected] > 0) {
-                long i = [[[NetworkManager sharedManager] galleryList] indexOfObjectPassingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    return ([[obj objectForKey:@"_id"] intValue] == [[NetworkManager sharedManager] settingGallerySelected]);
-                }];
-                if(i < [[[NetworkManager sharedManager] galleryList] count]) {
-                    //cell.detailTextLabel.text = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:i] objectForKey:@"_name"];
-                    NSData *data = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:i] objectForKey:@"_name"] dataUsingEncoding:NSUTF8StringEncoding];
-                    cell.detailTextLabel.text = [[NSString alloc] initWithData:data encoding:NSNonLossyASCIIStringEncoding];
-                } else {
-                    cell.detailTextLabel.text = NSLocalizedString(@"label_nogallery", @"Settings");
-                }
-            } else {
-                cell.detailTextLabel.text = NSLocalizedString(@"label_nogallery", @"Settings");
-            }
+            cell.detailTextLabel.text = [[NetworkManager sharedManager] settingGallerySelectedName];
             }
             break;
         case 1: {

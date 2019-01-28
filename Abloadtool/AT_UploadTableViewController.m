@@ -172,12 +172,50 @@
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     switch (section) {
         case 0:
-            return NSLocalizedString(@"title_images_waiting_for_upload", @"Upload Tab");
+            if([self.uploadStatus caseInsensitiveCompare:@"DONE"] == NSOrderedSame) {
+                return NSLocalizedString(@"title_images_uploaded", @"Upload Tab");
+            } else {
+                return NSLocalizedString(@"title_images_waiting_for_upload", @"Upload Tab");
+            }
             break;
         case 1:
             return NSLocalizedString(@"title_last5", @"Upload Tab");
             break;
         default:
+            return nil;
+            break;
+    }
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+    switch (section) {
+        case 0:
+            if([self.uploadImages count] > 0) {
+                if([[[NetworkManager sharedManager] settingResolutionSelected] compare:NSLocalizedString(@"label_keeporiginal", @"Settings")] != NSOrderedSame) {
+                    return [NSString stringWithFormat:NSLocalizedString(@"%@ %@:\n%@: %@\n%@: %@\n%@: %@", @"Upload Tab"),
+                            NSLocalizedString(@"nav_tabbar_upload",@"Navigation"),
+                            NSLocalizedString(@"nav_title_settings",@"Navigation"),
+                            NSLocalizedString(@"label_gallery",@"Settings"),
+                            [[NetworkManager sharedManager] settingGallerySelectedName],
+                            NSLocalizedString(@"label_resize",@"Settings"),
+                            [[NetworkManager sharedManager] settingResolutionSelected],
+                            NSLocalizedString(@"label_scale",@"Settings"),
+                            [[[[NetworkManager sharedManager] settingAvailableScalingList] objectAtIndex:[[NetworkManager sharedManager] settingScaleSelected]] objectAtIndex:0]];
+
+                } else {
+                    return [NSString stringWithFormat:NSLocalizedString(@"%@ %@:\n%@: %@\n%@: %@", @"Upload Tab"),
+                            NSLocalizedString(@"nav_tabbar_upload",@"Navigation"),
+                            NSLocalizedString(@"nav_title_settings",@"Navigation"),
+                            NSLocalizedString(@"label_gallery",@"Settings"),
+                            [[NetworkManager sharedManager] settingGallerySelectedName],
+                            NSLocalizedString(@"label_resize",@"Settings"),
+                            [[NetworkManager sharedManager] settingResolutionSelected]];
+                }
+            } else {
+                return NSLocalizedString(@"label_empty", @"Upload Tab");
+            }
+            break;
+            default:
             return nil;
             break;
     }
@@ -336,7 +374,13 @@
         [self.navigationController presentViewController:self.navSetting animated:YES completion:nil];
         UIPopoverPresentationController *presentationController =[self.navSetting popoverPresentationController];
         presentationController.barButtonItem = self.navigationItem.leftBarButtonItem;
+        presentationController.delegate = self;
     }
+}
+
+- (BOOL)popoverPresentationControllerShouldDismissPopover:(UIPopoverPresentationController *)popoverPresentationController {
+    [self.tableView reloadData];
+    return YES;
 }
 
 - (void)showSettingsLinkType {

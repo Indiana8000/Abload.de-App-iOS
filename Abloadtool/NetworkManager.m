@@ -255,6 +255,23 @@ static int settingMaxImageSize = 10485760;
     [self.defaults synchronize];
 }
 
+- (NSString*)settingGallerySelectedName {
+    if(self.settingGallerySelected > 0) {
+        long i = [self.galleryList indexOfObjectPassingTest:^BOOL(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            return ([[obj objectForKey:@"_id"] intValue] == self.settingGallerySelected);
+        }];
+        if(i < [self.galleryList count]) {
+            NSData *data = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:i] objectForKey:@"_name"] dataUsingEncoding:NSUTF8StringEncoding];
+            return [[NSString alloc] initWithData:data encoding:NSNonLossyASCIIStringEncoding];
+        } else {
+            [self saveGallerySelected:0];
+            return NSLocalizedString(@"label_nogallery", @"Settings");
+        }
+    } else {
+        return NSLocalizedString(@"label_nogallery", @"Settings");
+    }
+}
+
 - (void)saveResolutionSelected:(NSString*) newResolution {
     self.settingResolutionSelected = newResolution;
     [self.defaults setObject:newResolution forKey:@"settingResolutionSelected"];

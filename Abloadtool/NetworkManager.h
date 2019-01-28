@@ -53,6 +53,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 - (void)saveGalleryList:(NSArray*) gallery;
 - (void)saveGallerySorted:(NSInteger) gallerySorted;
 - (void)saveGallerySelected:(NSInteger) galleryID;
+- (NSString*)settingGallerySelectedName;
 
 #pragma mark - Settings
 @property NSArray* settingAvailableScalingList;
