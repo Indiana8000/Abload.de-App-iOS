@@ -612,7 +612,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = AbloadtoolShare/AbloadtoolShare.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
 				INFOPLIST_FILE = AbloadtoolShare/Info.plist;
@@ -622,7 +622,7 @@
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "c826848f-87cc-4c5b-bb2c-123022045176";
-				PROVISIONING_PROFILE_SPECIFIER = 20180620_AbloadToolShare_AdHoc;
+				PROVISIONING_PROFILE_SPECIFIER = 20190131_AbloadToolShare_XC_Dev;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -632,7 +632,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = AbloadtoolShare/AbloadtoolShare.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
 				INFOPLIST_FILE = AbloadtoolShare/Info.plist;
@@ -642,7 +642,7 @@
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "c826848f-87cc-4c5b-bb2c-123022045176";
-				PROVISIONING_PROFILE_SPECIFIER = 20180620_AbloadToolShare_AdHoc;
+				PROVISIONING_PROFILE_SPECIFIER = 20190131_AbloadToolShare_XC_Dev;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -764,7 +764,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Abloadtool/Abloadtool.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
 				INFOPLIST_FILE = Abloadtool/Info.plist;
@@ -774,7 +774,7 @@
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "3b10ddf5-d0ce-4f5a-9216-cccf1b026c39";
-				PROVISIONING_PROFILE_SPECIFIER = 20180620_AbloadTool_AdHoc;
+				PROVISIONING_PROFILE_SPECIFIER = 20190131_AbloadTool_Dev;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -785,7 +785,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Abloadtool/Abloadtool.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = RYEH6L2AC3;
 				INFOPLIST_FILE = Abloadtool/Info.plist;
@@ -795,7 +795,7 @@
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "3b10ddf5-d0ce-4f5a-9216-cccf1b026c39";
-				PROVISIONING_PROFILE_SPECIFIER = 20180620_AbloadTool_AdHoc;
+				PROVISIONING_PROFILE_SPECIFIER = 20190131_AbloadTool_Dev;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
