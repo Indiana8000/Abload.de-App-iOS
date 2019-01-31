@@ -238,7 +238,9 @@
     [self showProgressHUDWithText:loadTest];
     self.imageView.hidden = YES;
     [self.imageView setImageWithURLRequest:[NSURLRequest requestWithURL:self.imageURL] placeholderImage:[UIImage imageNamed:@"AppIcon"] progress:^(NSProgress * _Nonnull downloadProgress) {
-        weakSelf.progressHUD.progress = downloadProgress.fractionCompleted;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            weakSelf.progressHUD.progress = downloadProgress.fractionCompleted;
+        });
     } success:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nullable response, UIImage * _Nonnull image) {
         weakSelf.imageView.hidden = NO;
         unsigned long imageMemory  = CGImageGetHeight(image.CGImage) * CGImageGetBytesPerRow(image.CGImage);
