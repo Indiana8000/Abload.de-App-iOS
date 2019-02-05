@@ -22,6 +22,7 @@
     @property AT_DetailedViewController* detailedViewController;
     @property AT_SettingOutputLinksTableViewController* pageSetting;
     @property UINavigationController* navSetting;
+    @property BOOL scrollTop;
     - (void)setLastRefresh;
     - (void)resetForNewGroup;
 @end

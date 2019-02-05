@@ -25,6 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.scrollTop = YES;
     self.multiSelectMode = NO;
     self.selectedImages = [[NSMutableIndexSet alloc] init];
 
@@ -62,6 +63,11 @@
     [self.tableView reloadData];
     if(self.multiSelectMode)
         [self.navigationController setToolbarHidden:NO animated:animated];
+    if(self.scrollTop) {
+        self.scrollTop = NO;
+        if([[[[NetworkManager sharedManager] imageList] objectForKey:self.gid] count] > 0)
+            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

@@ -135,16 +135,20 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [[NetworkManager sharedManager] showProgressHUD];
+    NSString* newGid = @"x";
     if(indexPath.section == 0) {
-        self.imageTableViewController.gid = @"x";
         self.imageTableViewController.navigationItem.title = NSLocalizedString(@"label_nogallery", @"Settings");
     } else {
         NSData *data = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_name"] dataUsingEncoding:NSUTF8StringEncoding];
         NSString *name = [[NSString alloc] initWithData:data encoding:NSNonLossyASCIIStringEncoding];
         
-        self.imageTableViewController.gid = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_id"];
+        newGid = [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_id"];
         self.imageTableViewController.navigationItem.title = name;
     }
+    if([self.imageTableViewController.gid compare:newGid] != NSOrderedSame) {
+        self.imageTableViewController.scrollTop = YES;
+    }
+    self.imageTableViewController.gid = newGid;
     [self.imageTableViewController resetForNewGroup];
 
     [[NetworkManager sharedManager] getImageListForGroup:self.imageTableViewController.gid success:^(NSDictionary *responseObject) {
