@@ -49,6 +49,10 @@
     self.multiSelectMode = NO;
     self.selectedImages = [[NSMutableIndexSet alloc] init];
 
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(doRefresh:) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+
     [self.tableView registerClass:[AT_UploadTableViewCell class] forCellReuseIdentifier:cUploadCell];
     [self.tableView registerClass:[AT_ImageTableViewCell class] forCellReuseIdentifier:cImageCell];
     
@@ -156,6 +160,47 @@
     
     if(i>([extension count]-2)) i = [extension count]-1;
     return [NSString stringWithFormat:@"%.1f %@", size, [extension objectAtIndex:i]];
+}
+
+
+#pragma mark - RefreshController
+
+- (void)doRefresh:(id)sender {
+    if([[NetworkManager sharedManager] loggedin] == 1) {
+        [[NetworkManager sharedManager] getGalleryList:^(NSDictionary *responseObject) {
+            [self setLastRefresh];
+            [[self refreshControl] endRefreshing];
+            [self.tableView reloadData];
+        } failure:^(NSString *failureReason, NSInteger statusCode) {
+            [[self refreshControl] endRefreshing];
+            [NetworkManager showMessage:failureReason];
+        }];
+    } else if ([[NetworkManager sharedManager] loggedin] == -1) {
+        [[NetworkManager sharedManager] checkSessionKeyWithSuccess:^(NSDictionary *responseObject) {
+            [self doRefresh:nil];
+        }  failure:^(NSString *failureReason, NSInteger statusCode) {
+            if([[NetworkManager sharedManager] loggedin] == 0) {
+                [self doRefresh:sender];
+            } else {
+                [[self refreshControl] endRefreshing];
+                [NetworkManager showMessage:failureReason];
+            }
+        }];
+    } else {
+        [[NetworkManager sharedManager] showLoginWithCallback:^(void) {
+            [self doRefresh:sender];
+        }];
+        [[self refreshControl] endRefreshing];
+    }
+}
+
+- (void)setLastRefresh {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:NSLocalizedString(@"label_lastrefresh_language", @"Gallery")]];
+    [formatter setDateFormat:@"d. MMM, H:mm"];
+    NSString *lastUpdated = [NSString stringWithFormat:NSLocalizedString(@"label_lastrefresh %@", @"Gallery"),
+                             [formatter stringFromDate:[NSDate date]]];
+    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:lastUpdated];
 }
 
 
