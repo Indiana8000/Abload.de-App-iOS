@@ -17,9 +17,13 @@
     self.canbeSelected                             = NO;
     self.isSelected                                = NO;
 
-    self.backgroundColor                           = [UIColor whiteColor];
+    if (@available(iOS 13.0, *)) {
+        self.backgroundColor                           = [UIColor systemBackgroundColor];
+    } else {
+        self.backgroundColor                           = [UIColor whiteColor];
+    }
     self.imageView.layer.masksToBounds             = YES;
-    self.imageView.backgroundColor                 = [UIColor whiteColor];
+    self.imageView.backgroundColor                 = [UIColor clearColor];
     self.imageView.contentMode                     = UIViewContentModeScaleAspectFit;
     self.textLabel.adjustsFontSizeToFitWidth       = YES;
     self.detailTextLabel.adjustsFontSizeToFitWidth = NO;
