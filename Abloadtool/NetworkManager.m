@@ -803,7 +803,7 @@ static int settingMaxImageSize = 10485760;
 
 #pragma mark - User-Actions
 
-- (void)showLoginWithCallback:(void(^)(void))successCallback  {
+- (void)showLoginWithCallback:(void(^)(void))successCallback failure:(void (^)(void))failureCallback  {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"net_login_title", @"NetworkManager")
                                                                    message:nil
                                                             preferredStyle:UIAlertControllerStyleAlert];
@@ -813,12 +813,14 @@ static int settingMaxImageSize = 10485760;
                                                    [self authenticateWithEmail:[[alert.textFields objectAtIndex:0] text] password:[[alert.textFields objectAtIndex:1] text] success:^(id responseObject) {
                                                        if(successCallback != nil) successCallback();
                                                    } failure:^(NSString *failureReason, NSInteger statusCode) {
+                                                       if(failureCallback != nil) failureCallback();
                                                        [NetworkManager showMessage:failureReason];
                                                    }];
                                                }];
 
     UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"net_login_cancel", @"NetworkManager") style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction * action) {
+                                                       if(failureCallback != nil) failureCallback();
                                                        [alert dismissViewControllerAnimated:YES completion:nil];
                                                    }];
     
@@ -837,6 +839,10 @@ static int settingMaxImageSize = 10485760;
     }];
 
     [[[UIApplication sharedApplication] delegate].window.rootViewController presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)showLoginWithCallback:(void(^)(void))successCallback {
+    [self showLoginWithCallback:successCallback failure:nil];
 }
 
 - (void)logoutWithCallback:(void(^)(void))successCallback {

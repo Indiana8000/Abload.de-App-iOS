@@ -169,10 +169,11 @@
     if([[NetworkManager sharedManager] loggedin] == 1) {
         [[NetworkManager sharedManager] getGalleryList:^(NSDictionary *responseObject) {
             [self setLastRefresh];
-            [[self refreshControl] endRefreshing];
+            [self.refreshControl endRefreshing];
             [self.tableView reloadData];
         } failure:^(NSString *failureReason, NSInteger statusCode) {
-            [[self refreshControl] endRefreshing];
+            [self.refreshControl endRefreshing];
+            [self.tableView scrollsToTop];
             [NetworkManager showMessage:failureReason];
         }];
     } else if ([[NetworkManager sharedManager] loggedin] == -1) {
@@ -182,15 +183,18 @@
             if([[NetworkManager sharedManager] loggedin] == 0) {
                 [self doRefresh:sender];
             } else {
-                [[self refreshControl] endRefreshing];
+                [self.refreshControl endRefreshing];
+                [self.tableView scrollsToTop];
                 [NetworkManager showMessage:failureReason];
             }
         }];
     } else {
         [[NetworkManager sharedManager] showLoginWithCallback:^(void) {
             [self doRefresh:sender];
+        } failure:^{
+            [self.refreshControl endRefreshing];
+            [self.tableView scrollsToTop];
         }];
-        [[self refreshControl] endRefreshing];
     }
 }
 

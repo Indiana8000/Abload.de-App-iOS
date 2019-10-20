@@ -70,6 +70,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 @property NSMutableDictionary* imageList;
 @property NSArray* imageLast;
 - (void)checkSessionKeyWithSuccess:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;
+- (void)showLoginWithCallback:(void(^)(void))successCallback failure:(void(^)(void))failureCallback;
 - (void)showLoginWithCallback:(void(^)(void))successCallback;
 - (void)logoutWithCallback:(void(^)(void))successCallback;
 - (NSString*)generateLinkForImage:(NSString*) name;
