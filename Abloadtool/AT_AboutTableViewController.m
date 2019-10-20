@@ -76,7 +76,11 @@
     switch (indexPath.row) {
         case 0:
             cell.textLabel.text = NSLocalizedString(@"label_abload_slogan", @"About");
-            cell.backgroundColor = [UIColor whiteColor];
+            if (@available(iOS 13.0, *)) {
+                cell.backgroundColor = [UIColor systemGray5Color];
+            } else {
+                cell.backgroundColor = [UIColor whiteColor];
+            }
             break;
         case 1:
             cell.textLabel.text = @"";
@@ -96,7 +100,11 @@
             break;
         case 5:
             cell.textLabel.text = NSLocalizedString(@"label_bluepaw_slogan", @"About");
-            cell.backgroundColor = [UIColor whiteColor];
+            if (@available(iOS 13.0, *)) {
+                cell.backgroundColor = [UIColor systemGray5Color];
+            } else {
+                cell.backgroundColor = [UIColor whiteColor];
+            }
             break;
         case 6:
             cell.textLabel.text = @"";

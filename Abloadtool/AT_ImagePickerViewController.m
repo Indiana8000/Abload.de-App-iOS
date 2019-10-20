@@ -300,7 +300,7 @@
     PHFetchResult *syncedAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumSyncedAlbum options:nil];
     PHFetchResult *sharedAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumCloudShared options:nil];
     NSArray *allAlbums = @[myPhotoStreamAlbum,smartAlbums,topLevelUserCollections,syncedAlbums,sharedAlbums];
-    
+
     for (PHFetchResult *fetchResult in allAlbums) {
         for (PHAssetCollection *collection in fetchResult) {
             if (![collection isKindOfClass:[PHAssetCollection class]]) continue;
@@ -397,6 +397,7 @@
                 }];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [[NetworkManager sharedManager] hideProgressHUD];
+                    [self.uploadTableViewController reloadData];
                     [self cancleView];
                 });
             }

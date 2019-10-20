@@ -19,6 +19,7 @@
 @property NSInteger selectedAlbum;
 @property NSMutableIndexSet* selectedImages;
 @property BOOL firstView;
+@property UITableView* uploadTableViewController;
 
 - (void)prepareDisplay;
 

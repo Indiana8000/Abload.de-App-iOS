@@ -484,6 +484,7 @@
         if(status == PHAuthorizationStatusAuthorized) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.imagePickerViewController prepareDisplay];
+                self.imagePickerViewController.uploadTableViewController = self.tableView;
                 self.albumTableViewController.imagePickerViewController = self.imagePickerViewController;
                 self.imagePickerViewController.collectionView.backgroundColor = self.tableView.backgroundColor;
                 [self presentViewController:self.imagePickerNavigationController animated:YES completion:nil];
