@@ -26,3 +26,4 @@
     - (void)setLastRefresh;
     - (void)resetForNewGroup;
 @end
+
