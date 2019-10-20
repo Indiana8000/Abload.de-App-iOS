@@ -76,6 +76,7 @@ typedef void (^NetworkManagerFailure)(NSString *failureReason, NSInteger statusC
 - (NSString*)generateLinkForImage:(NSString*) name;
 - (NSString*)generateLinkForGallery:(NSString*) name;
 - (NSString*)generateLinkForItemProvider:(NSString*) name;
+- (NSString*)getThumbPath;
 
 #pragma mark - HTTP-Gallery
 - (void)getGalleryList:(NetworkManagerSuccess)success failure:(NetworkManagerFailure)failure;

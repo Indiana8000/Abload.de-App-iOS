@@ -317,7 +317,7 @@
             tmpCell.isSelected = NO;
         }
         if([[[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_uploaded"] intValue] == 1) {
-            NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
+            NSString *tmpURL = [NSString stringWithFormat:@"%@/%@/%@", cURL_BASE, [[NetworkManager sharedManager] getThumbPath], [[self.uploadImages objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
             [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
             [tmpCell.progressView setBackgroundColor:[UIColor clearColor]];
@@ -339,7 +339,7 @@
         cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
         cell.textLabel.text = [[[[NetworkManager sharedManager] imageLast] objectAtIndex:indexPath.row] objectForKey:@"_filename"];
         cell.detailTextLabel.text = [self bytesToUIString:[[[[NetworkManager sharedManager] imageLast] objectAtIndex:indexPath.row] objectForKey:@"_filesize"]];
-        NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[NetworkManager sharedManager] imageLast] objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
+        NSString *tmpURL = [NSString stringWithFormat:@"%@/%@/%@", cURL_BASE, [[NetworkManager sharedManager] getThumbPath], [[[[NetworkManager sharedManager] imageLast] objectAtIndex:indexPath.row] objectForKey:@"_filename"]];
         [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
         AT_ImageTableViewCell* tmpCell = (id)cell;
         tmpCell.dateTextLabel.text = [[[[NetworkManager sharedManager] imageLast] objectAtIndex:indexPath.row] objectForKey:@"_date"];

@@ -873,4 +873,16 @@ static int settingMaxImageSize = 10485760;
     return link;
 }
 
+- (NSString*)getThumbPath {
+    if (@available(iOS 13.0, *)) {
+        if([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
+            return @"thumb2";
+        } else {
+            return @"mini";
+        }
+    } else {
+        return @"mini";
+    }
+}
+
 @end
