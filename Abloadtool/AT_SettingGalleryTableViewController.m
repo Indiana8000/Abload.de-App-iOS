@@ -65,7 +65,7 @@
         }
         cell.dateTextLabel.text = [[[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_lastchange"] substringToIndex:16];
         
-        NSString *tmpURL = [NSString stringWithFormat:@"%@/mini/%@", cURL_BASE, [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_thumb"]];
+        NSString *tmpURL = [NSString stringWithFormat:@"%@/%@/%@", cURL_BASE, [[NetworkManager sharedManager] getThumbPath], [[[[NetworkManager sharedManager] galleryList] objectAtIndex:indexPath.row] objectForKey:@"_thumb"]];
         [cell.imageView setImageWithURL:[NSURL URLWithString:tmpURL] placeholderImage:[UIImage imageNamed:@"AppIcon"]];
     }
 

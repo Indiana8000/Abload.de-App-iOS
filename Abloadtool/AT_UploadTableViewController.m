@@ -369,7 +369,19 @@
     } else {
         UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:NSLocalizedString(@"btn_slide_delete", @"Upload Tab") handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull indexPath) {
             [[NetworkManager sharedManager] removeImageFromDisk:indexPath.row andList:YES];
+            
+            [CATransaction begin];
+            [tableView beginUpdates];
+            [CATransaction setCompletionBlock: ^{
+                if([self.uploadImages count] == 0) {
+                    [tableView reloadData];
+                }
+            }];
+            
             [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:YES];
+            
+            [tableView endUpdates];
+            [CATransaction commit];
         }];
         return @[deleteAction];
     }
