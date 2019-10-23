@@ -91,6 +91,7 @@
     self.albumTableViewController = [[AT_AlbumTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
     self.imagePickerViewController = [[AT_ImagePickerViewController alloc] initWithCollectionViewLayout:layout];
     self.imagePickerNavigationController = [[UINavigationController alloc] initWithRootViewController:self.albumTableViewController];
+    [self.imagePickerNavigationController pushViewController:self.imagePickerViewController animated:NO];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
@@ -500,7 +501,6 @@
                 self.albumTableViewController.imagePickerViewController = self.imagePickerViewController;
                 self.imagePickerViewController.collectionView.backgroundColor = self.tableView.backgroundColor;
                 [self presentViewController:self.imagePickerNavigationController animated:YES completion:nil];
-                [self.imagePickerNavigationController pushViewController:self.imagePickerViewController animated:NO];
             });
         } else {
             UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil

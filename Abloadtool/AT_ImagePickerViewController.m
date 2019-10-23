@@ -87,7 +87,7 @@
     [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:(id)self];
     [self.selectedImages removeAllIndexes];
     [self dismissViewControllerAnimated:YES completion:nil];
-    [self.navigationController popViewControllerAnimated:YES];
+    //[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -209,9 +209,11 @@
 - (void)takePicture {
     [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
         if(granted) {
-            self.observerEnabled = 2;
-            self.pickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-            [self presentViewController:self.pickerController animated:YES completion:nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.observerEnabled = 2;
+                self.pickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+                [self presentViewController:self.pickerController animated:YES completion:nil];
+            });
         } else {
             UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
                                                                            message:NSLocalizedString(@"msg_no_access_camera", @"ImagePicker")
