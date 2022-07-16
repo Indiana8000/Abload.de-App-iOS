@@ -381,7 +381,7 @@
                 requestOptions.networkAccessAllowed = YES;
                 requestOptions.synchronous = YES;
                 requestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-                requestOptions.version = PHVideoRequestOptionsVersionOriginal;
+                requestOptions.version = PHVideoRequestOptionsVersionCurrent; // Alternative Option: PHVideoRequestOptionsVersionOriginal
                 
                 [self.selectedImages enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
                     PHAsset* asset = [fetchResult objectAtIndex:idx];
