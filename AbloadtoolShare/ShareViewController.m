@@ -22,7 +22,7 @@
     [super viewDidLoad];
     self.title = NSLocalizedString(@"Abloadtool", @"Abloadtool");
 
-    //NSURL* securityPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool"];
+    //NSURL* securityPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool2"];
     //NSString* filePath = [[securityPath path] stringByAppendingPathComponent:@"plugin.log"];
     //freopen([filePath cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
     
@@ -49,9 +49,9 @@
 }
 
 - (void)didSelectPost {
-    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.de.bluepaw.Abloadtool"];
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.de.bluepaw.Abloadtool2"];
     
-    NSURL* securityPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool"];
+    NSURL* securityPath = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool2"];
     NSString* filePath = [[securityPath path] stringByAppendingPathComponent:@"images"];
     if(![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:nil];

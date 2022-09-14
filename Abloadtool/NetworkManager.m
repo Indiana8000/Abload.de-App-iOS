@@ -50,7 +50,7 @@ static int settingMaxImageSize = 10485760;
 - (id)init {
     NSLog(@"NetworkManager - init");
     if ((self = [super init])) {
-        self.defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.de.bluepaw.Abloadtool"];
+        self.defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.de.bluepaw.Abloadtool2"];
         self.loggedin = 0;
         self.noad = 0;
         self.lastRefresh = [NSDate date];
@@ -84,7 +84,7 @@ static int settingMaxImageSize = 10485760;
         [[NSFileManager defaultManager] createDirectoryAtPath:self.pathThumbnails withIntermediateDirectories:YES attributes:nil error:nil];
     }
 
-    NSURL* securityPath = [[[NSFileManager alloc] init] containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool"];
+    NSURL* securityPath = [[[NSFileManager alloc] init] containerURLForSecurityApplicationGroupIdentifier:@"group.de.bluepaw.Abloadtool2"];
     self.pathImagesShared = [[securityPath path] stringByAppendingPathComponent:@"images"];
     if(![[NSFileManager defaultManager] fileExistsAtPath:self.pathImagesShared]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:self.pathImagesShared withIntermediateDirectories:YES attributes:nil error:nil];
