@@ -6,5 +6,5 @@
   Copyright © 2018 Andreas Kreisl. All rights reserved.
 */
 
-NSPhotoLibraryUsageDescription = "Ohne Zugriff auf deine Bilder kann die App nicht funktionieren.";
-NSCameraUsageDescription = "Mit Zugriff auf deine Kamera kannst du direkt Fotos machen und hochladen.";
+NSPhotoLibraryUsageDescription = "Die Hauptfunktion unserer App ist es, dir das Hochladen von Bildern auf unseren Speicherplatz zu ermöglichen. Damit das funktioniert, braucht sie natürlich Zugriff auf deine Bilder.";
+NSCameraUsageDescription = "Falls du nicht nur Bilder hochladen, sondern auch direkt in der App Fotos machen möchtest, braucht unsere App natürlich auch Zugriff auf deine Kamera.";

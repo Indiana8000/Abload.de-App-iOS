@@ -6,5 +6,5 @@
   Copyright © 2018 Andreas Kreisl. All rights reserved.
 */
 
-NSPhotoLibraryUsageDescription = "Without access to your images, this app cannot work.";
-NSCameraUsageDescription = "With access to your camera you can take and upload photos directly.";
+NSPhotoLibraryUsageDescription = "The main feature of our app is to let you upload images to our cloud storage. To make this possible, it needs access to your images of course.";
+NSCameraUsageDescription = "In case you do not only want to upload images but also want to take photos right within the app, our app also needs access to your camera of course.";
